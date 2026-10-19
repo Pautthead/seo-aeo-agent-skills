@@ -103,11 +103,21 @@ honest statement is "position unknown, between 30 and 90 days old", not "current
 
 ### The two overrides
 
-**Override A — unrefreshable and aged.**
-If `auth_state` ∈ `expired | revoked | unavailable` **and** `age > L`, the class is at least `stale`,
-whatever the arithmetic says. `L` describes a healthy pipeline; this one is not healthy. Note that
-`auth_state: unavailable` triggers this — it is how you handle a user who pasted an export while you
-have no credentials, without punishing them for it.
+**Override A — credential lost and data aged.**
+If `auth_state` ∈ `expired | revoked` **and** `age > L`, the class is `stale`, whatever the
+arithmetic says. `L` describes a healthy pipeline; this one is not healthy. A credential we
+believed we held has gone, so there is no path back to `fresh` — the data is not just old, it is
+**frozen**. This is the `r/AiAutomations` failure: an OAuth token expired and the workflow kept
+producing confident analysis from a cache for two weeks.
+
+`auth_state: unavailable` is deliberately **excluded** from this override. It means no credential
+was ever expected — a user pasted a GSC export into the chat and we hold no keys. There is no broken
+expectation of refreshability and no false confidence to correct, and flooring it at `stale` would
+make the skill refuse the single most common keyless input, which would break the keyless-first
+contract this repository is built on. Age classification alone applies.
+
+The distinction: `expired` and `revoked` are **transitions** from a state we were in. `unavailable`
+is a **starting condition**. Only transitions warrant a hard gate.
 
 **Override B — truncated.**
 If `truncated: true` at a known cap, the dataset is **partial**, not merely old. Age classification
@@ -159,7 +169,7 @@ RETENTION = {
     "dataforseo_serp": None,
 }
 
-BLOCKING_AUTH = {"expired", "revoked", "unavailable"}
+BLOCKING_AUTH = {"expired", "revoked"}  # `unavailable` is NOT blocking - see Override A
 
 def classify(env: dict, today: date | None = None) -> tuple[str, str]:
     """Returns (freshness_class, class_reason). Pure function of the envelope."""
@@ -192,17 +202,20 @@ def classify(env: dict, today: date | None = None) -> tuple[str, str]:
 
     reason = f"age {age}d vs L={l}d for {family} (newest data {ndd}, via {env.get('date_field')})"
 
-    # Override A: unrefreshable and already aged out.
-    if env.get("auth_state") in BLOCKING_AUTH and age > l and cls == "fresh":
-        cls = "aging"
-        reason += "; auth not usable, cannot refresh — floored at aging"
+    # Override A: credential lost and data already aged out.
+    # No `cls == "fresh"` guard here: that condition is unsatisfiable, because
+    # age > l can never coexist with cls == "fresh" (fresh is defined as age <= l).
+    # It was dead code, so a dead OAuth token silently produced "aging" - the
+    # exact silent-stale failure this skill exists to prevent.
+    if env.get("auth_state") in BLOCKING_AUTH and age > l:
+        cls = "stale"
+        reason += "; auth unusable, cannot refresh — floored at stale"
     return cls, reason
 ```
 
-The override is written as a floor at `aging` rather than a jump to `stale`, so the report reads
-accurately: the data is not *yet* stale, it is just frozen and therefore cannot be relied on to stay
-acceptable. If you prefer a hard line, change one comparison — but make the choice explicit rather
-than accidental, which is the entire point of the file.
+The override is a **floor at `stale`, not a warning**. That is a deliberate hard line: the
+`r/AiAutomations` failure was not that the data was old, it was that the workflow reported success
+while making decisions from an input it could no longer refresh. A warning is not a control.
 
 ## 5. Traps
 

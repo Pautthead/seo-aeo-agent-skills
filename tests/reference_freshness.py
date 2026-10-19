@@ -522,8 +522,8 @@ def main(argv: list[str] | None = None) -> int:
         print("         a scan that finds nothing is not the same as a scan that finds")
         print("         nothing wrong.")
     elif checked < args.min_citations:
-        print("WARNING: only %d citation(s) detected. A low count usually means the date")
-        print("         patterns no longer match how the sources are written." % checked)
+        print("WARNING: only %d citation(s) detected. A low count usually means the date" % checked)
+        print("         patterns no longer match how the sources are written.")
 
     if ages:
         print("Oldest citation:    %d days" % max(ages))

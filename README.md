@@ -1,6 +1,6 @@
 # SEO + AEO + GEO Skills for AI Agents — four verifiable agent skills
 
-Evidence-backed AI SEO agent skills for Claude Code, Codex, Cursor, OpenCode, Gemini CLI, Cline, Hermes and ~75 other hosts. Every scoring rule traces to a dated source. **No API keys, no MCP servers, no subscription.**
+Evidence-backed AI SEO agent skills for Claude Code, Codex, Cursor, OpenCode, **Grok Build**, Gemini CLI, Cline, Hermes and ~75 other hosts. Every scoring rule traces to a dated source. **No API keys, no MCP servers, no subscription.**
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Install](https://img.shields.io/badge/install-npx%20skills-8a2be2.svg)](https://www.npmjs.com/package/skills)
@@ -128,18 +128,27 @@ Claude Code plugin marketplace:
 
 Or copy `skills/<name>/` into your host's directory by hand:
 
-| Host | Project path | Global path |
-|---|---|---|
-| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
-| OpenCode | `.agents/skills/` | `~/.config/opencode/skills/` |
-| Codex | `.agents/skills/` | `~/.agents/skills/` |
-| Cursor | `.agents/skills/` | `~/.cursor/skills/` |
-| Hermes Agent | `.hermes/skills/` | `~/.hermes/skills/` |
-| OpenClaw | `skills/` | `~/.openclaw/skills/` |
-| Gemini CLI | `.agents/skills/` | `~/.gemini/skills/` |
-| Cline | `.agents/skills/` | `~/.agents/skills/` |
+| Host | `--agent` | Project path | Global path |
+|---|---|---|---|
+| Claude Code | `claude-code` | `.claude/skills/` | `~/.claude/skills/` |
+| OpenCode | `opencode` | `.agents/skills/` | `~/.config/opencode/skills/` |
+| Codex | `codex` | `.agents/skills/` | `~/.agents/skills/` |
+| Cursor | `cursor` | `.agents/skills/` | `~/.cursor/skills/` |
+| **Grok Build (xAI)** | `grok` | `.grok/skills/` | `~/.grok/skills/` |
+| Hermes Agent | `hermes-agent` | `.hermes/skills/` | `~/.hermes/skills/` |
+| OpenClaw | `openclaw` | `skills/` | `~/.openclaw/skills/` |
+| Gemini CLI | `gemini-cli` | `.agents/skills/` | `~/.gemini/skills/` |
+| Cline | `cline` | `.agents/skills/` | `~/.agents/skills/` |
+| OpenHands | `openhands` | `.openhands/skills/` | `~/.openhands/skills/` |
+| Goose | `goose` | `.goose/skills/` | `~/.config/goose/skills/` |
+| Crush | `crush` | `.crush/skills/` | `~/.config/crush/skills/` |
+| Amp | `amp` | `.agents/skills/` | `~/.config/agents/skills/` |
+| Warp | `warp` | `.agents/skills/` | `~/.agents/skills/` |
+| Kiro CLI | `kiro-cli` | `.kiro/skills/` | `~/.kiro/skills/` |
 
-`.agents/skills/` is the de-facto portable project location. OpenCode additionally reads `.opencode/skills/`, `.claude/skills/` and `.agents/skills/`, walking up from CWD to the worktree root.
+`.agents/skills/` is the de-facto portable project location — Codex, Cursor, Cline, Amp, Warp and OpenCode all read it natively, so no symlinks are needed. OpenCode additionally reads `.opencode/skills/`, `.claude/skills/` and `.agents/skills/`, walking up from CWD to the worktree root. Grok Build reads `.grok/skills/` and *also* scans `.agents/skills/` at each tier between CWD and the repo root, and honours `GROK_HOME`.
+
+That is a subset of the ~80 agents the `skills` CLI supports. Any host that can read `SKILL.md` can use these; the paths above are the ones with first-class registry entries.
 
 After install, ask the agent by name or by description — the `description` frontmatter carries the trigger keywords so it can self-select. `AGENTS.md` is the entry point most hosts load automatically.
 
@@ -188,7 +197,7 @@ Lily Ray documents the corollary: a brand with established authority appears in 
 
 ### And the thing that matters more than all of the above
 
-**Do not produce a finding the technique cannot actually detect.** If a check is N/A — unsupported language, missing field, unreachable source — report it as *not scored*. Never as a pass, never as a failure. A false pass is what destroys trust in an audit. If you couldn't fetch a page, say so. `web_fetch` and `curl` strip `<script>` tags, so reporting "no structured data found" from a fetched page is a false finding, not a clean result.
+**Do not produce a finding the technique cannot actually detect.** If a check is N/A — unsupported language, missing field, unreachable source — report it as *not scored*. Never as a pass, never as a failure. A false pass is what destroys trust in an audit. If you couldn't fetch a page, say so. Note the asymmetry on structured data: summarising fetchers (`web_fetch` and similar) **strip `<script>` tags**, so a page fetched that way genuinely cannot be checked for JSON-LD — but **`curl` returns raw bytes**, so there you must grep the body for `"@type"` and report what's really there. Don't turn a solvable check into a permanent N/A.
 
 ---
 
@@ -291,10 +300,10 @@ Read [`AGENTS.md`](AGENTS.md) first; it is loaded by Codex, OpenCode, Cline, Gem
 
 ```bash
 python tests/validate_skill_inventory.py
-python tests/reference_freshness.py --max-age-days 90
+python tests/reference_freshness.py --review-after-days 90 --stale-after-days 365
 ```
 
-Both run in CI on every push. The first checks that every declared skill exists, that the inventory matches, and that frontmatter is conformant. The second fails any reference document whose evidence has aged past the threshold.
+Both run in CI on every push. The first checks spec conformance and that every internal link resolves. The second uses **two thresholds deliberately**: 90 days flags a *review trigger* — the finding may have been superseded even though the source itself has not expired — and 365 days fails. A single threshold would flag every primary research paper older than three months as broken, which is noise, and noise is how gates get ignored.
 
 **The citation rule.** Every numeric threshold must trace to a dated source with a stated level of evidence. **Verify the source actually says what you claim before citing it** — reading the primary text is the minimum, and if you cannot verify it, do not cite it. A claim that cannot be independently verified gets removed, not softened.
 

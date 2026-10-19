@@ -1,7 +1,11 @@
 <!doctype html>
 <!-- FIXTURE — exercises: aeo-citability-audit, structured-data detection, and the
      skill's own Known-limitations rule #3. This page's ONLY JSON-LD is emitted by
-     JavaScript at runtime. `curl` and `web_fetch` both strip <script> tags, so an
+     JavaScript at runtime. Fetch it with `curl`, which returns raw bytes INCLUDING
+     <script> tags, and you can see the empty placeholder above. Fetch it with a
+     summarising reader (`web_fetch` and similar) and the <script> is stripped, so
+     JSON-LD becomes genuinely unverifiable and the honest answer is "could not
+     verify".
      agent reading fetched bytes sees no schema here and CANNOT tell whether the
      page has any. The correct report is "could not verify — JSON-LD may be
      client-rendered", never "no structured data found". Reporting a clean result

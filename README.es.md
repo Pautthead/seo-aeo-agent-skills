@@ -1,6 +1,6 @@
 # Skills de SEO, AEO y GEO para agentes de IA — cuatro skills de agente verificables
 
-Skills de AI SEO respaldadas por evidencia para Claude Code, Codex, Cursor, OpenCode, Gemini CLI, Cline, Hermes y ~75 hosts más. Cada regla de puntuación se remonta a una fuente fechada. **Sin claves de API, sin servidores MCP, sin suscripción.**
+Skills de AI SEO respaldadas por evidencia para Claude Code, Codex, Cursor, OpenCode, **Grok Build**, Gemini CLI, Cline, Hermes y ~75 hosts más. Cada regla de puntuación se remonta a una fuente fechada. **Sin claves de API, sin servidores MCP, sin suscripción.**
 
 [![Licencia: Apache-2.0](https://img.shields.io/badge/licencia-Apache--2.0-blue.svg)](LICENSE)
 [![Instalación](https://img.shields.io/badge/instalar-npx%20skills-8a2be2.svg)](https://www.npmjs.com/package/skills)
@@ -133,16 +133,27 @@ Marketplace de plugins para Claude Code:
 
 O copia `skills/<nombre>/` a mano en el directorio de tu host:
 
-| Host | Ruta de proyecto | Ruta global |
-|---|---|---|
-| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
-| OpenCode | `.agents/skills/` | `~/.config/opencode/skills/` |
-| Codex | `.agents/skills/` | `~/.agents/skills/` |
-| Cursor | `.agents/skills/` | `~/.cursor/skills/` |
-| Hermes Agent | `.hermes/skills/` | `~/.hermes/skills/` |
-| OpenClaw | `skills/` | `~/.openclaw/skills/` |
-| Gemini CLI | `.agents/skills/` | `~/.gemini/skills/` |
-| Cline | `.agents/skills/` | `~/.agents/skills/` |
+| Host | `--agent` | Ruta de proyecto | Ruta global |
+|---|---|---|---|
+| Claude Code | `claude-code` | `.claude/skills/` | `~/.claude/skills/` |
+| OpenCode | `opencode` | `.agents/skills/` | `~/.config/opencode/skills/` |
+| Codex | `codex` | `.agents/skills/` | `~/.agents/skills/` |
+| Cursor | `cursor` | `.agents/skills/` | `~/.cursor/skills/` |
+| **Grok Build (xAI)** | `grok` | `.grok/skills/` | `~/.grok/skills/` |
+| Hermes Agent | `hermes-agent` | `.hermes/skills/` | `~/.hermes/skills/` |
+| OpenClaw | `openclaw` | `skills/` | `~/.openclaw/skills/` |
+| Gemini CLI | `gemini-cli` | `.agents/skills/` | `~/.gemini/skills/` |
+| Cline | `cline` | `.agents/skills/` | `~/.agents/skills/` |
+| OpenHands | `openhands` | `.openhands/skills/` | `~/.openhands/skills/` |
+| Goose | `goose` | `.goose/skills/` | `~/.config/goose/skills/` |
+| Crush | `crush` | `.crush/skills/` | `~/.config/crush/skills/` |
+| Amp | `amp` | `.agents/skills/` | `~/.config/agents/skills/` |
+| Warp | `warp` | `.agents/skills/` | `~/.agents/skills/` |
+| Kiro CLI | `kiro-cli` | `.kiro/skills/` | `~/.kiro/skills/` |
+
+`.agents/skills/` es la ubicación portátil de facto: Codex, Cursor, Cline, Amp, Warp y OpenCode la leen de forma nativa, así que no hacen falta symlinks. OpenCode además lee `.opencode/skills/`, `.claude/skills/` y `.agents/skills/`, subiendo desde el CWD hasta la raíz del worktree. Grok Build lee `.grok/skills/` y *también* escanea `.agents/skills/` en cada nivel entre el CWD y la raíz del repo, y respeta `GROK_HOME`.
+
+Este es un subconjunto de los ~80 agentes que soporta el CLI `skills`. Cualquier host que sepa leer `SKILL.md` puede usarlos; las rutas de arriba son las que tienen entrada en el registro oficial.
 
 `.agents/skills/` es la ubicación de proyecto portátil de facto. OpenCode además lee `.opencode/skills/`, `.claude/skills/` y `.agents/skills/`, subiendo desde el directorio actual hasta la raíz del worktree.
 
@@ -193,7 +204,7 @@ Lily Ray documenta el corolario: una marca con autoridad consolidada aparece en 
 
 ### Y lo que importa más que todo lo anterior
 
-**No produzcas un hallazgo que la técnica no puede detectar.** Si un check es N/A — idioma no soportado, campo ausente, fuente inaccesible — repórtalo como *no puntuado*. Nunca como aprobado, nunca como fallido. Un aprobado falso es lo que destruye la confianza en una auditoría. Si no has podido descargar una página, dilo. `web_fetch` y `curl` eliminan las etiquetas `<script>`, así que informar «no se encontraron datos estructurados» sobre una página descargada es un hallazgo falso, no un resultado limpio.
+**No produzcas un hallazgo que la técnica no puede detectar.** Si un check es N/A — idioma no soportado, campo ausente, fuente inaccesible — repórtalo como *no puntuado*. Nunca como aprobado, nunca como fallido. Un aprobado falso es lo que destruye la confianza en una auditoría. Si no has podido descargar una página, dilo. Ojo a la asimetría con los datos estructurados: los descargadores que resumen (`web_fetch` y similares) **eliminan las etiquetas `<script>`**, así que una página descargada así realmente no se puede comprobar en busca de JSON-LD — pero **`curl` devuelve los bytes crudos**, de modo que ahí sí debes buscar `"@type"` en el cuerpo e informar de lo que haya de verdad. No conviertas un check resoluble en un N/A permanente.
 
 ---
 
@@ -296,10 +307,10 @@ Lee [`AGENTS.md`](AGENTS.md) primero; lo cargan Codex, OpenCode, Cline, Gemini C
 
 ```bash
 python tests/validate_skill_inventory.py
-python tests/reference_freshness.py --max-age-days 90
+python tests/reference_freshness.py --review-after-days 90 --stale-after-days 365
 ```
 
-Ambas se ejecutan en CI en cada push. La primera comprueba que cada skill declarada existe, que el inventario coincide y que el frontmatter es conforme. La segunda falla cualquier documento de referencia cuya evidencia haya superado el umbral.
+Ambas se ejecutan en CI en cada push. La primera comprueba la conformidad con la spec y que todos los enlaces internos resuelven. La segunda usa **dos umbrales de forma deliberada**: 90 días marca un *disparador de revisión* —el hallazgo podría haber sido superado aunque la fuente no haya caducado— y 365 días falla. Un único umbral señalaría como rotos todos los artículos de investigación primarios con más de tres meses, lo cual es ruido, y el ruido es exactamente lo que hace que una puerta deje de usarse.
 
 **La regla de citación.** Cada umbral numérico debe remontarse a una fuente fechada con un nivel de evidencia declarado. **Verifica que la fuente diga realmente lo que afirmas antes de citarla**: leer el texto primario es el mínimo, y si no puedes verificarlo, no lo cites. Una afirmación que no se puede verificar de forma independiente se elimina, no se suaviza.
 

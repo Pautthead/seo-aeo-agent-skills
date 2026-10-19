@@ -152,6 +152,38 @@ def parse_frontmatter(text: str) -> tuple[dict, str, str | None]:
     block = lines[1:end]
     body = "\n".join(lines[end + 1 :])
 
+    # Reject YAML constructs the minimal parser would otherwise mis-handle, BEFORE
+    # parsing. Previously `description: {a: 1}` (flow mapping) and tab-indented
+    # children parsed "successfully" into the wrong shape and the gate reported a
+    # clean PASS. A conformance gate that false-passes malformed input is worse
+    # than no gate, so unsupported syntax is an error, never a best-effort guess.
+    for lineno, raw in enumerate(block, start=2):
+        indent = raw[: len(raw) - len(raw.lstrip())]
+        if "\t" in indent:
+            return {}, body, (
+                "line %d: YAML forbids tabs in indentation. Use spaces." % lineno
+            )
+        stripped = raw.strip()
+        if stripped.startswith("#"):
+            continue
+        if ":" in stripped:
+            value = stripped.split(":", 1)[1].strip()
+            if value[:1] in ("{", "["):
+                return {}, body, (
+                    "line %d: YAML flow style (%s) is not supported by the minimal "
+                    "parser. Use block style." % (lineno, "mapping" if value[0] == "{" else "sequence")
+                )
+            if value[:1] in ("|", ">"):
+                return {}, body, (
+                    "line %d: YAML block scalars are not supported by the minimal "
+                    "parser." % lineno
+                )
+            if value[:1] in ("&", "*"):
+                return {}, body, (
+                    "line %d: YAML anchors and aliases are not supported by the "
+                    "minimal parser." % lineno
+                )
+
     data: dict = {}
     current_map: dict | None = None
 
@@ -728,6 +760,20 @@ def main(argv: list[str] | None = None) -> int:
         for d in skills_dir.iterdir()
         if d.is_dir() and not d.name.startswith((".", "_"))
     )
+
+    # A gate that finds nothing to check must not report success. `skills/`
+    # containing only dot-prefixed dirs (or an emptied tree) previously produced
+    # "Checked 0 skill(s). RESULT: PASS", which is the worst possible failure
+    # mode for a conformance gate: silently green while checking nothing.
+    if not skill_dirs:
+        present = sorted(p.name for p in skills_dir.iterdir())
+        report.error(
+            SKILLS_DIRNAME,
+            "vacuous-pass",
+            "no skill directories found under %s (contains: %s). Refusing to report PASS "
+            "without checking anything."
+            % (SKILLS_DIRNAME, ", ".join(present) if present else "empty"),
+        )
 
     for skill_dir in skill_dirs:
         validate_skill(skill_dir, report, args.max_body_tokens)

@@ -18,6 +18,7 @@ jobs:
   gates:
     name: "gates (py${{ matrix.python-version }})"
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
@@ -32,11 +33,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install PyYAML (enables the parser cross-check)
+        # The minimal frontmatter parser and PyYAML are cross-checked against each
+        # other when both are available. Without PyYAML that cross-check is a silent
+        # no-op and the gate is trusting one hand-written parser with no second
+        # opinion. This step exists so that it is not a no-op on CI.
+        run: python -m pip install --quiet --disable-pip-version-check "PyYAML>=6.0"
+
       - name: Sanity -- scripts compile
         run: python -m compileall -q tests
 
       - name: Gate 1 -- skill inventory and spec conformance
-        run: python tests/validate_skill_inventory.py
+        run: python tests/validate_skill_inventory.py --strict
 
       # ---------------------------------------------------------------------------------
       # Gate 2 has TWO thresholds, and which one blocks is the whole design.
