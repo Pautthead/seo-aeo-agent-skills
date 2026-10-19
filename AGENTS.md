@@ -142,8 +142,9 @@ Reading the primary text is the minimum. If you cannot, do not cite it.
 
 These are documented in `docs/METHODOLOGY-BRIEF.md` §6 with the evidence. In short:
 
-- No `llms.txt` as a traffic or citation lever. Six independent 2026 measurements say
-  it does not work, and Google has said so publicly.
+- No `llms.txt` as a traffic or citation lever. Six 2026 studies find no link between
+  the file and more citations or more crawling, and Google's own documentation says you
+  do not need it to appear in AI features.
 - No FAQPage schema as a GEO tactic.
 - No automated posting to Reddit or any forum. Measure, never post.
 - No promise of AI visibility in under 60 days.

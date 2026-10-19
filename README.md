@@ -6,13 +6,13 @@ Evidence-based skills for Claude Code, Codex, Cursor, OpenCode, **Grok Build**, 
 npx skills add Pautthead/seo-aeo-agent-skills
 ```
 
-> **Sources last verified 2026-10-19.** These statistics age in weeks. Every claim links to its primary source; the verification table is in [`docs/SOURCE-VERIFICATION.md`](docs/SOURCE-VERIFICATION.md).
+> **Sources last verified 2026-10-19.** These statistics age in weeks. Every statistic in this README links to its primary source; the verification table is in [`docs/SOURCE-VERIFICATION.md`](docs/SOURCE-VERIFICATION.md).
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Install](https://img.shields.io/badge/install-npx%20skills-8a2be2.svg)](https://www.npmjs.com/package/skills)
 [![API keys](https://img.shields.io/badge/API%20keys-none%20required-brightgreen.svg)](skills/)
 [![Skills](https://img.shields.io/badge/skills-4-orange.svg)](skills/)
-[![Release](https://img.shields.io/badge/release-v1.0.0-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.1-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
 
 ---
 
@@ -49,7 +49,7 @@ Disallow: /site-explorer/ajax/
 ...
 ```
 
-**Finding:** all four AI bots reach the edge and get `200`. The `robots.txt` names no AI bot at all — the wildcard covers them — so nothing is blocked. But there is **no `Sitemap:` directive**, and no named-token policy at all. The site is reachable by AI retrieval bots and has made no deliberate decision about it, which is the most common state in the market.
+**Finding:** all four AI bots reach the edge and get `200`. The `robots.txt` names no AI bot at all — the wildcard covers them — so nothing is blocked. But there is **no `Sitemap:` directive**, and no named-token policy at all. The site is reachable by AI retrieval bots and has made no deliberate decision about it.
 
 That distinction is the point of the skill. A clean `robots.txt` proves nothing on its own: Cloudflare, Akamai and AWS WAF all enforce *before* your origin parses a robots file. The edge check is the only one that means anything.
 
@@ -67,7 +67,7 @@ The workflow exits 0. The report looks fine. Every number in it is a fact about 
 
 **2. Confident, unreproducible output.** From `r/SEO_Xpert`, 2026-07-19: an agent proposed ~150 internal links with total confidence; ~20 were usable. The same page, in a fresh session, produced different recommendations. Nothing in the output told you which items came from data and which came from the model's priors.
 
-**3. Techniques that were never earning their keep.** `llms.txt` has been sold, blogged and shipped as an AI-visibility lever all year. Six independent 2026 studies say it does not get you cited. [The evidence table is below](#what-these-skills-refuse-to-do).
+**3. Techniques that were never earning their keep.** `llms.txt` has been sold, blogged and shipped as an AI-visibility lever all year. Six 2026 studies find no link between publishing the file and more citations or more crawling. [The evidence table is below](#what-these-skills-refuse-to-do).
 
 ---
 
@@ -180,7 +180,7 @@ Check this section if you are here to evaluate us.
 
 ### `llms.txt` does not get you cited in AI answers
 
-Six independent 2026 studies. Five are negative or null for citations; one is the nuance that keeps us honest.
+Six 2026 studies. None finds a relationship between publishing `llms.txt` and more citations or more crawling. Two are independent measurements (Ahrefs, Arsentev), three are vendor research (SE Ranking, Otterly.AI, CueScout) and one is editorial (Search Engine Land). Three of the six measure fetches of the file rather than citations.
 
 | Study | Date | N | Result | Type |
 |---|---|---|---|---|
@@ -191,9 +191,9 @@ Six independent 2026 studies. Five are negative or null for citations; one is th
 | [CueScout](https://cuescout.com/blog/does-llms-txt-work) | 2026-10-15 | 537 SaaS sites, 80 AI Mode answers | 24.3% cited *with* vs 21.8% *without* (p=0.53); **none of the 708 cited links pointed at an llms.txt file** | vendor research |
 | [Arsentev, origin log](https://doi.org/10.5281/zenodo.23018429) | 2026-09-28 | 345,808 requests / 15 days | **Zero** crawler-token requests to `/llms.txt`; robots.txt got 698, sitemap.xml got 282 | measured |
 
-**The nuance that stops us overclaiming.** "Doesn't work" is too strong, and Ahrefs' own data says why. Files that *are* fetched are read mostly by agents, not search engines: AI agents and the infrastructure serving them account for **10.5% of llms.txt requests — more than any other bot type** — and *"Claude-Code out-fetched every AI retrieval bot, every AI assistant, and every AI training crawler."* Mueller's read, replying to Lily Ray, is that it's *"not done for search"* but *"a temporary crutch, perhaps to save some tokens"* for coding tools parsing developer documentation. CueScout's 537-site null result is the cleanest statement of it: **nothing that gets cited points at the file.**
+**The nuance that stops us overclaiming.** "Doesn't work" is too strong, and Ahrefs' own data says why. Of the 3% of files that get fetched at all, 96% of requests are bots — but **77% of those bots are not AI tools**. Named AI bots are 19.5% of requests and become the largest single bucket only when the four AI categories are combined. Within that, AI agents and the agentic infrastructure serving them are the biggest individual AI category at **10.5%**, yet they sit **fifth overall**, behind SEO audit tools (21.7%), unidentified clients (14.9%), general web crawlers (13.1%) and tech-profiling tools (11.6%). What the fetches do show is a coding-agent audience: *"Aside from statespace-indexer and GPTBot, Claude-Code … out-fetched every AI retrieval bot, every AI assistant, and every AI training crawler."* Mueller's answer, which Ahrefs characterises as responding to Lily Ray, was about Google's own **markdown developer documentation**, not about the `llms.txt` file as a standalone standard — he called it *"not done for search"* but *"a temporary crutch, perhaps to save some tokens"* for AI coding tools parsing developer docs. Ahrefs extends that reading to the file; we label it as their extension, not Mueller's words about `llms.txt`. CueScout's 537-site null result is the cleanest statement of it: **nothing that gets cited points at the file.**
 
-So: if your goal is showing up in ChatGPT, Perplexity or AI Overviews, an llms.txt file is, in Ahrefs' words, *"largely decoration."* If you ship documentation and agents use it to orient, it is read. Budget zero against traffic either way.
+So: if your goal is showing up in ChatGPT, Perplexity or AI Overviews, an llms.txt file is, in Ahrefs' words, *"largely decoration."* If you ship developer documentation and coding agents are directed at it, it has a real chance of being read. Budget zero against traffic either way.
 
 Google's own documentation, in a section headed *"Mythbusting generative AI search: what you don't need to do"*:
 
@@ -235,7 +235,9 @@ One asymmetry worth knowing: summarising fetchers (`web_fetch` and similar) **st
 
 Nothing in this repo requires any of this. All four skills complete with zero credentials. This section exists because one gap — SERP rank data, for the two highest-ranked factors — has no free equivalent, and because the pricing here has a trap worth knowing about.
 
-DataForSEO is a paid vendor we use and may earn a referral commission from. It is listed because it is the cheapest bulk SERP/keyword data we found, not because it is required.
+This link is a referral link: we may earn a commission if you sign up. DataForSEO is listed because it is the cheapest bulk SERP/keyword data we found, not because it is required. It is not an endorsement of their data quality — the freshness caveat below is real and it is theirs.
+
+Prices checked 2026-10-19 against [dataforseo.com/pricing](https://dataforseo.com/pricing). Vendor pricing changes without notice; verify before you budget.
 
 | Endpoint | Price | Notes |
 |---|---|---|

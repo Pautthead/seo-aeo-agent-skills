@@ -1,5 +1,7 @@
 # Source Verification — pass 1
 
+> **Status: every finding below was actioned in v1.0.1.** This document is the record of what was wrong *before* that release, kept public because overwriting it would hide the failure. Headings like "Must change" and verdicts like "NOT FOUND" describe the **v1.0.0 state, not open defects**. As of 2026-10-19 nothing listed here remains unresolved: each item was corrected, re-attributed, or removed outright.
+
 **Verified:** 2026-10-19. Every URL below was fetched and read in this pass. Where a number
 could not be located in the source, it is marked **NOT FOUND** rather than softened.
 
@@ -150,3 +152,20 @@ The core thesis survives this audit comfortably. **The "llms.txt does nothing" e
 What did not survive: **one fabricated quote (Danny Sullivan), one wrong number attached to a real study (2,135 robots.txt requests), one wrong metric label (98% accuracy for 97.0 macro-F1), two broken URLs that silently resolve to index pages, one source that cannot be found at all (ProCloser), and a family of User-Agent strings that were presented as vendor-exact when two of the four vendors do not publish them — including two outright wrong version numbers in copy-pasteable curl commands.**
 
 That is a good result for a repo whose thesis is traceability. The failures are concentrated in exactly the place a reviewer would look hardest: the citation apparatus. Fix items 1–14 and the evidence base is defensible end to end.
+
+---
+
+## Appendix — secondary sources and live data
+
+Added in v1.0.1 because a reviewer reasonably asked what backs the figures that were not in the main table. These are not "studies"; they are quotes, live platform metrics and vendor prices.
+
+| Item | Where used | Status on 2026-10-19 |
+|---|---|---|
+| Jeremy Moser (uSERP, agency CEO), Digiday 2026-03-10 — *"Roughly 80% of GEO is good, fundamental SEO"* | README intro | **VERIFIED as a quote.** The figure is the speaker's **estimate, not a measurement** — the README says so. Source: `digiday.com/media/geo-hype-busted-experts-call-it-more-seo-than-new-discipline/` |
+| Lily Ray, *The AI Slop Loop*, 2026-04-14 | Credits | **VERIFIED** — `lilyraynyc.substack.com/p/the-ai-slop-loop`. Quoted for editorial framing, not a statistic |
+| John Mueller thread (via SERoundtable, 2026-05-19) | `llms.txt` nuance | **VERIFIED, framing corrected.** The exchange concerned Google's **markdown developer docs**; Ahrefs extends it to `llms.txt`. The README now labels that as Ahrefs' extension |
+| Competitor repo star counts (incl. `seranking/seo-skills` 175, `inhouseseo/superseo-skills` 360 and the larger repos) | Comparison table | **Live data, stamped "as of 2026-10-19".** GitHub stars change daily; the table carries the date for that reason |
+| DataForSEO endpoint prices | Optional paid-data section | **Checked 2026-10-19** against `dataforseo.com/pricing`. Vendor pricing is not a study; the README states the check date and links the pricing page |
+| DataForSEO affiliate link | Optional paid-data section | Disclosed as a referral link in the README. Not an evidence claim |
+
+**What the README claims about sourcing, precisely:** every *statistic* links to its primary source. Quotes, competitor star counts and vendor prices are labelled separately and carry their own dates, because they are not measurements of the same kind.

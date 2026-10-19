@@ -6,13 +6,13 @@ Skills respaldadas por evidencia para Claude Code, Codex, Cursor, OpenCode, **Gr
 npx skills add Pautthead/seo-aeo-agent-skills
 ```
 
-> **Fuentes verificadas por última vez el 2026-10-19.** Estas estadísticas caducan en semanas. Cada afirmación enlaza a su fuente primaria; la tabla de verificación está en [`docs/SOURCE-VERIFICATION.md`](docs/SOURCE-VERIFICATION.md).
+> **Fuentes verificadas por última vez el 2026-10-19.** Estas estadísticas caducan en semanas. Cada estadística de este README enlaza a su fuente primaria; la tabla de verificación está en [`docs/SOURCE-VERIFICATION.md`](docs/SOURCE-VERIFICATION.md).
 
 [![Licencia: Apache-2.0](https://img.shields.io/badge/licencia-Apache--2.0-blue.svg)](LICENSE)
 [![Instalación](https://img.shields.io/badge/instalar-npx%20skills-8a2be2.svg)](https://www.npmjs.com/package/skills)
 [![Claves de API](https://img.shields.io/badge/claves%20de%20API-ninguna%20requerida-brightgreen.svg)](skills/)
 [![Skills](https://img.shields.io/badge/skills-4-orange.svg)](skills/)
-[![Release](https://img.shields.io/badge/release-v1.0.0-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.1-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
 
 ---
 
@@ -49,7 +49,7 @@ Disallow: /site-explorer/ajax/
 ...
 ```
 
-**Hallazgo:** los cuatro bots de IA llegan al edge y reciben `200`. El `robots.txt` no menciona ningún bot de IA —el comodín los cubre—, así que no se bloquea nada. Pero **no hay ninguna directiva `Sitemap:`**, ni política alguna basada en tokens nombrados. El sitio es accesible para los bots de recuperación de IA y no ha tomado ninguna decisión deliberada al respecto, que es el estado más habitual del mercado.
+**Hallazgo:** los cuatro bots de IA llegan al edge y reciben `200`. El `robots.txt` no menciona ningún bot de IA —el comodín los cubre—, así que no se bloquea nada. Pero **no hay ninguna directiva `Sitemap:`**, ni política alguna basada en tokens nombrados. El sitio es accesible para los bots de recuperación de IA y no ha tomado ninguna decisión deliberada al respecto.
 
 Esa distinción es el objetivo de la skill. Un `robots.txt` limpio no prueba nada por sí solo: Cloudflare, Akamai y AWS WAF aplican sus reglas *antes* de que tu origen llegue a parsear un archivo robots. La comprobación en el edge es la única que significa algo.
 
@@ -67,7 +67,7 @@ El flujo termina con código 0. El informe parece correcto. Cada número que con
 
 **2. Salida segura pero irreproducible.** De `r/SEO_Xpert`, 2026-07-19: un agente propuso ~150 enlaces internos con total confianza; ~20 eran utilizables. La misma página, en una sesión nueva, produjo recomendaciones distintas. Nada en la salida te decía qué elementos procedían de datos y cuáles de las prioridades del modelo.
 
-**3. Técnicas que nunca compensaron.** `llms.txt` se ha vendido, documentado y desplegado durante todo el año como palanca de visibilidad en IA. Seis estudios independientes de 2026 dicen que no te consigue citas. [La tabla de evidencias está más abajo](#lo-que-estas-skills-se-niegan-a-hacer).
+**3. Técnicas que nunca compensaron.** `llms.txt` se ha vendido, documentado y desplegado durante todo el año como palanca de visibilidad en IA. Seis estudios de 2026 no encuentran relación entre publicar el archivo y obtener más citas o más rastreo. [La tabla de evidencias está más abajo](#lo-que-estas-skills-se-niegan-a-hacer).
 
 ---
 
@@ -180,7 +180,7 @@ Consulta esta sección si has venido a evaluarnos.
 
 ### `llms.txt` no te consigue citas en las respuestas de IA
 
-Seis estudios independientes de 2026. Cinco son negativos o nulos para las citas; uno es el matiz que nos mantiene honestos.
+Seis estudios de 2026. Ninguno encuentra relación entre publicar `llms.txt` y obtener más citas o más rastreo. Dos son mediciones independientes (Ahrefs, Arsentev), tres son investigación de proveedor (SE Ranking, Otterly.AI, CueScout) y una es editorial (Search Engine Land). Tres de los seis miden descargas del archivo, no citas.
 
 | Estudio | Fecha | N | Resultado | Tipo |
 |---|---|---|---|---|
@@ -191,9 +191,9 @@ Seis estudios independientes de 2026. Cinco son negativos o nulos para las citas
 | [CueScout](https://cuescout.com/blog/does-llms-txt-work) | 2026-10-15 | 537 sitios SaaS, 80 respuestas de AI Mode | 24,3% citados *con* él frente a 21,8% *sin* él (p=0,53); **ninguno de los 708 enlaces citados señalaba a un archivo llms.txt** | investigación de proveedor (*vendor research*) |
 | [Arsentev, log de origen](https://doi.org/10.5281/zenodo.23018429) | 2026-09-28 | 345.808 peticiones / 15 días | **Cero** peticiones con token de rastreador a `/llms.txt`; robots.txt recibió 698, sitemap.xml recibió 282 | medido |
 
-**El matiz que nos impide pasarnos.** «No funciona» es demasiado fuerte, y los propios datos de Ahrefs dicen por qué. Los archivos que sí se descargan los leen sobre todo agentes, no motores de búsqueda: los agentes de IA y la infraestructura que los sirve suman el **10,5% de las peticiones a llms.txt — más que cualquier otro tipo de bot** — y *«Claude-Code superó en descargas a todos los bots de recuperación de IA, a todos los asistentes de IA y a todos los rastreadores de entrenamiento de IA»*. La lectura de Mueller, respondiendo a Lily Ray, es que se hizo *«no con fines de búsqueda»* sino *«una muleta temporal, quizá para ahorrar algunos tokens»* para herramientas de código que parsean documentación de desarrolladores. El resultado nulo de CueScout sobre 537 sitios es la formulación más limpia de todo esto: **nada que se cita apunta al archivo.**
+**El matiz que nos impide pasarnos.** «No funciona» es demasiado fuerte, y los propios datos de Ahrefs dicen por qué. Del 3% de los archivos que llegan a descargarse, el 96% de las peticiones son de bots, pero **el 77% de esos bots no son herramientas de IA**. Los bots de IA con nombre suman el 19,5% de las peticiones y solo se convierten en el mayor bloque individual al combinar las cuatro categorías de IA. Dentro de ellas, los agentes de IA y la infraestructura que los sirve son la mayor categoría individual de IA con el **10,5%**, y aun así ocupan el **quinto puesto global**, por detrás de las herramientas de auditoría SEO (21,7%), los clientes no identificados (14,9%), los rastreadores web generales (13,1%) y las herramientas de perfilado tecnológico (11,6%). Lo que sí muestran las descargas es una audiencia de agentes de código: *«Aparte de statespace-indexer y GPTBot, Claude-Code … superó en descargas a todos los bots de recuperación de IA, a todos los asistentes de IA y a todos los rastreadores de entrenamiento de IA»*. La respuesta de Mueller, que Ahrefs describe como su réplica a Lily Ray, trataba sobre la **documentación de desarrolladores en markdown** de Google, no sobre el archivo `llms.txt` como estándar independiente: la llamó *«no con fines de búsqueda»* sino *«una muleta temporal, quizá para ahorrar algunos tokens»* para herramientas de código de IA que parsean documentación de desarrolladores. Ahrefs extiende esa lectura al archivo; lo etiquetamos como su extensión, no como palabras de Mueller sobre `llms.txt`. El resultado nulo de CueScout sobre 537 sitios es la formulación más limpia de todo esto: **nada que se cita apunta al archivo.**
 
-Así que: si tu objetivo es aparecer en ChatGPT, Perplexity o AI Overviews, un archivo llms.txt es, en palabras de Ahrefs, *«en gran medida decorativo»*. Si publicas documentación y los agentes la usan para orientarse, entonces sí se lee. Presupuesta cero frente al tráfico en ambos casos.
+Así que: si tu objetivo es aparecer en ChatGPT, Perplexity o AI Overviews, un archivo llms.txt es, en palabras de Ahrefs, *«en gran medida decorativo»*. Si publicas documentación para desarrolladores y los agentes de código van dirigidos a ella, tiene posibilidades reales de leerse. Presupuesta cero frente al tráfico en ambos casos.
 
 La propia documentación de Google, en una sección titulada *«Mythbusting generative AI search: what you don't need to do»*:
 
@@ -235,7 +235,9 @@ Una asimetría que conviene conocer: los recuperadores que resumen (`web_fetch` 
 
 Nada de este repositorio requiere nada de esto. Las cuatro skills se completan sin credenciales. Esta sección existe porque una carencia — datos de posición en el SERP, para los dos factores mejor puntuados — no tiene equivalente gratuito, y porque aquí los precios tienen una trampa que conviene conocer.
 
-DataForSEO es un proveedor de pago que usamos y del que podemos obtener una comisión de referencia. Aparece porque son los datos masivos de SERP/keywords más baratos que encontramos, no porque sea necesario.
+Este enlace es un enlace de afiliado: podemos obtener una comisión si te registras. DataForSEO aparece porque son los datos masivos de SERP/keywords más baratos que encontramos, no porque sea necesario. No es un aval de la calidad de sus datos: la advertencia de frescura de abajo es real y es suya.
+
+Precios comprobados el 2026-10-19 en [dataforseo.com/pricing](https://dataforseo.com/pricing). El precio de un proveedor cambia sin aviso; verifícalo antes de presupuestar.
 
 | Endpoint | Precio | Notas |
 |---|---|---|
