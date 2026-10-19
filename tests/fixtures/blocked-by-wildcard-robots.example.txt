@@ -1,0 +1,9 @@
+# FIXTURE — exercises: aeo-bot-access-audit, Step 3 trap (a) and scoring rule 4
+# (`User-agent: *` + `Disallow: /`). Expected verdict: BLOCKED, CRITICAL, 0/100.
+# Every AI bot, retrieval and training alike, is excluded by the wildcard rule.
+# The `Sitemap:` line below is deliberate: it does not rescue the file, and it is the
+# kind of thing that makes the fault look intentional rather than accidental.
+User-agent: *
+Disallow: /
+
+Sitemap: https://example.com/sitemap.xml

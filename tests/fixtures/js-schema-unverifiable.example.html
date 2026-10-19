@@ -1,0 +1,41 @@
+<!doctype html>
+<!-- FIXTURE — exercises: aeo-citability-audit, structured-data detection, and the
+     skill's own Known-limitations rule #3. This page's ONLY JSON-LD is emitted by
+     JavaScript at runtime. `curl` and `web_fetch` both strip <script> tags, so an
+     agent reading fetched bytes sees no schema here and CANNOT tell whether the
+     page has any. The correct report is "could not verify — JSON-LD may be
+     client-rendered", never "no structured data found". Reporting a clean result
+     here would be a false finding. The <article> below is server-rendered, so the
+     extractability checks still work normally. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Server-side rendering vs client-side rendering for SEO</title>
+  <script src="/static/js/seo-schema.js" defer></script>
+</head>
+<body>
+
+<article>
+  <h1>Server-side rendering vs client-side rendering for SEO</h1>
+
+  <p><strong>Server-side rendering is safer for search indexing than
+  client-side rendering, because a crawler sees the content in the first byte of
+  HTML rather than after script execution.</strong> Verified 2026-08-14.</p>
+
+  <p>The trade is engineering cost: server-side rendering moves work to first
+  response and needs a runtime, while client-side rendering ships a shell and fills
+  it in the browser.</p>
+
+  <h2>When client-side rendering fails</h2>
+
+  <p>It fails when the crawler does not execute JavaScript, when the primary content
+  is injected after a network call, or when the rendered HTML differs from what a
+  user sees.</p>
+</article>
+
+<!-- The tag below is present but empty in the raw fetch. Its content is built at
+     runtime by seo-schema.js. Nothing here tells you whether that succeeded. -->
+<script type="application/ld+json" id="seo-schema-placeholder"></script>
+
+</body>
+</html>

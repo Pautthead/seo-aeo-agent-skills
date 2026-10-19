@@ -1,0 +1,55 @@
+# ---- Secrets / credentials ---------------------------------------------
+# Never commit API keys. The data contract skill treats credentials as
+# out-of-band; keep it that way.
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets.yaml
+credentials.json
+
+# ---- Local agent state ---------------------------------------------------
+.claude/settings.local.json
+.claude/plugins/cache/
+.opencode/
+.agents/
+.hermes/
+.cursor/
+.windsurf/
+.roo/
+.agents/skills/
+
+# ---- Skill install symlinks ---------------------------------------------
+# `npx skills add` symlinks skills into the host directory when you test
+# locally. Those links point outside the repo and must never be committed.
+skills/*/SKILL.md.local
+
+# ---- Audit output --------------------------------------------------------
+# Skill runs produce reports. They are per-site and not part of the library.
+audits/
+reports/
+*.audit.json
+*.audit.md
+
+# ---- Python --------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Node ---------------------------------------------------------------
+node_modules/
+*.log
+npm-debug.log*
+
+# ---- OS / editor ---------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp

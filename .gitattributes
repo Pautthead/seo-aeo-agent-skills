@@ -1,0 +1,26 @@
+# Default: detect, normalize to LF in repo
+* text=auto eol=lf
+
+# Scripts must run with LF. A stray CR breaks the stdlib-only Python on Linux
+# and, worse, silently breaks the copy-paste shell commands in the skills.
+*.py   text eol=lf
+*.sh   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+
+# Markdown skills: LF, because agents read them verbatim and a trailing CR in a
+# fenced code block can corrupt a curl command the user copies.
+*.md       text eol=lf
+SKILL.md   text eol=lf
+
+# Test fixtures are compared byte-for-byte by the validators.
+tests/fixtures/* text eol=lf
+
+# Binary, never touch
+*.png  binary
+*.jpg  binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary

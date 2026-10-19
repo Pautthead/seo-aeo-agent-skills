@@ -1,0 +1,59 @@
+# FIXTURE — exercises: aeo-bot-access-audit, Steps 2/3/5. Expected verdict: OPEN.
+# The posture the skill recommends as the more defensible default: block training
+# crawlers, allow retrieval/citation crawlers, announce the sitemap.
+# The trap to notice: a site that blocks `GPTBot` believing it blocks ChatGPT Search
+# is still fully cited by it, because ChatGPT Search fetches as `OAI-SearchBot`.
+# `Google-Extended` is allowed here because it governs Gemini training and Vertex AI
+# grounding, not Googlebot ranking or Google AI Overviews.
+
+# --- retrieval and citation bots: allow -------------------------------------------
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# --- training crawlers: block ------------------------------------------------------
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+# --- admin paths stay closed, assets stay open ------------------------------------
+User-agent: *
+Disallow: /wp-admin/
+Disallow: /cart/
+Allow: /wp-content/uploads/
+
+Sitemap: https://example.com/sitemap.xml

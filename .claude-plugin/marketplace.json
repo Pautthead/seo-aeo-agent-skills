@@ -1,0 +1,36 @@
+{
+  "name": "seo-aeo-agent-skills",
+  "owner": {
+    "name": "Pautthead"
+  },
+  "metadata": {
+    "description": "Evidence-based SEO and AEO skills for AI coding agents. Keyless by default; every scoring rule traceable to a dated source.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "seo-aeo",
+      "source": "./",
+      "description": "Four verifiable skills for SEO and Answer Engine Optimization: input freshness contract, AI bot access audit, citability audit, information gain analysis.",
+      "license": "Apache-2.0",
+      "keywords": [
+        "seo",
+        "aeo",
+        "geo",
+        "answer-engine-optimization",
+        "generative-engine-optimization",
+        "technical-seo",
+        "citability",
+        "information-gain",
+        "robots-txt",
+        "llm-citation"
+      ],
+      "skills": [
+        "./skills/seo-data-contract",
+        "./skills/aeo-bot-access-audit",
+        "./skills/aeo-citability-audit",
+        "./skills/information-gain-analysis"
+      ]
+    }
+  ]
+}
