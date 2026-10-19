@@ -2,6 +2,21 @@
 
 Exact token strings, vendors, purpose class, and the recommended verdict. Every token here is matched **case-insensitively** on the `User-Agent` request header, and in `robots.txt` `User-agent:` lines.
 
+> ### ⚠️ Which strings here are actually vendor-published
+>
+> **Two of the four vendors in this file publish exact User-Agent strings. Two do not.**
+> OpenAI and Perplexity publish them. **Anthropic publishes none**, and Google and Microsoft
+> publish token documentation rather than full headers. Each vendor block below is labelled
+> accordingly, and the "Sources and confidence" table at the foot of this file carries the
+> same distinction. Where a string is marked **OBSERVED**, it was assembled from crawls and
+> third-party directories that **actively disagree with each other** — treat it as a
+> placeholder, not a citation-grade fact.
+>
+> **The version component is not stable anywhere.** OpenAI states plainly that *"the version
+> number may change."* **Match the token substring, not the frozen string** — `-A 'GPTBot'`,
+> not `-A 'Mozilla/5.0 … GPTBot/1.4 …'`. A curl command carrying a stale version is a
+> copy-pasteable defect that will look authoritative to whoever runs it.
+
 ---
 
 > ## ⚠️ Read this before you copy any table
@@ -37,16 +52,26 @@ Sort every token into exactly one class before writing any rule.
 | `GPTBot` | **T** | Collects training data to improve generative AI foundation models. Does not power ChatGPT Search. | **Block** (recommended default) |
 | `OAI-SearchBot` | **R** | ChatGPT's search crawler. Links from ChatGPT search results to the sites it cites. | **Allow — mandatory** |
 | `ChatGPT-User` | **U** | User action. Fetches a link the user asked ChatGPT to visit, not an automatic crawl. | **Allow — mandatory** |
+| `OAI-AdsBot` | — | OpenAI's advertising crawler for ad-related surfaces. Not a retrieval or citation crawler. | **Either** — allow if you run OpenAI-platform ads, block otherwise |
 
-Exact UA strings as published by OpenAI:
+UA strings **as published by OpenAI** in its crawler documentation
+(`https://platform.openai.com/docs/bots`; the `openai.com/searchbot`, `/gptbot` and `/bot`
+pages all resolve to that same document). Copied 2026-10-19:
 
 ```
-GPTBot:        Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; GPTBot/1.2; +https://openai.com/gptbot
-OAI-SearchBot: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot
-ChatGPT-User:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot
+GPTBot:        Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; GPTBot/1.4; +https://openai.com/gptbot
+OAI-SearchBot: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot
+ChatGPT-User:  Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot
+OAI-AdsBot:    Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-AdsBot/1.0; +https://openai.com/adsbot
 ```
 
-> The version component (`/1.0`, `/1.2`) will drift. **Match on the token substring only** — `-A 'GPTBot'`, not the full frozen string. Verify against the live vendor page before quoting a version in a report.
+> OpenAI's documentation states explicitly that **"the version number may change."** The
+> `/1.4` on `GPTBot` and `OAI-SearchBot` is the current published value, not a frozen fact.
+> **Match the token substring, not the string** — `-A 'GPTBot'`, not the full header. Verify
+> against `https://platform.openai.com/docs/bots` before quoting a version in a report.
+>
+> OpenAI also documents a variant of `OAI-SearchBot` with an added `robots.txt;` marker used
+> for `robots.txt` fetches. Expect to see it in logs.
 
 ---
 
@@ -57,8 +82,17 @@ ChatGPT-User:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.3
 | `ClaudeBot` | **T** | Training. | **Block** (recommended default) |
 | `Claude-SearchBot` | **R** | Claude's search index — **the token that produces Claude citations**. | **Allow — mandatory** |
 | `Claude-User` | **U** | Fetches a URL a user asked Claude to visit. | **Allow — mandatory** |
+| `claude-code` | **G** | Claude Code, fetching during an agent run. Observed in the wild (e.g. `claude-code/2.1.131 (cli)`). | **Allow** — agents cannot complete a task without your page |
 
-Exact UA strings:
+**OBSERVED strings — NOT vendor-published.**
+
+Anthropic documents exactly three bots (`ClaudeBot`, `Claude-User`, `Claude-SearchBot`) in
+its crawler support article (updated 2026-04-07, also served from `support.claude.com`), with
+purpose, robots.txt examples, `Crawl-delay` support and an IP-range list. **It does not print
+a single full User-Agent header.** The strings below are what crawls and third-party
+directories report, and those directories **disagree with each other** — on the base string,
+and on whether `Claude-SearchBot` ends in an email address or a URL (one commonly cited
+verification URL, `anthropic.com/claudesearchbot`, returns 404):
 
 ```
 ClaudeBot:        Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)
@@ -66,7 +100,23 @@ Claude-SearchBot: Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anth
 Claude-User:      Mozilla/5.0 (compatible; Claude-User/1.0; +claudebot@anthropic.com)
 ```
 
-All three share the verification address `claudebot@anthropic.com`. If you have added that address to an allowlist on the theory that it "proves it's Anthropic", note that it proves nothing — an email address in a UA header is not authentication, and anyone can send it.
+> ### ⚠️ A User-Agent header is a claim anyone can make
+>
+> The older version of this file said that all three tokens "share the verification address
+> `claudebot@anthropic.com`", and that adding that address to an allowlist "proves it's
+> Anthropic." **Both claims are withdrawn.** An email address in a UA header is not
+> authentication, and since the vendor publishes no string at all, there is nothing to verify
+> the address against. This applies to the **whole string**, not just the address: matching
+> `claudebot@anthropic.com`, or the parenthesised base string, or any particular version
+> component proves nothing about who sent the request.
+>
+> **The correct verification method is the published IP list**, not the UA string:
+> `https://claude.com/crawling/bots.json`. Verify the request's source IP against Anthropic's
+> ranges before treating it as Anthropic traffic.
+>
+> **Still match on the token substring for a `robots.txt` rule** — a robots directive is a
+> request to well-behaved crawlers, and matching `Claude-SearchBot` is what makes that request
+> reach the real crawler. Match the substring; do not treat the string as proof of identity.
 
 `ClaudeBot` is the highest-volume fetcher of any un-announced file type in the measured literature (Hall, 2026-09-17: 1,131 of 1,549 `llms.txt` fetches). That is a statement about training crawlers being thorough. It is **not** evidence that Claude cites those pages.
 
@@ -84,7 +134,8 @@ All three share the verification address `claudebot@anthropic.com`. If you have 
 | `Google-Read-Aloud` | **U** | Read-aloud / voice surfacing. | **Allow** |
 | `Google-PageRenderer` | **—** | JS rendering, not a user-facing crawler. | **Allow** |
 
-Exact UA strings (product token appears in parentheses):
+Token strings as commonly observed (Google documents the bots and their purpose, not full
+headers — verify against the live vendor page before quoting one):
 
 ```
 Googlebot:              Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
@@ -128,12 +179,23 @@ If you see a token like `Copilot` or `bingbot` used for answer retrieval on a sp
 | `PerplexityBot` | **R** | Perplexity's search index. Source of its citations. | **Allow — mandatory** |
 | `Perplexity-User` | **U** | User-initiated fetch. ⚠️ Perplexity documents this as user-requested, but it can still appear in cited answer sources. Treat blocking it as an **R-class** risk, not a free win. | **Allow** |
 
+UA strings **as published by Perplexity** in `https://docs.perplexity.ai/guides/bots`,
+copied 2026-10-19. Note that Perplexity's own `PerplexityBot` string contains an
+**unbalanced parenthesis** — `(KHTML, like Gecko;`. Copy it verbatim or it will not match:
+
 ```
-PerplexityBot:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36; compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot
-Perplexity-User: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36; compatible; Perplexity-User/1.0; +https://perplexity.ai/perplexitybot
+PerplexityBot:  Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)
+Perplexity-User: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Perplexity-User/1.0; +https://perplexity.ai/perplexity-user)
 ```
 
-Both carry the verification address `https://perplexity.ai/perplexitybot`. Perplexity is the clearest case in the catalogue of a **U** token that still deserves citation weight — classify by observed behaviour in your logs, not by the label.
+**The two tokens carry different verification addresses.** `PerplexityBot` is
+`https://perplexity.ai/perplexitybot`; `Perplexity-User` is
+`https://perplexity.ai/perplexity-user`. An earlier version of this file claimed both carried
+`/perplexitybot`; that was wrong.
+
+As with every other vendor, a UA header is a claim anyone can make — the embedded address is
+not authentication. Perplexity is the clearest case in the catalogue of a **U** token that
+still deserves citation weight — classify by observed behaviour in your logs, not by the label.
 
 ---
 
@@ -230,10 +292,15 @@ Explicit allowlines for the retrieval bots are **not required** if no `Disallow`
 
 | Entry | Source | Date | Confidence |
 |---|---|---|---|
-| OpenAI tokens | OpenAI publisher documentation (`openai.com/searchbot`, `/gptbot`, `/bot`) | vendor, current | vendor-documented |
-| Anthropic tokens | `anthropic.com` crawler documentation | vendor, current | vendor-documented |
-| Google tokens | Google Search Central crawling documentation | vendor, current | vendor-documented |
-| Perplexity tokens | `perplexity.ai/perplexitybot` | vendor, current | vendor-documented |
+| OpenAI tokens | OpenAI crawler documentation — `https://platform.openai.com/docs/bots` | vendor, current | vendor-documented |
+| OpenAI UA strings | Same page, copied 2026-10-19. Vendor states the version number may change. | 2026-10-19 | vendor-published; version drifts |
+| Anthropic tokens | `anthropic.com` / `support.claude.com` crawler documentation | vendor, current | **vendor-documented tokens** |
+| Anthropic UA strings | **Not published by the vendor.** Assembled from crawls and third-party directories that disagree. | — | **OBSERVED, unverified; version drift expected** |
+| Anthropic identity check | Published IP list — `https://claude.com/crawling/bots.json` | vendor, current | **This is the verification method, not the UA string** |
+| Google tokens | Google Search Central crawling documentation | vendor, current | vendor-documented tokens |
+| Google UA strings | Commonly observed headers; Google does not print full strings | — | observed; verify against the live vendor page |
+| Perplexity tokens | Perplexity crawler documentation — `https://docs.perplexity.ai/guides/bots` | vendor, current | vendor-documented |
+| Perplexity UA strings | Same page, copied 2026-10-19 | 2026-10-19 | vendor-published (note the unbalanced parenthesis) |
 | Bingbot feeds Copilot | Microsoft Bing Webmaster documentation | vendor, current | vendor claim, not independently measured |
 | Training-crawl verdict | No consensus. Recommendation in this file is a judgement call, stated as one. | — | **judgement, not evidence** |
 | "GPTBot powers ChatGPT Search" | **False.** Contradicts OpenAI's own docs. | — | known-bad source; discard any table repeating it |

@@ -4,15 +4,35 @@ Extractability (see [EXTRACTABILITY.md](references/EXTRACTABILITY.md)) asks whet
 *can* be lifted. Citation-worthiness asks whether it is *worth* lifting — whether the
 page carries the kind of material a synthesizer will keep.
 
-**Where this sits in the weighting:** GeoTest (2026-06) weights Citation Worthiness at
-**34 of 100** — the largest single category in its model, ahead of technical
-structure, authority and crawlability. Worthiness is not a garnish on an audit; it is
-the biggest block of the score.
+**Where this sits in the weighting:** GeoTest weights Citation Worthiness at
+**34 of 100** — the largest single category in its model (GEO Score v6.0, in force since
+2026-10-04), ahead of technical structure, authority and crawlability. Worthiness is not a
+garnish on an audit; it is the biggest block of the score. ⚠️ **Vendor research** — GeoTest
+sells the scoring product and the rubric is self-published with weights asserted, not
+derived. Useful as an outside shape for the rubric; not evidence.
 
 **And the off-site mirror of it:** Muck Rack, across 25M+ cited links —
 **earned media 84% of AI citations vs 0.3% paid.** Whatever makes a page worth
 quoting on-page, the same properties are what a journalist or a Reddit commenter
 repeats off-site. These are not two problems.
+
+⚠️ **Three caveats on the Muck Rack figure, all of which must travel with it.** It is
+**vendor research** (Muck Rack sells PR software) and the full report is gated:
+
+- **84% is not 84% journalism.** Muck Rack defines "earned media" as *"journalism, academic
+  research, government sources, encyclopedic sites, and third-party corporate content."*
+  **Wikipedia and PubMed Central both count inside that 84%.** Journalism alone is 27%.
+- **Muck Rack contradicts itself by 25× on sample size.** Its 2026-05-07 post and press
+  release say "more than 25 million links"; its own 2026-05-27 webinar recap says "1 million
+  or more links."
+- Use it as a directional statement — *earned media dominates AI citations, paid placement
+  barely registers* — and never as a precise ratio.
+
+> **A note on the "Shepard N.N" labels in this file.** Every score cited below is Shepard's
+> **hand-assigned** 0–10 score against repeatability, evidence strength and official support,
+> **not a measurement**. Shepard: *"These are not confirmed ranking factors. Correlation is
+> not causation."* Read them as a priority ordering. See
+> [CITATION_FACTORS.md](references/CITATION_FACTORS.md).
 
 ---
 
@@ -24,8 +44,8 @@ repeats off-site. These are not two problems.
 **An externally attributable fact** is a claim a third party could verify without
 asking the author. Concretely, any of:
 
-- A specific number with a magnitude or unit — `137 scientific studies`, `25,000 posts
-  per day`, `$0.012/task`.
+- A specific number with a magnitude or unit — `137 scientific studies`, `3.4M analysed
+  rows`, `$0.012/task`.
 - A specific date — `2026-04-17`, `July 2026`, `Q3 2025`.
 - A named person or organisation attached to a claim — `Cyrus Shepard`, `Ahrefs`,
   `Google Search Central`.
@@ -133,10 +153,10 @@ logo link. Only count links inside content blocks.
 
 **Language-agnostic.** Pure link-graph measurement.
 
-**Why it scores:** a page that shows its sources is a page whose claims can be quoted
-without the extractor having to extend trust to you first. And in practice it
-correlates with earned media — Muck Rack's 84% earned vs 0.3% paid split. Pages that
-cite get cited.
+**And it correlates with earned media** — Muck Rack's earned-vs-paid split (see the caveats
+at the top of this file: 84% is earned media as Muck Rack defines it, not 84% journalism).
+Pages that cite get cited. That is a correlation from one vendor's dataset, not a
+mechanism, and it does not tell you which direction the causality runs.
 
 **Do not require a minimum link count above 3.** Three high-quality primary-source
 links beat thirty aggregator links, and the audit cannot tell the difference. Report
@@ -159,9 +179,10 @@ citation-dense structure available to you and it costs nothing but the work of
 building it.
 
 **Watch the anti-pattern:** the table that exists only to rank your own product first
-against unattributed or invented competitors. It converts a 5.6-scoring structured
-signal into a trust liability, and it is the shape most likely to be called out in a
-synthesized answer's commentary. If the comparison is not defensible, do not build it.
+against unattributed or invented competitors. It converts a mid-table hand-assigned
+structured-data score (Shepard 5.6) into a trust liability, and it is the shape most likely
+to be called out in a synthesized answer's commentary. If the comparison is not defensible,
+do not build it.
 
 ---
 
@@ -261,11 +282,14 @@ operational consequences:
    X-04 score 8.6 not because pretty HTML wins, but because unstructured DOM prevents
    the extractor from finding the answer at all. The mechanism is extraction, not
    presentation.
-3. **Corollary for slop:** AI-generated text is detectable from **structure alone**,
-   ~98% accuracy on held-out data (Sitefire / arXiv 2609.15369, 2026-09). You cannot
-   paraphrase your way out of a structural tell. Any recommendation this audit emits
-   should push toward real structure, never toward shape-matching a competitor's
-   post.
+3. **Corollary for slop:** AI-generated text is detectable from **structure alone** —
+   **97.0 macro-F1 on held-out companies**, from 176 structural features out of a
+   203-feature instrument, over 2,250 pre-ChatGPT human blog posts from 268 company domains
+   against 11,250 AI mirrors from 5 frontier models (Madler, *"SlopShape: Identifying
+   AI-Generated Commercial Web Content"*, Sitefire — `https://arxiv.org/abs/2609.15369`,
+   submitted 2026-09-14, v3 2026-09-28). You cannot paraphrase your way out of a
+   structural tell. Any recommendation this audit emits should push toward real structure,
+   never toward shape-matching a competitor's post.
 
 ---
 

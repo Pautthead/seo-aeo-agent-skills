@@ -8,7 +8,7 @@
 | Answer-composition behaviour | US11354342B2, Google LLC | patent | Primary — granted patent text |
 | "No position four" | Ahrefs, 2026-08-20 | 2026-08-20 | Analyst interpretation of the patent |
 | Where gain lives | Bernard Huang (ex-Clearscope) | 2026 | Practitioner assertion, not measured |
-| Score distribution | On-Page.ai, 150 top-3 pages | 2026 | Vendor measurement, small n |
+| Score distribution | On-Page.ai, Eric Lancheres, 2026-06-12, `https://api.on-page.ai/research/information-gain-study` | 2026-06-12 | ⚠️ **Vendor research** — On-Page.ai sells a scoring product and this is their own metric. 150 pages, 50 keywords, 10 verticals, US/English |
 | Google has not confirmed it | Ahrefs, explicit | 2026-08-20 | Direct statement |
 | Practitioner dissent | r/SEO | 2026-01-26 | Anecdotal |
 
@@ -155,7 +155,7 @@ high-gain in two sections and zero-gain in nine, which reads from the outside as
 
 Ruled out explicitly, because each of these is routinely sold as information gain:
 
-- **Length.** Shepard scores length 6.7/10 — below factually specific (8.3), self-contained
+- **Length.** Shepard hand-assigns length 6.7/10 — below factually specific (8.3), self-contained
   passages (8.0), and brand/entity trust (6.8) (2026-05-07). Length adds no fact.
 - **Formatting.** arXiv 2605.25517 (252,000 trials, 6 LLMs, two-source injected RAG):
   formatting-only edits had little impact. Bullets, tables, and headings change how a
@@ -167,16 +167,29 @@ Ruled out explicitly, because each of these is routinely sold as information gai
   [SCORING.md](references/SCORING.md).
 - **`llms.txt`.** Not information gain, and not a lever at all. Six independent
   negative measurements — see the repo README. Shipping it costs an hour; budget zero.
-- **FAQPage schema.** Shepard scores structured data 5.6/10: "LLMs don't typically
-  ingest schema as part of their training." Do not recommend it.
+- **FAQPage schema.** Shepard hand-assigns structured data 5.6/10 — and he is *more*
+  positive on schema than the negative half of his note suggests: *"practically every study
+  that looks at schema and AI citations finds a positive relationship. The effect is
+  typically small, but it's amazingly consistent across studies."* The other half of his note
+  is that *"LLMs don't typically ingest schema as part of their training"* and there is
+  *"limited evidence they can at least see schema when searching."* Both are true at once:
+  the correlation is real and consistent, and there is no demonstrated mechanism to pull it
+  with. Small, consistent, and not a lever. Do not recommend FAQPage as a GEO tactic; do
+  recommend schema for rich results and entity clarity, which is a different and honest
+  reason.
 - **Freshness for its own sake.** Freshness scores 7.0. A date updated to *look* fresh
   is not a fact. A newly measured number is.
 
 ## 7. Relationship to rank — do not conflate
 
-Shepard's **#1** factor is URL accessibility at **9.5/10**, and his **#2** is search rank
-(top 10) at **9.4/10** (2026-05-07). His summary is "win SEO, win AI citations (most of
-the time, with extra steps)." Jeremy Moser (uSERP) via Digiday, 2026-03-10: "80 percent
+> ⚠️ **Every Shepard score quoted in this section is hand-assigned, not measured.** Shepard:
+> *"I assigned each score by hand against those criteria… These are not confirmed ranking
+> factors. Correlation is not causation."* Read the ordering as a priority sequence. The
+> full table is in `aeo-citability-audit` → `references/CITATION_FACTORS.md`.
+
+Shepard ranks URL accessibility **#1 at a hand-assigned 9.5/10**, and search rank (top 10)
+**#2 at 9.4/10** (2026-05-07). His summary is "win SEO, win AI citations (most of the
+time, with extra steps)." Jeremy Moser (uSERP) via Digiday, 2026-03-10: "80 percent
 of GEO is good, fundamental SEO."
 
 Information gain does not contradict this. It explains the residual 20% — the part
@@ -201,10 +214,10 @@ from 76% in July 2025. That sits awkwardly against Shepard's 9.4. Treat the
 
 - Ahrefs, "Information Gain in SEO," Louise Linehan — `https://ahrefs.com/blog/information-gain/` — 2026-08-20
 - US11354342B2, Google LLC — `https://patents.google.com/patent/US11354342B2/en`
-- On-Page.ai Information Gain Score study, 150 top-3 pages — 2026
-- Cyrus Shepard / Zyppy, "AI citation ranking factors" — `https://signal.zyppy.com/p/ai-citation-ranking-factors` — 2026-05-07, 54 experiments/patents/case studies scored 0–10
-- arXiv 2605.25517, competitive GEO controlled experiment — `https://arxiv.org/html/2605.25517` — 2026-05-25, 252,000 trials
-- Sitefire / arXiv 2609.15369 — `https://github.com/pulse-energy-eu/slopshape` — 2026-09
+- On-Page.ai Information Gain Score study — Eric Lancheres, On-Page.ai Research, 2026-06-12 — `https://api.on-page.ai/research/information-gain-study` — 150 pages, 50 keywords, 10 verticals, US/English; bins 40.2 / 54.4 / 55.1 / 62.1, median 52/100, Pearson r = 0.17, "within the top 3, position was unrelated to the score" — ⚠️ **vendor research; On-Page.ai sells a scoring product and this is their own metric**
+- Cyrus Shepard / Zyppy, "AI citation ranking factors" — `https://signal.zyppy.com/p/ai-citation-ranking-factors` — 2026-05-07, 54 experiments/patents/case studies — ⚠️ **hand-assigned correlation scores, not measurements**
+- arXiv 2605.25517, competitive GEO controlled experiment — `https://arxiv.org/abs/2605.25517` — 2026-05-25, 252,000 trials
+- Jochen Madler (Sitefire), "SlopShape: Identifying AI-Generated Commercial Web Content" — `https://arxiv.org/abs/2609.15369` — 2026-09-14, v3 2026-09-28 — 97.0 macro-F1 on held-out companies, 176 structural features of a 203-feature instrument
 - Jeremy Moser (uSERP) via Digiday — 2026-03-10
 - Practitioner dissent, r/SEO — 2026-01-26
 

@@ -271,7 +271,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 for u in 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' \
-         'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot' \
+         'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot' \
          'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' \
          'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)' \
          'Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)'; do

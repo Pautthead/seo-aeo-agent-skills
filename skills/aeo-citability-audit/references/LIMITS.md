@@ -72,10 +72,15 @@ that ranks #40 is still a page that will not be cited.
 
 ## 3. It cannot see the platforms, and platform data is the weakest link
 
-- **91% of AI citations appear on exactly one platform** (Indig H1 2026, via Search
-  Engine Journal, 2026-08-08). Single-engine tracking is, arithmetically, near-zero
-  tracking. Anyone reporting AI visibility from ChatGPT alone is reporting 9% of the
-  signal and calling it 100%.
+- **91.07% of cited URLs appeared in exactly one engine** — ChatGPT, Perplexity or Google
+  AI Overviews — for the same prompt (Kevin Indig, *"The Consensus Gap"*, Growth Memo,
+  2026-05-11, `https://www.growth-memo.com/p/the-consensus-gap`; 20,000 prompts, 3.7M URL
+  citations, only 2.37% appeared in all three). ⚠️ **Vendor research** — the data is
+  Omnia, Indig's own product, and he states it is "skewed toward Omnia's customer base."
+  This is URL-level overlap across three named engines, not a general claim about
+  "platforms". Single-engine tracking is, arithmetically, near-zero tracking. Anyone
+  reporting AI visibility from ChatGPT alone is reporting a fraction of the signal and
+  calling it 100%.
 - **Google Search Console is ~75% incomplete for AI features**, and there is **no
   separate AI Mode data** in Search Console at all. A GSC-based "AI visibility" number
   is a partial number presented as a total one.
@@ -93,17 +98,20 @@ is what I cannot".
 
 | Change type | Time to first effect | Source |
 |---|---|---|
-| On-page edits | Weeks | ProCloser field test, 2026-05-27 |
-| Third-party citation changes | 4–12 weeks | ProCloser field test, 2026-05-27 |
-| **First citation lift** | **60–120 days** | ProCloser field test, 2026-05-27, n=5, author flags sample as underpowered |
+| On-page edits | Weeks | Practitioner consensus; consistent with arXiv 2605.25517's "recent timestamp helps consistently" |
+| Third-party citation changes | Months, unquantified | No reliable public source |
 
 **Never promise a GEO uplift in under 60 days.** Anyone who does is selling a
 timeline they cannot control.
 
-**Provenance note:** the 60–120 day figure comes from n=5 clients and the author
-explicitly flags it as underpowered. It is the best available figure and it should be
-cited with n and the caveat every time. Treat it as an order of magnitude, not a
-service-level agreement.
+**Provenance note — there is no number here on purpose.** This file previously carried a
+"60–120 days to first citation lift" figure attributed to an n=5 field test. That source
+could not be located, no URL or snippet was found, and the figure is **widely repeated
+without a traceable primary**. It has been removed. **No reliable public source for a
+specific citation-lift window exists.** If a user or vendor hands you one, ask for the URL
+and the methodology; a number without both is a guess, and this repo does not print guesses.
+The rule above survives the removal — it rests on the absence of evidence, not on a figure
+anyone can produce.
 
 **And the horizon applies to this audit too.** An audit run today cannot have
 produced a citation change yet. Re-auditing the same page in 30 days will show
@@ -159,12 +167,13 @@ it returns N/A, is excluded from the denominator, and is listed by ID in the rep
 
 ## 7. Five factors that are not on Shepard's list
 
-From our own 5-client field test (ProCloser, 2026-05-27, n=5, underpowered) — these
-surfaced in practice and do not appear in the 23:
+From an underpowered 5-client field test — these surfaced in practice and do not appear in
+the 23. (The specific source could not be verified; treat the whole section as hypotheses,
+which is how it is used below.)
 
 1. **Third-party citation density.** How often the brand is cited *by other sites*.
-   Consistent with Muck Rack's 25M+ cited-links finding: earned media 84% of AI
-   citations vs 0.3% paid. Not measurable from one page.
+   Consistent with Muck Rack's 25M+ cited-links finding (⚠️ vendor research): earned
+   media 84% of AI citations vs 0.3% paid. Not measurable from one page.
 2. **YouTube listicle inclusion.** Presence in "best X" video or list content, which
    retrieval surfaces reach differently from web pages. Not measurable keylessly.
 3. **Date-stamped freshness.** Independent signal from E-05 in the field data —
@@ -193,17 +202,54 @@ otherwise would be exactly the false negative this repo refuses to publish.
 
 ## 8. What this skill deliberately does not do
 
-- **It does not score `llms.txt` absence as a defect.** 2.0/10, six independent
-  negative measurements, Google on the record (Danny Sullivan, Search Central Live
-  Toronto, 2026-04: *"There is no benefit to creating a llms.txt file for SEO."*).
+- **It does not score `llms.txt` absence as a defect.** Shepard scores it 2.0/10, the
+  lowest of his 23. **State the claim narrowly:** an `llms.txt` file does not get you
+  cited in AI search answers. It **is** fetched, mostly by coding agents and by the
+  industry studying it. **Never write "does not work" or "does nothing"** — those
+  overclaim, and the evidence below contradicts them.
+
+  | Study | Type | Date | N | Result |
+  |---|---|---|---|---|
+  | Ahrefs (`https://ahrefs.com/blog/llmstxt-study/`) | measured | 2026-06-15 | 137,210 domains | 28% have llms.txt; **97% received zero requests**; of the 3% fetched, 96% from bots, 12% from GEO researchers; **zero AI-bot requests for files that don't exist — they never go looking** |
+  | SE Ranking | vendor research | 2026-10-15 | ~300,000 domains | 10.13% adoption; XGBoost more accurate with llms.txt removed: *"LLMs.txt might currently introduce more noise than value."* |
+  | Otterly.AI | vendor research | 2026-02-05 | 62,100 AI bot visits / 90d | 0.1% hit /llms.txt (84 requests); no positive correlation with AI crawl activity |
+  | Search Engine Land | editorial | 2026-01-20 | 10 sites, 90d before/after | *"llms.txt documented those efforts. It didn't drive them."* Sites that launched **new functional content** gained; sites that merely documented existing content gained nothing. ⚠️ SEL's own counts are internally inconsistent (2 up + 8 flat + 1 down = 11 for a stated n=10). |
+  | CueScout | vendor research | 2026-10-15 | 537 SaaS sites, 80 AI Mode answers | 24.3% cited with llms.txt vs 21.8% without (Fisher p=0.53); **none of the 708 cited links pointed at an llms.txt file**; site size dominated |
+  | Server-log study, Zenodo `10.5281/zenodo.23018429` | measured | 15-day origin log | 345,808 requests | **Zero** requests to /llms.txt from any of the 22 published crawler tokens; robots.txt got 698 from 11 distinct tokens |
+
+  **The upper bound.** The 28% adoption figure is an **upper bound** — Ahrefs' customer
+  base skews technical — and their words are: *"Every figure in this study is therefore a
+  ceiling on actual llms.txt consumption."*
+
+  **Google, first-party.** Not a secondhand quote:
+  > *"You don't need to create new machine readable files, AI text files, or markup to
+  > appear in these features."*
+  > — [Google Search Central, "AI features and your website"](https://developers.google.com/search/docs/appearance/ai-features)
+
+  **Mueller's framing.** His *"temporary crutch, perhaps to save some tokens"* came from a
+  Bluesky reply to Lily Ray about Google's **markdown mirrors of developer documentation**,
+  not a standalone verdict on `llms.txt` as a file. Also his: *"For non-developer sites,
+  I don't think this makes much sense… Making a markdown version of a shoe's specs is not
+  going to get you more sales (competitors appreciate tho)."* Write-ups:
+  `https://www.seroundtable.com/google-adds-markdown-files-to-help-docs-41342.html`,
+  `https://searchengineland.com/google-llms-txt-chrome-lighthouse-478246`.
+
+  **The counter-evidence that must ship with the claim.** Ahrefs, read in full: *"AI
+  agents, and the infrastructure built to serve them, drive 10.5% of llms.txt requests —
+  more than any other type of AI bot"*, and *"Aside from statespace-indexer and GPTBot,
+  Claude-Code out-fetched every AI retrieval bot, every AI assistant, and every AI training
+  crawler."* And announced in robots.txt, crawlers demonstrably fetch the file (Nathan
+  Hall, Zenodo `10.5281/zenodo.23128812`, 2026-10-03: 1,549 fetches across 165 site-days,
+  ClaudeBot = 1,131; ten un-referenced siblings got zero across 60 file-months; his caveat:
+  *"That is discovery, not adoption."*). Retrieval is not parsing, indexing, ranking or use.
 - **It does not recommend FAQPage schema.** 5.6/10, and Google stopped showing FAQ
   rich results for most sites. Schema is worth doing for rich results and entity
   clarity, not for GEO.
-- **It does not automate posting anywhere.** Reddit reported catching 25,000 spammy
-  posts/day (2026-07), explicitly to stop *"brands from planting posts meant to get
-  them recommended by ChatGPT and Gemini"*, and banned 4 subreddits used in a GEO
-  experiment that automated upvotes and comments. **Measure Reddit. Never post to
-  it.**
+- **It does not automate posting anywhere.** Reddit removed **all four subreddit
+  communities OtterlyAI built for its own 60-day GEO engagement experiment**, for a breach
+  of **Rule 2 of Reddit's Content Policy** — not specifically for upvote automation
+  (`https://otterly.ai/blog/reddit-geo-2026/`, a vendor's self-report of its own failed
+  experiment). **Measure Reddit. Never post to it.**
 - **It does not award points for formatting.** arXiv 2605.25517: formatting-only
   edits had little impact across 252,000 trials.
 - **It does not generate content, fake authors, or rewrite the page.** Google's

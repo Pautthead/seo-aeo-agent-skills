@@ -15,11 +15,11 @@ metadata:
 > **Evidence:** METHODOLOGY-BRIEF §1.1 (23 Shepard / Zyppy factors, 2026-05-07, 54 experiments);
 > §1.2 (arXiv 2605.25517, 2026-05-25 — price and recent timestamp help, formatting-only edits do
 > not); §1.8 (Jeremy Moser via Digiday, 2026-03-10 — "80 percent of GEO is good, fundamental
-> SEO"); §1.9 (ProCloser field test 2026-05-27, n=5, underpowered — 60–120 day horizon);
-> §1.10 (GeoTest 2026-06, Citation Worthiness 34/100; Muck Rack 25M+ cited links, earned 84% vs
-> 0.3% paid); §1.12 (Ahrefs 2026-03 — contested, direction only). Research window
-> September–October 2026. Type: audit. Multilingual: language-agnostic checks with a
-> per-language calibration table.
+> SEO"); §1.4 (six independent 2026 `llms.txt` measurements plus Google's first-party
+> documentation); §1.9 (**no reliable public source gives a specific citation-lift window**);
+> §1.10 (GeoTest Citation Worthiness 34/100; Muck Rack 25M+ cited links); §1.12 (Ahrefs
+> 2026-03 — contested, direction only). Research window September–October 2026. Type: audit.
+> Multilingual: language-agnostic checks with a per-language calibration table.
 
 Scores a single page for **a second consumption mode**: being extracted, quoted and
 attributed inside a synthesized answer. It deliberately reuses ordinary SEO checks
@@ -157,9 +157,9 @@ see the multilingual rules in Step 3 and in
 | E-04 | Preview control: HTTP 200, no auth wall, `nosnippet` absent, no `max-snippet:0` | 9.5 / 9.2 |
 | E-05 | Freshness: machine-readable `datePublished`/`dateModified` **and** a visible in-text date | 7.0 |
 
-\* Shepard scores entity consistency 5.8. In our own 5-client field test
-(ProCloser, 2026-05-27, underpowered) it surfaced as one of five non-Shepard
-factors that mattered most. It is cheap. See [references/ENTITIES.md](references/ENTITIES.md).
+\* Shepard scores entity consistency 5.8. In an underpowered 5-client field test it
+surfaced as one of five non-Shepard factors that mattered most. It is cheap. See
+[references/ENTITIES.md](references/ENTITIES.md).
 
 ### Step 3 — Calibrate for language, and fail honestly
 
@@ -259,14 +259,15 @@ say that the highest-scoring factor is out of scope. If ranking is healthy and
 the page still is not cited, name the failing checks above.>
 
 DEBUNKED — NOT RECOMMENDED BY THIS SKILL
-  llms.txt ....... six independent 2026 measurements, all negative or null
+  llms.txt ....... does not get you cited in AI answers; it IS fetched
   FAQPage schema .. not a GEO lever; Google stopped showing it for most sites
   Reddit posting .. never automate posting; automate measurement only
 
 MEASUREMENT HORIZON
-First on-page effect: weeks. First citation effect: 60–120 days.
-Single-engine tracking is near-zero tracking (91% of AI citations appear on
-exactly one platform).
+On-page edits: weeks. No reliable public source gives a specific
+citation-lift window — do not quote one. Single-engine tracking is
+near-zero (91.07% of cited URLs appear in exactly one of ChatGPT,
+Perplexity and Google AI Overviews).
 ```
 
 ## Scoring
@@ -297,8 +298,9 @@ number it does not like.
 2. **It cannot predict citation.** Outputs are not reproducible: run the same
    prompt 10 times, get different outputs (`r/DigitalMarketing`, 2026-04-17). This
    audit measures page readiness, never outcome.
-3. **It cannot see AI-platform data.** GSC is ~75% incomplete for AI features with
-   no separate AI Mode data; 91% of AI citations appear on exactly one platform.
+3. **It cannot see AI-platform data.** GSC is ~75% incomplete for AI features, with no
+   separate AI Mode data; 91.07% of cited URLs appear in exactly one of ChatGPT,
+   Perplexity and Google AI Overviews.
 4. **Lexical checks are N/A outside 7 languages.** X-05, W-03, W-06.
 5. **Word counts are means, not measurements.** ±15% (Step 3).
 6. **It reads one page.** It does not audit the cluster, the internal link graph, or
@@ -311,58 +313,57 @@ Full ceiling discussion: [references/LIMITS.md](references/LIMITS.md).
 
 | Source | Unlocks | Keyless fallback |
 |---|---|---|
-| DataForSEO Labs `historical_rank_overview/live` ($0.12/task + $0.0012/item; DB refresh 30–90 days, do not present as real-time) | Search rank (9.4), fan-out rank (9.3) | Report them as "not measured"; do not estimate |
+| DataForSEO Labs `historical_rank_overview/live` ($0.12/task + $0.0012/item; DB refresh 30–90 days — not real-time) | Search rank (9.4), fan-out rank (9.3) | Report them as "not measured"; do not estimate |
 | Google Search Console | Which queries surface the page at all | None needed — the audit completes without it |
 | Operator-supplied fact list | W-02 | Ask the operator, or mark N/A |
 | Server log / crawler data | Whether bots fetched the page | None — never block on this |
 
-Auth note if used: HTTP Basic, credentials from `app.dataforseo.com/api-access`
-**API** login, not the dashboard login.
+Auth note if used: HTTP Basic, credentials from `app.dataforseo.com/api-access`.
 
 ## Debunked tactics — do not recommend these
 
-**(a) `llms.txt` does not work.** Six independent 2026 measurements, all negative or
-null: Ahrefs 2026-06-15 (n=137,210 domains; 28% have it, **97% received zero
-requests**; zero AI-bot requests for files that do not exist — they never go
-looking), SE Ranking 2026-10-15 (n≈300,000; 10.13% adoption; their model got *more*
-accurate when the variable was removed — *"LLMs.txt might currently introduce more
-noise than value"*), Otterly.AI 2026-02-05 (0.1% of AI bot hits), Search Engine Land
-2026-01-20 (10 sites, before/after; sites that shipped **new functional content**
-gained, sites that merely documented existing content gained nothing), CueScout
-2026-10-15 (n=537, 24.3% vs 21.8% cited, p=0.53 — and **none of the 708 cited links
-pointed at an llms.txt file**), and a 15-day origin log (345,808 requests; **zero**
-`/llms.txt` requests from any of 22 crawler tokens). Google on the record — Danny
-Sullivan, Search Central Live Toronto 2026-04: *"There is no benefit to creating a
-llms.txt file for SEO."* Shepard scores it **2.0/10**, lowest of 23 factors.
+**(a) `llms.txt` does not get you cited in AI answers.** Say it that narrowly — six
+independent 2026 measurements are negative or null on citation, and a 15-day origin
+log (Zenodo `10.5281/zenodo.23018429`) recorded **zero** `/llms.txt` requests from any of
+the 22 published crawler tokens. Details: [references/LIMITS.md](references/LIMITS.md) §8.
 
-The one nuance worth shipping: announced in robots.txt, crawlers *do* fetch the
-file (Nathan Hall, Zenodo 2026-09-17: 1,549 fetches across 165 site-days; ten
-un-referenced sibling files got zero across 60 file-months). The author's own
-caveat is the correct reading: **"That is discovery, not adoption."** If you ship
-llms.txt at all, ship it in an hour, announce it, and budget **zero** against it.
+**Never say "does not work" or "does nothing."** Those overclaim, and this repo's own
+evidence contradicts them. In Google's own documentation:
+> *"You don't need to create new machine readable files, AI text files, or markup to appear
+> in these features."*
+> — [Google Search Central, "AI features and your website"](https://developers.google.com/search/docs/appearance/ai-features)
+
+**The nuance worth shipping:** the file **is** fetched. Ahrefs: *"AI agents, and the
+infrastructure built to serve them, drive 10.5% of llms.txt requests — more than any other
+type of AI bot"*; announced in robots.txt, crawlers fetch it (Nathan Hall, Zenodo
+`10.5281/zenodo.23128812`: 1,549 fetches across 165 site-days; ten un-referenced siblings
+got zero across 60 file-months). His caveat is the correct reading: **"That is discovery,
+not adoption."** Mueller, on Google's markdown dev-docs mirrors, called it *"a temporary
+crutch, perhaps to save some tokens"*. Shepard scores it **2.0/10**, lowest of 23 factors.
+Ship it in an hour if at all, announce it, and budget **zero** against it.
 
 **(b) FAQPage schema is not a GEO lever.** Shepard scores structured data 5.6/10 and
 notes *"LLMs don't typically ingest schema as part of their training"* with
 *"limited evidence they can at least see schema when searching."* Google stopped
 showing FAQ rich results for most sites a while back (`r/AskMarketing`,
-2026-09-29). Several 2026 skills still auto-recommend adding FAQPage. Do not repeat
-it. Schema is worth doing for rich results and for entity clarity — not for GEO.
+2026-09-29). Several 2026 skills still auto-recommend adding FAQPage. Do not repeat it.
+Schema earns its place for rich results and entity clarity — not for GEO.
 
-**(c) Never automate Reddit posting.** Reddit began labelling legitimate bot
-accounts (2026-03), reported catching **25,000 spammy posts/day** (2026-07),
-explicitly to stop *"brands from planting posts meant to get them recommended by
-ChatGPT and Gemini"*, and **banned 4 subreddits** used in a GEO experiment that
-automated upvotes and comments. **Measure Reddit. Never post to it.**
+**(c) Never automate Reddit posting.** Reddit removed **all four subreddit communities
+OtterlyAI built for its own 60-day GEO engagement experiment**, for a breach of **Rule 2
+of Reddit's Content Policy** — not specifically for upvote automation
+(`https://otterly.ai/blog/reddit-geo-2026/`, a vendor's self-report of its own failed
+experiment). **Measure Reddit. Never post to it.**
 
 ## References
 
 - [references/CITATION_FACTORS.md](references/CITATION_FACTORS.md) — all 23 Shepard
   factors, scored, annotated operational / how-checked / keyless-or-data.
 - [references/EXTRACTABILITY.md](references/EXTRACTABILITY.md) — X-01…X-08, the
-  answer-position and self-containment rules, server rendering and the CSP/JS trap.
+  answer-position and self-containment rules, and the server-rendering / CSP-JS trap.
 - [references/CITATION_WORTHINESS.md](references/CITATION_WORTHINESS.md) — W-01…W-07,
   GeoTest signals and the arXiv 2605.25517 findings.
 - [references/ENTITIES.md](references/ENTITIES.md) — E-01…E-05, entity consistency,
   topic clusters and the entity-bloat failure mode.
-- [references/LIMITS.md](references/LIMITS.md) — what this skill cannot measure, and
-  the five non-Shepard factors from the field test.
+- [references/LIMITS.md](references/LIMITS.md) — what this skill cannot measure, the
+  `llms.txt` evidence table, and the five non-Shepard factors.

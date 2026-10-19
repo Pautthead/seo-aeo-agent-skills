@@ -139,7 +139,7 @@ if both:
 |---|---|
 | "Magnesium glycinate is supported by 137 scientific studies." | "This ingredient has better evidence." |
 | "SearchPilot measured that sites losing organic visibility lost AI citations in 2026." | "As we saw, the same thing happened." |
-| "Reddit reports catching 25,000 spammy posts per day as of July 2026." | "Reddit does not like it." |
+| "OtterlyAI reports Reddit removed all 4 subreddit communities it built for its 60-day GEO engagement experiment, for a breach of Rule 2 of Reddit's Content Policy." | "Reddit does not like it." |
 
 The right column is not *wrong*. It is **recoverable only with its surrounding
 context** — and context is exactly what a synthesizer drops. When a model lifts a

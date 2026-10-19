@@ -12,15 +12,37 @@ metadata:
 
 # AEO Bot Access Audit
 
-> **Evidence:** METHODOLOGY-BRIEF §1.1 (URL accessibility — Cyrus Shepard / Zyppy, 2026-05-07,
-> 9.5/10, highest of 23 factors); §1.4 (Nathan Hall, Zenodo, 2026-09-17 — robots.txt `Sitemap:`
-> announcement of an `/ai/llms.txt` drew 1,549 fetches across 165 site-days vs zero for ten
-> un-referenced sibling files across 60 file-months); §1.9 (91% of AI citations on one platform;
-> GSC ~75% incomplete for AI features).
+> **Evidence:** METHODOLOGY-BRIEF §1.1 (URL accessibility — Cyrus Shepard / Zyppy,
+> 2026-05-07, **hand-assigned correlation score 9.5/10**, highest of 23); §1.4 (Nathan Hall,
+> Zenodo, 2026-09-17 — robots.txt `Sitemap:` announcement of an `/ai/llms.txt` drew 1,549
+> fetches across 165 site-days vs zero for ten un-referenced sibling files across 60
+> file-months); §1.9 (91% of AI citations on one platform; GSC ~75% incomplete for AI
+> features).
 
-Every AI answer engine reads your pages through a named HTTP client with a named user-agent token. If that token gets a `403`, a login wall, a bot challenge, or an empty page, the content of the page is irrelevant — it does not exist as far as the retrieval system is concerned. Shepard scores **URL accessibility 9.5/10, the highest-scoring of 23 AI citation factors** (`https://signal.zyppy.com/p/ai-citation-ranking-factors`, 2026-05-07). This skill tests that factor directly, at the edge, with nothing but `curl`.
+> ### ⚠️ The Zyppy scores are hand-assigned, not measured
+>
+> **9.5/10 is not a measurement and must never be reported as one.** Shepard's own words,
+> on the `signal.zyppy.com/p/ai-citation-ranking-factors` post:
+>
+> > "I assigned each score by hand against those criteria, using AI to help adjust the final
+> > numbers… These are not confirmed ranking factors. Correlation is not causation."
+>
+> > "These aren't 'Ranking Factors' in the traditional sense. Instead, they're features
+> > correlated with AI citations across multiple studies."
+>
+> Read them as **a ranked expert opinion about which features correlate with citations** —
+> useful for prioritising an audit, worthless as a quantity. A page does not "achieve 9.5 on
+> accessibility", and this skill's own 0–100 score is a different instrument that must never
+> be mapped onto Shepard's. The full 23-row table, with the same caveat at the top, is in
+> `aeo-citability-audit` → `references/CITATION_FACTORS.md`.
 
-The thesis: **access is the highest-scoring and most-missed factor in AI visibility, and it is 100% keyless.** Every other AEO technique in this repo is downstream of whether the bot got bytes back.
+Every AI answer engine reads your pages through a named HTTP client with a named user-agent token. If that token gets a `403`, a login wall, a bot challenge, or an empty page, the content of the page is irrelevant — it does not exist as far as the retrieval system is concerned. Shepard hand-assigns URL accessibility **9.5/10, the highest of his 23 factors** (2026-05-07) — the strongest available statement that access comes first, which is what this skill tests directly, at the edge, with nothing but `curl`.
+
+> **The "highest-scoring factor" phrasing is a rank, not a measurement.** It is the correct
+> reading of Shepard's table and it is the reason this skill runs first. Do not upgrade it to
+> "access causes 9.5 points of citation lift" — that is not what the number is.
+
+The thesis: **access is the factor practitioners most often miss, and it is 100% keyless.** Every other AEO technique in this repo is downstream of whether the bot got bytes back.
 
 ## When to use this
 
@@ -34,8 +56,8 @@ The thesis: **access is the highest-scoring and most-missed factor in AI visibil
 ## When not to use this
 
 - It does **not** measure citation impact. It measures access only. A site can be perfectly open and still never be cited — that is a ranking and content problem, not this skill.
-- It does not audit render output. If the HTML you serve requires JavaScript to reveal the answer, that is a content-visibility problem (Shepard 7.6), a different skill.
-- Do not use it to argue that structured data will get you cited (Shepard 5.6, and schema is not ingested by most LLMs).
+- It does not audit render output. If the HTML you serve requires JavaScript to reveal the answer, that is a content-visibility problem (Shepard's hand-assigned 7.6/10 for *content visibility*), a different skill.
+- Do not use it to argue that structured data will get you cited. See `aeo-citability-audit` → `references/CITATION_FACTORS.md` §20 for the honest two-sided position on schema.
 
 ## Inputs
 
@@ -96,7 +118,7 @@ The two questions practitioners get wrong, and which this skill exists to preven
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot' \
+  -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot' \
   https://example.com/pricing
 ```
 
@@ -110,15 +132,17 @@ Batch form and per-token strings, response-code meanings, and the Cloudflare int
 
 **Pass condition:** sitemap fetches 200 and contains the audited URLs.
 
-This is the one discovery mechanism with measured evidence behind it. Nathan Hall (Zenodo, 2026-09-17, v1.2 2026-10-03) found an `/ai/llms.txt` announced via `Sitemap:` in robots.txt drew **1,549 fetches across 165 site-days** (ClaudeBot = 1,131), while ten un-referenced files in the same directory drew **zero requests across 60 file-months**. Note the author's own caveat: *"Tell a crawler where a file is and it fetches the file. That is discovery, not adoption."* A fetch is not a citation, and it is not evidence the file was parsed, indexed, or used in an answer. Announcing a file in robots.txt is worth doing because it costs one line — budget zero against it.
+This is the one discovery mechanism with measured evidence behind it. Nathan Hall (Zenodo, 2026-09-17, v1.2 2026-10-03, `https://doi.org/10.5281/zenodo.23128812`) found an `/ai/llms.txt` announced via `Sitemap:` in robots.txt drew **1,549 fetches across 165 site-days** (ClaudeBot = 1,131), while ten un-referenced files in the same directory drew **zero requests across 60 file-months**. Note the author's own caveat: *"Tell a crawler where a file is and it fetches the file. That is discovery, not adoption."* A fetch is not a citation, and it is not evidence the file was parsed, indexed, or used in an answer. Announcing a file in robots.txt is worth doing because it costs one line — budget zero against it.
 
-### Step 6 — Read the preview-control factor (Shepard 9.2)
+Two caveats that must travel with the citation: the file measured is `/ai/llms.txt`, **not** the root `llms.txt`; and the author discloses that *"the author owns Lefty Media Co and builds the plugin that announces the file measured here."* A source with a conflict of interest can still be cited — it just has to say so.
+
+### Step 6 — Read the preview-control factor (Shepard: hand-assigned 9.2/10)
 
 **Check:** search robots.txt for `nosnippet`, and page HTML for `<meta name="robots" content="...nosnippet...">` and `data-nosnippet`.
 
 **Pass condition:** you can state explicitly whether snippet control is on or off, per section of the site.
 
-What it does: `nosnippet` tells Google not to generate a textual snippet for the result, and prevents the page text from being used as a quoted passage in AI Overviews. It is the *preview control* factor, scored 9.2 — second-tier-high, and in the same layer as access.
+What it does: `nosnippet` tells Google not to generate a textual snippet for the result, and prevents the page text from being used as a quoted passage in AI Overviews. It is the *preview control* factor, hand-assigned 9.2 by Shepard — second tier in his ranking, and in the same layer as access. **That 9.2 is Shepard's by-hand score against his stated criteria, not a measurement** — it says he thinks the factor is real, not that switching it on costs you a measurable share of citations.
 
 The distinction that gets lost: **blocking a retrieval bot and allowing `nosnippet` are different decisions with opposite economics.** `nosnippet` keeps the page eligible to rank and to be cited; it only constrains how much text may be quoted. Blocking `OAI-SearchBot` removes the page from that engine entirely. If a client says "we want to control how we are quoted but we still want to be found", the answer is `nosnippet` (or `max-snippet:0`), not a bot block. If they say "we do not want our content in training", the answer is to block the *training* token — which is a separate question, resolved in Step 2.
 
@@ -190,7 +214,7 @@ State these in every report. They are not hedges; they are the boundary of what 
 
 1. **A fetch succeeding from your laptop is not a fetch succeeding from the origin's perspective.** IP reputation, ASN, geolocation, and rate-based rules change what a bot receives. A `200` from a residential IP is evidence, not proof. Server logs are the only ground truth.
 2. **This cannot see WAF rules that respond differently to a specific IP reputation.** Bot-Management scores, challenge thresholds and allowlists keyed to ASN or IP are invisible to `curl` from one vantage point. Repeat from a second network (a different ASN, ideally a datacenter IP, which is what real crawlers use) before reporting an edge block as definitive.
-3. **This cannot measure citation impact — only access.** Nothing here predicts whether an AI answer will cite the page. 91% of AI citations appear on exactly one platform (Indig H1 2026, via Search Engine Journal 2026-08-08), and Google Search Console is ~75% incomplete for AI features with no separate AI Mode data. Access is necessary and not sufficient.
+3. **This cannot measure citation impact — only access.** Nothing here predicts whether an AI answer will cite the page. **91.07% of cited URLs appeared in exactly one of ChatGPT, Perplexity and Google AI Overviews** for the same prompt (Kevin Indig, "The Consensus Gap," Growth Memo, 2026-05-11; 20,000 prompts, 3.7M URL citations — vendor research on Omnia's own tracking data, which Indig states is skewed toward Omnia's customer base). It is a three-engine overlap figure, not a general claim about "platforms". Google Search Console is also ~75% incomplete for AI features with no separate AI Mode data. Access is necessary and not sufficient.
 4. **It cannot distinguish a WAF challenge from a deliberate deny in every vendor's implementation.** Detection rules for the common vendors are in `references/EDGE_VERIFICATION.md`, but a custom error page can mimic either.
 5. **robots.txt is advisory by specification.** Bots that ignore it will ignore an allow too. Passing this audit does not guarantee a compliant crawler fetches anything.
 6. **It tests only the URLs you supply**, plus robots.txt and the sitemap. It does not crawl. A blocked directory path that is not on the audited list will not surface.

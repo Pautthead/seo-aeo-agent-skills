@@ -35,10 +35,10 @@ byte-identical case would generate false findings on pages whose title casing is
 merely typographic. So: case-insensitive comparison, whitespace-normalised, with
 punctuation differences *reported but not failed*.
 
-**What "materially higher in the field test" means.** In our 5-client field test
-(ProCloser, 2026-05-27, n=5, author flags the sample as underpowered) entity-naming
-consistency surfaced as one of five factors that mattered in practice but do not
-appear on Shepard's list. It was rated as cheap and underrated.
+**What "materially higher in the field test" means.** In an underpowered 5-client field
+test (n=5, the author flagged the sample as underpowered, and the source itself could not
+be verified) entity-naming consistency surfaced as one of five factors that mattered in
+practice but do not appear on Shepard's list. It was rated as cheap and underrated.
 
 **Stronger position:** the field observation is a single small sample and cannot
 override a 54-experiment scored study. The correct synthesis is that E-01 is *low
@@ -206,8 +206,10 @@ times, which is plenty.
 - Does the added sentence contain a fact? If no, it is bloat.
 
 **Related:** long-tail entity-stuffed phrasing is also the shape that reads as
-machine-generated. Sitefire / arXiv 2609.15369 (2026-09) detects AI-generated blog
-posts from **structure alone** at ~98% accuracy on held-out data. Entity stuffing is
+machine-generated. Jochen Madler (Sitefire), *"SlopShape: Identifying AI-Generated
+Commercial Web Content"*, `https://arxiv.org/abs/2609.15369` (2026-09) detects AI-generated
+commercial posts from **structure alone, at 97.0 macro-F1 on held-out companies**. That is
+a macro-averaged F1 score, not a share of pages classified correctly. Entity stuffing is
 one of the most reliable structural tells there is. This is the empirical reason not
 to let an entity-optimisation pass run unsupervised.
 
@@ -223,6 +225,6 @@ to let an entity-optimisation pass run unsupervised.
 | E-04 | 200, no auth wall, ≥200 chars, no `nosnippet` | 9.5 / 9.2 | yes | No lexical dependence |
 | E-05 | Machine-readable **and** visible recent date | 7.0 | yes | Locale-aware date parsing |
 
-\* Shepard 5.8; rated materially more important in our underpowered 5-client field
-test (ProCloser, 2026-05-27). Cheap and low-risk either way. Full caveat in
+\* Shepard 5.8; rated materially more important in an underpowered 5-client field
+test. Cheap and low-risk either way. Full caveat in
 [LIMITS.md](references/LIMITS.md).

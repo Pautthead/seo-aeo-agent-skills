@@ -121,9 +121,12 @@ Practical consequence: **an information gain report is not a GEO campaign**, and
 score is not a traffic forecast. Reporting a gain score as expected traffic is the same
 category error as reading a vendor "AI visibility" number as a business outcome.
 
-Supporting reality check: **91% of AI citations appear on exactly one platform**
-(Indig H1 2026, via Search Engine Journal, 2026-08-08). Single-engine tracking is close
-to no tracking. Citation data is also unstable — run the same prompt ten times, get
+Supporting reality check: **91.07% of cited URLs appeared in exactly one of ChatGPT,
+Perplexity and Google AI Overviews** for the same prompt (Kevin Indig, "The Consensus Gap,"
+Growth Memo, 2026-05-11; 20,000 prompts, 3.7M URL citations). Single-engine tracking is close
+to no tracking. That is a three-engine overlap figure, not a general statement about
+"platforms", and the data is Omnia's own tracking set, which Indig states is skewed toward
+Omnia's customer base. Citation data is also unstable — run the same prompt ten times, get
 different outputs (`r/DigitalMarketing`, 2026-04-17).
 
 ## 6. Review at volume does not scale, and review is not the same as originality
@@ -178,9 +181,14 @@ Consequences for this skill:
 - The three dimensions that survive human review are the ones where a human supplied
   something that did not exist before: a measurement, a name, a boundary.
 
-Corroborating: Sitefire / arXiv 2609.15369 (2026-09) detects AI-generated posts **from
-structure alone at ~98% accuracy** on held-out data. Sentence-level polish does not
-change the shape. The shape is the tell.
+Corroborating: *"SlopShape: Identifying AI-Generated Commercial Web Content"*, Jochen
+Madler (Sitefire), `https://arxiv.org/abs/2609.15369`, submitted 2026-09-14, last revised
+2026-09-28 (v3), cs.CL. It detects AI-generated commercial posts **from structure alone,
+at 97.0 macro-F1 on held-out companies**, using **176 structural features** out of a
+203-feature instrument, over a corpus of **2,250 pre-ChatGPT human blog posts from 268
+company domains against 11,250 AI mirrors from 5 frontier models**. (Held-out robustness
+under rewording: 96.1. Source attribution: 68.6% correct against a 16.7% chance baseline.)
+Sentence-level polish does not change the shape. The shape is the tell.
 
 ## 7. Google's own guidance, and the word "critical"
 
@@ -247,10 +255,14 @@ score it.
   a sample-size table. A YMYL page cannot reach 60 without original data — and should
   not fake it. Score bands are not portable; the method is.
 
-**Expect 60–120 days** to observe any citation consequence (ProCloser field test,
-2026-05-27, n=5 clients, author flags the sample as underpowered). On-page changes move
-in weeks; third-party citation changes take 4–12 weeks. Do not report uplift inside
-that window.
+**No reliable public source gives a citation-lift window.** This file previously carried a
+"60–120 days to observe any citation consequence" figure attributed to an n=5 field test. That
+source could not be located — no URL, no snippet, no primary text — and the figure is **widely
+repeated without a traceable primary**, so it has been removed. What survives is the qualitative
+split, and it is enough: on-page changes move in weeks; third-party citation changes move far
+more slowly. **Do not quote a number, and do not promise visibility inside 60 days** — anyone
+who does is selling a timeline they cannot source. The rule stands on the **absence of
+evidence**, not on a figure anyone can produce.
 
 ## 10. Mandatory disclosure block
 
@@ -282,8 +294,8 @@ Gary Illyes (Search Central Live Barcelona, 2026-10) says scaled AI content is n
 bigger problem than link spam.
 
 **Coverage is a sample.** The baseline is 3–5 retrieved pages. It is not the source set
-an AI answer was synthesized from. Expect 60–120 days to observe any citation
-consequence.
+an AI answer was synthesized from. No reliable public source gives a citation-lift
+window, so do not quote one.
 ```
 
 ## 11. Sources
@@ -296,10 +308,13 @@ consequence.
 - Gary Illyes, Search Central Live Barcelona — 2026-10
 - Google Search Central, AI-generated content guidance — updated 2026-10-01
 - Barry Schwartz — observation on the word "critical"
-- Indig H1 2026, via Search Engine Journal — 2026-08-08 — 91% single-platform citations
+- Indig, "The Consensus Gap," Growth Memo — 2026-05-11 — 91.07% of cited URLs appeared in exactly one of ChatGPT, Perplexity and Google AI Overviews; 20k prompts, 3.7M citations; Omnia tracking data, which Indig states is skewed toward Omnia's customer base
+- Jochen Madler (Sitefire), "SlopShape: Identifying AI-Generated Commercial Web Content" — `https://arxiv.org/abs/2609.15369` — 2026-09-14, v3 2026-09-28 — **97.0 macro-F1 on held-out companies**, 176 structural features of a 203-feature instrument, 2,250 human posts vs 11,250 AI mirrors
+- Nathan Hall, Zenodo — `https://doi.org/10.5281/zenodo.23128812` — v1.2 2026-10-03 — **disclosed competing interest: the author owns Lefty Media Co and builds the plugin that announces the file measured**
+- Muck Rack, "What is AI Reading" — 2026-05-07 — **vendor research**; 84% is "earned media" as Muck Rack defines it (Wikipedia and PubMed Central included; journalism alone is 27%), and Muck Rack's own pages contradict each other by 25× on sample size
 - `r/DigitalMarketing` — 2026-04-17 — prompt-output instability
-- Sitefire / arXiv 2609.15369 — 2026-09 — ~98% structural detection accuracy
-- ProCloser field test — 2026-05-27 — n=5, underpowered by the author's own assessment
+- Jochen Madler (Sitefire), "SlopShape: Identifying AI-Generated Commercial Web Content" — `https://arxiv.org/abs/2609.15369` — 2026-09 — **97.0 macro-F1 on held-out companies.** Earlier drafts of this repo rendered this as an accuracy percentage; it is a macro-averaged F1 against a balanced-class definition, not a share of pages classified correctly.
+- ProCloser field test — 2026-05-27 — n=5 — **removed: NOT FOUND.** No URL, no snippet, no primary text located. It was cited for a "60–120 days to citation lift" window, and the figure is widely repeated without a traceable primary. Do not reinstate either the number or the attribution.
 
 Method: **[METHODOLOGY.md](references/METHODOLOGY.md)**. Rubric: **[SCORING.md](references/SCORING.md)**.
 Baseline: **[COMPETITOR_SERP.md](references/COMPETITOR_SERP.md)**.

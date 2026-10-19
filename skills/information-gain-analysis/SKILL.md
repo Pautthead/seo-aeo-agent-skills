@@ -15,7 +15,8 @@ metadata:
 > **Evidence:** METHODOLOGY-BRIEF §1.3 (US11354342B2 answer-composition / fact-pruning mechanism;
 > Ahrefs, Louise Linehan, 2026-08-20 — "there is no position four"; On-Page.ai study of 150 top-3
 > pages; Google has not confirmed any information gain requirement; `r/SEO` 2026-01-26 dissent);
-> §1.9 (60–120 day horizon, ProCloser n=5 underpowered); §1.2 and §1.6 (formatting-only edits and
+> §1.9 (measurement reality — **no reliable public source gives a specific
+> citation-lift window**); §1.2 and §1.6 (formatting-only edits and
 > structural slop detection). Research window September–October 2026.
 
 A page's job in a synthesized answer is not to rank. It is to contribute something
@@ -188,11 +189,13 @@ Full rubric, thresholds, and the anti-gaming section: **[SCORING.md](references/
 
 Two rules govern everything else:
 
-1. **Rank position contributes zero points.** On-Page.ai's study of 150 top-3 pages
-   found position and originality barely separated positions 1–3 (mean ~51), while
-   pages with ≥15 unique data points averaged 62 against 40 for pages with 0–1.
-   Originality is the variable. Scoring this skill on rank would launder the ranking
-   signal into an "information gain" score, which is a category error.
+1. **Rank position contributes zero points.** ⚠️ **Vendor research** — On-Page.ai sells a
+   scoring product and the Information Gain Score is their own metric. Their study of 150
+   top-3 pages found **"within the top 3, position was unrelated to the score"** (median
+   page score 52/100), while pages with ≥15 unique data points averaged **62.1** against
+   **40.2** for pages with 0–1. Originality is the variable. Scoring this skill on rank
+   would launder the ranking signal into an "information gain" score, which is a
+   category error.
 2. **The counting steps are deterministic; the meaning judgement is not.** Enumeration
    of facts, ledger matching, and dimension arithmetic are reproducible. "Is this
    number informative or is it padding?" is a judgement, and it is a judgement about
@@ -215,8 +218,10 @@ Two rules govern everything else:
   without original data, reach 60 — and should not pretend to.
 - **Single-page scope.** It does not model cannibalisation across a cluster. Run it
   per page, then compare inventories.
-- **Expect 60–120 days** to observe any citation consequence. Do not report uplift
-  inside that window.
+- **No sourced citation-lift window exists.** A "60–120 days" figure circulates widely but
+  could not be traced to a primary source, so it is not repeated here. Do not quote one, and
+  do not report uplift inside a window you cannot source. What does hold: on-page changes move
+  in weeks, third-party citation changes move far more slowly.
 
 ## Optional data sources
 

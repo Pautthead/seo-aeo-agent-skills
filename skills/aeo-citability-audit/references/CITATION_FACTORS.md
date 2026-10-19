@@ -5,6 +5,33 @@
 repeatability, evidence strength and official support. Corroborated by SearchPilot,
 2026-10-02: sites that lost organic visibility lost their AI citations too.
 
+---
+
+> ## ⚠️ READ THIS FIRST — these scores are hand-assigned, not measured
+>
+> **Every number in the table below is an opinion, weighted by hand.** None of them is a
+> measurement, none of them is a quantity your site can "achieve", and none of them is a
+> confirmed ranking factor. Shepard says so himself, on the same page:
+>
+> > "I assigned each score by hand against those criteria, using AI to help adjust the final
+> > numbers… These are not confirmed ranking factors. Correlation is not causation."
+>
+> > "These aren't 'Ranking Factors' in the traditional sense. Instead, they're features
+> > correlated with AI citations across multiple studies."
+>
+> **What this means for how you use the table:**
+>
+> - "URL accessibility 9.5" means *"the author believes this feature correlates strongly with
+>   AI citations."* It does **not** mean accessibility is worth 9.5 points of citation lift,
+>   and it cannot be compared against this skill's own 0–100 score.
+> - **Read the column as a priority ordering, not as a scale.** The gap between 9.5 and 8.6
+>   carries no information about effect size.
+> - **Never write "accessibility is measured at 9.5."** Write "Shepard hand-assigns
+>   accessibility 9.5/10, the highest of his 23 features."
+> - The underlying correlation evidence is real and is cited per-factor below. Where a factor
+>   has direct, attributable measurements — Ahrefs, arXiv, the Zenodo records — those are
+>   given precedence over the score.
+
 **Author's summary, verbatim:**
 > *"win SEO, win AI citations (most of the time, with extra steps)."*
 
@@ -15,10 +42,13 @@ tactic that is not also an SEO tactic.
 
 ## The ranked table
 
-| # | Factor | Score | Keyless? | Check |
+**Score = Shepard's by-hand 0–10 judgement against repeatability, evidence strength and
+official support. Not a measurement.**
+
+| # | Factor | Shepard score | Keyless? | Check |
 |---|---|---|---|---|
 | 1 | URL accessibility | **9.5** | yes | E-04 |
-| 2 | **Search rank (top 10)** | **9.4** | **no** | Rank data required |
+| 2 | **Search rank (top 10)** | **9.4** | no | Rank data required |
 | 3 | Fan-out rank | 9.3 | no | Rank data required |
 | 4 | Preview control (`nosnippet`) | 9.2 | yes | E-04 |
 | 5 | Query-answer match | 9.2 | partial | X-01, W-02 |
@@ -46,10 +76,12 @@ tactic that is not also an SEO tactic.
 Any tool that scores "AI readiness" without surfacing these three is selling
 something. They are the honest headline of this whole reference file:
 
-- **Search rank — 9.4/10.** The second-highest factor. Ordinary SEO.
-- **Structured data — 5.6/10.** Mid-table. Not the lever the 2026 skill market says
-  it is.
-- **llms.txt — 2.0/10.** The lowest score of all 23.
+- **Search rank — 9.4.** The second-highest hand-assigned score. Ordinary SEO.
+- **Structured data — 5.6.** Mid-table in Shepard's ranking. Not the lever the 2026 skill
+  market says it is — see §20 for the full two-sided picture, because he is *more* positive
+  on schema than we have been quoting him.
+- **llms.txt — 2.0.** The lowest hand-assigned score of all 23, against six independent
+  negative measurements.
 
 ---
 
@@ -57,6 +89,11 @@ something. They are the honest headline of this whole reference file:
 
 Each entry: what it means operationally, how this skill checks it, and whether it
 needs data beyond the page.
+
+**The number in each heading is Shepard's hand-assigned score, not a measurement** (see the
+callout at the top). Where a factor also has direct measured evidence — an Ahrefs dataset, an
+arXiv study, a Zenodo record — that evidence is quoted in the entry and governs the
+recommendation. The score only sets priority.
 
 ### 1 — URL accessibility · 9.5
 
@@ -226,21 +263,45 @@ the first 3 blocks.
 **Means:** the brand, product and person are named the same way everywhere —
 title, `h1`, body, schema, and across the wider web. Inconsistent naming splits
 your entity and weakens the association.
-**Check:** E-01. Shepard's score is low; our 5-client field test (ProCloser,
-2026-05-27, underpowered) surfaced it as materially more important in practice. It
+**Check:** E-01. Shepard's score is low; in an underpowered 5-client field test it
+surfaced as materially more important in practice. (That source could not be
+verified — treat it as a hypothesis, per [LIMITS.md](references/LIMITS.md) §7.) It
 is cheap. See [ENTITIES.md](references/ENTITIES.md).
 **Keyless:** yes.
 
 ### 20 — Structured data · 5.6
 
-**Means:** moderate, not high. Shepard's notes are the operative text: *"LLMs don't
-typically ingest schema as part of their training"* and *"limited evidence they can
-at least see schema when searching."*
+**Shepard's score:** mid-table, and lower than his hand-assigned scores for structure,
+specificity or answer position. That is the number; it is a judgement, not a measurement.
+
+**His notes — both halves, and this repo previously quoted only one:**
+> *"LLMs don't typically ingest schema as part of their training"* and *"limited evidence
+> they can at least see schema when searching."*
+
+**…and on the study evidence, the other half, which is consistently positive:**
+> *"practically every study that looks at schema and AI citations finds a positive
+> relationship. The effect is typically small, but it's amazingly consistent across
+> studies."*
+
+**Put those together honestly, because the second quote is the more important one:**
+
+- **In studies, schema correlates positively with AI citations — consistently, across
+  studies.** Quoting only the "limited evidence they can see schema" line and presenting
+  schema as evidence-free is selective in the *unhelpful* direction, and it misrepresents
+  the source. Consistency across studies is a real, if small, signal.
+- **In mechanism, the same source explains why it doesn't cash out.** LLMs do not ingest
+  schema as training data, and there is little evidence they consume it in a schema-like
+  way at retrieval time. So the correlation is real without schema being a lever anyone has
+  demonstrated they can pull.
+- **Small and consistent is not the same as large and actionable.** An effect that is small
+  in every study is a weak reason to spend a sprint on, and no reason to sell as a tactic.
+
 **Check:** informational only. This audit does **not** award or withhold points for
 schema, because the evidence does not support a GEO claim either way.
-**Explicit non-recommendation:** do not tell anyone to add **FAQPage** as a GEO
-tactic. Google stopped showing FAQ rich results for most sites (`r/AskMarketing`,
-2026-09-29). Schema earns its place for rich results and entity clarity.
+**Explicit non-recommendation:** do not tell anyone to add **FAQPage** as a GEO tactic.
+Google stopped showing FAQ rich results for most sites (`r/AskMarketing`, 2026-09-29).
+Schema earns its place for rich results and entity clarity — do it for those reasons,
+which are real, and do not bill it as a GEO lever, which is not.
 
 ### 21 — Known source · 5.4
 
@@ -250,7 +311,7 @@ tactic. Google stopped showing FAQ rich results for most sites (`r/AskMarketing`
 
 ### 22 — Domain authority · 5.0
 
-**Means:** general domain strength — the lowest-scoring of the 22 non-llms.txt
+**Means:** general domain strength — the lowest hand-assigned score of the 22 non-llms.txt
 factors.
 **Check:** out of scope keylessly. Where external data exists, report it with its
 source and date; never launder a vendor metric into a fact.
@@ -258,8 +319,8 @@ source and date; never launder a vendor metric into a fact.
 
 ### 23 — llms.txt · 2.0
 
-**Means:** nothing. Lowest score of all 23 factors, against six independent negative
-measurements and Google's own on-the-record statement.
+**Means:** nothing — the lowest hand-assigned score of all 23, against six independent
+negative measurements and Google's own first-party documentation.
 **Check:** none. **Do not recommend.**
 **Nuance worth shipping (not worth forecasting):** announced in robots.txt,
 crawlers do fetch it (Nathan Hall, Zenodo, 2026-09-17, v1.2 2026-10-03:

@@ -53,6 +53,18 @@ Record the byte counts. You will compare bot responses against them in §5.
 
 Exact tokens from [`CRAWLERS.md`](references/CRAWLERS.md). These are the **citation-class** bots — the ones whose absence removes your pages from an engine's answers. Test all of them.
 
+> **On the strings below.** OpenAI and Perplexity publish exact User-Agent strings; OpenAI
+> explicitly notes that **"the version number may change"**, so `OAI-SearchBot/1.4` here is
+> the current published value and not a frozen fact. **Anthropic publishes no User-Agent
+> strings at all** — the `Claude-SearchBot` and `Claude-User` headers below are community-
+> observed, and third-party directories disagree about them.
+>
+> That does not weaken the test. A User-Agent header is a self-asserted claim, so what you
+> are measuring here is how your edge treats a request *bearing that token* — which is
+> exactly the failure mode you are auditing (a WAF rule keyed on the retrieval UA). For
+> verifying that a request really came from Anthropic, use the published IP list at
+> `https://claude.com/crawling/bots.json`, not the header.
+
 ### Claude Search (citations)
 
 ```bash
@@ -73,7 +85,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot' \
+  -A 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot' \
   https://example.com/pricing
 ```
 
@@ -140,7 +152,7 @@ PAGES="/ /pricing /blog/how-we-price"
 declare -A UA=(
   [Claude-SearchBot]='Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)'
   [Claude-User]='Mozilla/5.0 (compatible; Claude-User/1.0; +claudebot@anthropic.com)'
-  [OAI-SearchBot]='Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot'
+  [OAI-SearchBot]='Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot'
   [ChatGPT-User]='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot'
   [Googlebot]='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
   [Google-Agent]='Mozilla/5.0 (compatible; Google-Agent/1.0)'
@@ -166,7 +178,7 @@ PowerShell equivalent:
 ```powershell
 $UA = @{
   'Claude-SearchBot' = 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)'
-  'OAI-SearchBot'    = 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.0; +https://openai.com/searchbot'
+  'OAI-SearchBot'    = 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot'
   'Googlebot'        = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
   'Bingbot'          = 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'
   'PerplexityBot'    = 'Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)'
