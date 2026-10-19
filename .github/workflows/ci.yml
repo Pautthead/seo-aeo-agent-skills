@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# A newer push to the same branch/PR makes the previous run irrelevant.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: "gates (py${{ matrix.python-version }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Sanity -- scripts compile
+        run: python -m compileall -q tests
+
+      - name: Gate 1 -- skill inventory and spec conformance
+        run: python tests/validate_skill_inventory.py
+
+      # ---------------------------------------------------------------------------------
+      # Gate 2 has TWO thresholds, and which one blocks is the whole design.
+      #
+      #   review (90d)  -- a citation this old may have been SUPERSEDED. Reported, not
+      #                    failed. A primary source does not expire on a 90-day schedule:
+      #                    Shepard / Zyppy's 2026-05 experiments do not rot because time
+      #                    passed. Failing on this alone flagged 78 of 171 citations on
+      #                    day one, which is not a signal -- a permanently-red gate stops
+      #                    being read and looks like enforcement while being noise.
+      #   stale (365d)  -- the SOURCE itself has aged out. This one blocks.
+      #
+      # So the enforcing step runs at the defaults and only the stale threshold can turn
+      # it red. The strict run below promotes review triggers to failures as well; it is
+      # informational, so it is allowed to fail without blocking the build.
+      # ---------------------------------------------------------------------------------
+
+      # Deliberately a separate step from gate 1: when this is red, the reason is
+      # stale citations and nothing else, rather than a mixed structural report.
+      - name: "Gate 2 -- reference freshness (review 90d / stale 365d, enforcing)"
+        run: python tests/reference_freshness.py --review-after-days 90 --stale-after-days 365
+
+      - name: "Gate 2 (strict, informational) -- review triggers also fail"
+        continue-on-error: true
+        run: python tests/reference_freshness.py --review-after-days 90 --stale-after-days 365 --strict
