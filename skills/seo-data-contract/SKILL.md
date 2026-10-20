@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: No dependencies, no API keys, no network required. Runs fully offline.
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.4"
+  version: "1.1.0"
   updated: "2026-10-20"
   keys-required: "none"
 ---
@@ -21,7 +21,7 @@ dated, sourced envelope to that number *before* it writes a word of analysis —
 analysis outright when the input can no longer be trusted.
 
 The failure it exists to prevent is not loud. It is silent: a GSC OAuth token expired, the agent kept
-serving a cached export, the workflow kept exiting 0. Reported from `r/AiAutomations`, 2026-09-07:
+serving a cached export, the workflow kept exiting 0. Reported from [r/AiAutomations, 2026-09-07](https://www.reddit.com/r/AiAutomations/comments/1w9h1sv/an_seo_agent_kept_working_for_two_weeks_after_its/):
 *"a GSC OAuth token expired and the agent continued using cached Search Console data for two weeks.
 Rankings were changing while its decisions were still based on the old view… The workflow can run
 successfully against an input that should no longer be trusted."* The same shape, 2026-09-24 against a
@@ -52,19 +52,21 @@ exposes its latest import time."* Speed is not freshness. Neither is a green exi
 | 4 | Auth credentials | never | if auth fails, that is a **freshness result**, not a blocker |
 
 Inputs 1–3 are satisfiable with zero API keys, zero MCP servers, and zero accounts. When auth is
-unavailable the skill reports *why* the number is stale and offers the keyless paths in step 6 —
-it never becomes unusable.
+unavailable the skill reports *why* the number is stale and offers the keyless paths in Step 5
+(options A/B/C) — it never becomes unusable.
 
 ## Procedure
 
-Six steps. Steps 0–4 are the contract. Step 5 is the gate. Step 6 is the fallback that keeps the
-skill keyless-first.
+Six steps. Steps 0–4 are the contract. Step 5 is the gate, including the keyless options A/B/C.
+Step 6 is the labelling rule: no number leaves without a source and a date.
 
 ### Step 0 — Build the envelope (target: under 60 seconds)
 
 Fill the eleven required fields in `references/ENVELOPE.md` (Tier 1). If the source is a pasted file or a
-typed number, eleven fields is the whole job. Do not fill the seven optional Tier-2 fields you cannot
-fill — leave them `null` and say so.
+typed number, eleven fields is the whole job. When `newest_data_date` is non-null, also fill the two
+conditionally required fields `date_grain` and `date_field`. Leave the six optional fields (`subject`,
+`row_count`, `truncated`, `truncation_note`, `filters`, `role`) null when you cannot fill them, and
+say so. `role` defaults to `evidence`.
 
 - **Check:** `envelope_version`, `captured_at`, `source_family`, `source_ref`, `auth_state`,
   `last_successful_retrieval_at`, `newest_data_date`, `date_semantics`, `freshness_class`,
@@ -110,12 +112,13 @@ Extraction recipes, one line each — full detail in `references/ENVELOPE.md` §
 | GA4 export | max row date; for comparative ranges, the max of the **current** period only | `row_date` |
 | DataForSEO Labs | **not present in the payload.** Use the provider's stated refresh window | `provider_refresh_window` |
 | DataForSEO SERP | `captured_at` — it is a live fetch | `observed` |
-| Scraped page | max(`dateModified`, HTTP `Last-Modified`) — but read the semantics note | `content_claim` |
+| Live fetch of a page | the capture date. This envelope is only "the page was seen" | `observed` |
+| `dateModified` / `Last-Modified` on that page | the date the publisher or the header asserts. Separate envelope | `content_claim` |
 | Log file | max timestamp of the covered log window | `row_date` |
 | Typed number | `null` | `none` |
 
 - **Check:** `date_semantics` is set and `date_field` names the field the value came from.
-- **Pass when:** the agent can quote the newest date and the field it came from. If it cannot, `newest_data_date` is `null` and `freshness_class` is `unknown` — which routes to step 6, not to step 5.
+- **Pass when:** the agent can quote the newest date and the field it came from. If it cannot, and there is no documented refresh window, `newest_data_date` is `null` and `freshness_class` is `unknown`. Step 5 handles `unknown`: no trend analysis, options A/B/C. A `provider_refresh_window` with no date is `aging`, not `unknown`, and it stays in Step 5.
 
 ### Step 4 — Classify
 
@@ -203,7 +206,7 @@ the report says any of this. The workflow exits 0.
 
 > **Freshness check — read first**
 > Source: GSC export, `gsc-performance-2026-09-08.csv`, 1,000 rows (at the export cap; 4,318 rows matched — totals below are not reliable).
-> Newest date in data: **2026-08-05**. Age: 41 days. Expected latency for GSC: 3 days. **Class: STALE.**
+> Newest date in data: **2026-08-05**. Age: 75 days (captured 2026-10-19). Expected latency for GSC: 3 days. **Class: STALE.**
 > Auth: unavailable this session, so this cannot be refreshed from here.
 >
 > I am not going to analyse this as current. Three things I can do:
@@ -214,7 +217,7 @@ the report says any of this. The workflow exits 0.
 >
 > *On option B, for reference:* sessions were 12% higher than the prior period `[GSC · 2026-08-05]`.
 > `/blog/seo-guide` had lost its page-one position `[GSC · 2026-08-05]`. Whether either still holds is
-> not something this file can tell you — it is 41 days old and it was truncated at 1,000 rows.
+> not something this file can tell you — it is 75 days old and it was truncated at 1,000 rows.
 
 The second answer is longer and gives less advice. That is correct. The first answer's problem was not
 that it was wrong — it was that it was confidently stale and the reader could not tell.
@@ -223,7 +226,7 @@ that it was wrong — it was that it was confidently stale and the reader could 
 
 Two failures share a root cause: input nobody can date.
 
-`r/SEO_Xpert`, 2026-07-19: an agent proposed **~150 internal link suggestions with total confidence;
+[r/SEO_Xpert, 2026-07-10](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/): an agent proposed **~150 internal link suggestions with total confidence;
 ~20 were usable.** The same page, in a **fresh session**, produced different recommendations. The
 agent could not reproduce its own prior analysis.
 
@@ -268,7 +271,9 @@ Deterministic, applied to the agent's own behaviour. Not a grade of the site.
 | Labelling | 100% of figures carry `[SRC · date]` | ≥1 unlabelled figure |
 | Cap awareness | truncation surfaced whenever a vendor cap is hit | totals computed from a capped export |
 
-7/8 to proceed with a labelled report. 8/8 to proceed without a caveat. Below 7, re-run step 0.
+The Classification check is mandatory. 7/8 may proceed only when Classification passed. If
+Classification failed, stop and re-run step 4, even if the other seven passed. 8/8 to proceed
+without a caveat.
 
 ## Known limitations
 
@@ -280,7 +285,7 @@ Deterministic, applied to the agent's own behaviour. Not a grade of the site.
   GA4 export whose bot filters were changed mid-period, passes every check here.
 - **It cannot detect drift *within* the window.** A flat-looking 90-day GSC export can hide a sharp
   break; the envelope dates the data, it does not segment it.
-- **`data_semantics: content_claim` is weak evidence.** A `dateModified` on a scraped page is a claim
+- **`date_semantics: content_claim` is weak evidence.** A `dateModified` on a scraped page is a claim
   by the publisher, not an observation. Useful for spotting a stale page; useless as proof of one.
 - **The thresholds are judgement calls**, calibrated against documented source latencies, not
   measured optima. They are published so they can be argued with — see `references/FRESHNESS.md` §3.
@@ -297,14 +302,18 @@ None required. Nothing in this skill needs a paid tool.
 - **GSC / GA4** — the highest-quality inputs available, and free. Upgrade: nothing. They are the
   baseline where credentials exist, and their absence routes to option C rather than failure.
 - **Bing Webmaster Tools** — free, second opinion on a ~30% share of search. Lower volume, same
-  contract.
-- **DataForSEO** — optional upgrade for SERP/SERP structure where no GSC equivalent exists. Labs
-  Google is live-only, no queue: **$0.012/task + $0.00012/item**, default on
-  `dataforseo_labs/google/*/live`. Max 700 keywords per `keyword_overview` task, max 1,000 items per
-  response, 2,000 calls/min, 30 concurrent. **Database refresh cycle is 30–90 days — never present
-  Labs output as real-time.** Quoting SERP API rates: headline $2.00/1k live vs $0.60/1k standard;
-  the $0.60 figure is the ~5-minute queue and is *not* an equivalent product for an interactive agent.
-  Report **$2.00**.
+  contract. URL inspection is `GetUrlInfo`; dates come back as `/Date(milliseconds±offset)/`, and
+  the URL is encoded once. See `references/SOURCES.md`.
+- **DataForSEO** — optional. Three products, three prices. Do not treat them as one rate that
+  drifted by 10×:
+  - Labs `dataforseo_labs/google/*/live`: **$0.012/task + $0.00012/item**. Database refresh
+    **30–90 days**. Not real-time. `historical_rank_overview/live` is a different Labs call at
+    **$0.12/task + $0.0012/item** (the published 10× exception, not a typo of the default).
+  - SERP API live advanced: headline **$2.00/1,000** = **$0.002/task**. A 2026-10-20 invoice for
+    fluyeporlaweb.com was **$0.006 for 3 tasks**. The $0.60/1k figure is the ~5-minute standard
+    queue and is not the interactive rate.
+  - Max 700 keywords per `keyword_overview` task, max 1,000 items per response, 2,000 calls/min,
+    30 concurrent.
 - **Ahrefs / Semrush** — index-derived, useful for competitive context, never a source of truth about
   a site's own traffic.
 

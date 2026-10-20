@@ -63,10 +63,10 @@ official support. Not a measurement.**
 | 14 | Content visibility (in HTML, not JS) | 7.6 | yes | X-02, X-07 |
 | 15 | Freshness | 7.0 | yes | E-05 |
 | 16 | Brand / entity trust | 6.8 | partial | E-03 |
-| 17 | Length | 6.7 | yes | context, unscored |
+| 17 | Length | 6.7 | reported, not scored | context only |
 | 18 | Language | 6.3 | yes | X-08 |
 | 19 | Entity consistency | 5.8 | yes | E-01 |
-| 20 | Structured data | 5.6 | yes | informational only — **not a GEO lever** |
+| 20 | Structured data | 5.6 | reported, not scored | informational only — **not a GEO lever** |
 | 21 | Known source | 5.4 | no | off-site, out of scope |
 | 22 | Domain authority | 5.0 | no | off-site, out of scope |
 | 23 | **llms.txt** | **2.0** | — | **do not recommend; see below** |
@@ -159,7 +159,9 @@ recites like a lone page.
 **Check:** E-02 — ≥3 outbound links to pages sharing the topic stem, ≥1 inbound link
 from a sibling page. Cluster membership is computed from the URL path and `href`
 graph, which is language-agnostic.
-**Keyless:** yes, with a stated limit (see [ENTITIES.md](ENTITIES.md)).
+**Keyless:** partial. Path structure is countable; whether the cluster ranks is not.
+See [ENTITIES.md](ENTITIES.md). A generic first segment (`casos`, `blog`, `articles`,
+`posts`, `news`) makes the path stem N/A.
 
 ### 8 — Answer near the top · 8.8
 
@@ -246,6 +248,7 @@ believe them.
 **Means:** long enough to contain an answer. Not "longer is better" — there is no
 threshold and padding scores nothing.
 **Check:** unscored by design. Report the effective word count for context.
+**Keyless:** reported, not scored. It is not one of the 11 direct factors.
 **Do not** turn this into a length target. Lily Ray, commenting on arXiv 2605.25517:
 *"The sites that try to create as much content as possible eventually get burned,
 including very big brands."*
@@ -298,8 +301,12 @@ specificity or answer position. That is the number; it is a judgement, not a mea
 
 **Check:** informational only. This audit does **not** award or withhold points for
 schema, because the evidence does not support a GEO claim either way.
+**Keyless:** reported, not scored.
 **Explicit non-recommendation:** do not tell anyone to add **FAQPage** as a GEO tactic.
-Google stopped showing FAQ rich results for most sites (`r/AskMarketing`, 2026-09-29).
+Google stopped showing FAQ rich results for most sites
+([r/AskMarketing, 2026-09-29](https://www.reddit.com/r/AskMarketing/comments/1wt41hp/guys_have_you_used_any_ai_seo_tools_for_aeogeo/)).
+Google's own post limited those rich results to government and health sites
+(<https://developers.google.com/search/blog/2023/08/howto-faq-changes>).
 Schema earns its place for rich results and entity clarity — do it for those reasons,
 which are real, and do not bill it as a GEO lever, which is not.
 
@@ -333,8 +340,16 @@ discovery, not adoption."* Retrieval is not parsing, indexing, ranking or use.
 
 ## Coverage statement
 
-A keyless run of this audit scores **13 of 23** factors directly and **5** partially, on the
-`Keyless?` column above (13 yes + 5 partial + 4 no + llms.txt unscored = 23).
+A keyless run of this audit scores **11 of 23** factors directly and **5** partially.
+Two more are visible but **not scored** (length, structured data). Four are not
+measurable. `llms.txt` is unscored. 11 + 5 + 2 + 4 + 1 = 23.
+
+**Direct (11):** URL accessibility, preview control, answer near the top, AI-ready
+structure, factually specific, cites sources, self-contained passages, content
+visibility, freshness, language, entity consistency.
+
+**Partial (5):** query-answer match, intent-format match, topic cluster ranking,
+explicit phrasing, brand / entity trust.
 
 **Not measurable keylessly (4):** search rank (9.4), fan-out rank (9.3), known source (5.4) and
 domain authority (5.0). A **5th**, brand / entity trust (6.8), is measurable on-page only — the

@@ -46,6 +46,9 @@ jobs:
       - name: Gate 1 -- skill inventory and spec conformance
         run: python tests/validate_skill_inventory.py --strict
 
+      - name: Gate 1b -- freshness classifier matches its examples
+        run: python -m unittest tests.test_freshness_examples -v
+
       # ---------------------------------------------------------------------------------
       # Gate 2 has TWO thresholds, and which one blocks is the whole design.
       #

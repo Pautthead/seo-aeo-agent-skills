@@ -10,7 +10,7 @@
 | Where gain lives | Bernard Huang (ex-Clearscope) | 2026 | Practitioner assertion, not measured |
 | Score distribution | On-Page.ai, Eric Lancheres, 2026-06-12, `https://api.on-page.ai/research/information-gain-study` | 2026-06-12 | ⚠️ **Vendor research** — On-Page.ai sells a scoring product and this is their own metric. 150 pages, 50 keywords, 10 verticals, US/English |
 | Google has not confirmed it | Ahrefs, explicit | 2026-08-20 | Direct statement |
-| Practitioner dissent | r/SEO | 2026-01-26 | Anecdotal |
+| Practitioner dissent | [r/SEO, 2026-01-26](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/) | 2026-01-26 | Anecdotal |
 
 ---
 
@@ -219,7 +219,7 @@ from 76% in July 2025. That sits awkwardly against Shepard's 9.4. Treat the
 - arXiv 2605.25517, competitive GEO controlled experiment — `https://arxiv.org/abs/2605.25517` — 2026-05-25, 252,000 trials
 - Jochen Madler (Sitefire), "SlopShape: Identifying AI-Generated Commercial Web Content" — `https://arxiv.org/abs/2609.15369` — 2026-09-14, v3 2026-09-28 — 97.0 macro-F1 on held-out companies, 176 structural features of a 203-feature instrument
 - Jeremy Moser (uSERP) via Digiday — 2026-03-10
-- Practitioner dissent, r/SEO — 2026-01-26
+- Practitioner dissent, [r/SEO, 2026-01-26](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/)
 
 Caveats, dissent, and the mandatory disclosure block: **[HONESTY.md](HONESTY.md)**.
 Rubric and thresholds: **[SCORING.md](SCORING.md)**.

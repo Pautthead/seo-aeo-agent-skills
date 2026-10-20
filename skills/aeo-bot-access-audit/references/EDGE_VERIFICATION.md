@@ -154,17 +154,22 @@ Produces the bot matrix for the report in one pass.
 BASE="https://example.com"
 PAGES="/ /pricing /blog/how-we-price"
 
+# Citation and user-requested tokens from CRAWLERS.md (classes R, S, U, G).
+# Not the training-only list. Keep this array and the PowerShell table in step.
 declare -A UA=(
   [Claude-SearchBot]='Claude-SearchBot'
   [Claude-User]='Claude-User'
+  [claude-code]='claude-code'
   [OAI-SearchBot]='OAI-SearchBot'
   [ChatGPT-User]='ChatGPT-User'
   [Googlebot]='Googlebot'
   [Google-Agent]='Google-Agent'
   [Bingbot]='bingbot'
   [PerplexityBot]='PerplexityBot'
+  [Perplexity-User]='Perplexity-User'
   [YouBot]='YouBot'
   [DuckAssistBot]='DuckAssistBot'
+  [MistralAI-User]='MistralAI-User'
 )
 
 printf '%-18s %-24s %-6s %-24s %-10s\n' BOT PAGE CODE TYPE BYTES
@@ -181,12 +186,23 @@ done | sort
 PowerShell equivalent:
 
 ```powershell
+# Same citation / user-requested tokens as the bash array above.
+$BASE = 'https://example.com'
+$PAGES = '/', '/pricing', '/blog/how-we-price'
 $UA = @{
   'Claude-SearchBot' = 'Claude-SearchBot'
+  'Claude-User'      = 'Claude-User'
+  'claude-code'      = 'claude-code'
   'OAI-SearchBot'    = 'OAI-SearchBot'
+  'ChatGPT-User'     = 'ChatGPT-User'
   'Googlebot'        = 'Googlebot'
+  'Google-Agent'     = 'Google-Agent'
   'Bingbot'          = 'bingbot'
   'PerplexityBot'    = 'PerplexityBot'
+  'Perplexity-User'  = 'Perplexity-User'
+  'YouBot'           = 'YouBot'
+  'DuckAssistBot'    = 'DuckAssistBot'
+  'MistralAI-User'   = 'MistralAI-User'
 }
 foreach ($bot in $UA.Keys) {
   foreach ($p in $PAGES) {
@@ -205,8 +221,8 @@ foreach ($bot in $UA.Keys) {
 | Code | What it means here | Severity | Diagnosis |
 |---|---|---|---|
 | **200** | Page served | — | **Not sufficient on its own.** Check `content-type` and body size. A 200 carrying a challenge page or a login wall is a fail. |
-| **301 / 302 / 307 / 308** | Redirect | ⚠️ | Normal between `http`/`www`/canonical host. **Follow the chain** (`-L`) and check it terminates in 200 within 3 hops. A loop, or a redirect to a login page, is a fail. |
-| **303 / 307** | Method redirect | ⚠️ | Rare for crawlers. Investigate if seen. |
+| **301 / 302 / 307 / 308** | Redirect | ⚠️ | Normal between `http`/`www`/canonical host. **Follow the chain** (`-L`) and check it terminates in 200 within 3 hops. A loop, or a redirect to a login page, is a fail. 307 keeps the method; it is still this row, not a second one. |
+| **303** | See Other | ⚠️ | Method changes to GET. Rare for crawlers. Investigate if seen. |
 | **401** | HTTP authentication required | **CRITICAL** | Whole site behind Basic auth, or a mis-scoped path. Bots get nothing. Common on staging that was accidentally left on. |
 | **403** | Forbidden | **CRITICAL** | WAF rule, hotlink/geo rule, or an explicit block. If the browser UA gets 200 from the same IP, the block is user-agent- or bot-score-based, not network-based. |
 | **429** | Too many requests | **CRITICAL** | Rate rule or bot score. A crawler that receives 429 will back off and reduce its crawl rate. Effectively a de-listing. |
@@ -236,24 +252,35 @@ curl -sS \
   https://example.com/pricing | grep -iE 'just a moment|challenges\.cloudflare\.com|cf-browser-verification|cf_chl_|Enable JavaScript and cookies'
 ```
 
-**Detection — check size:** a challenged response is typically well under 20 KB, while a real page is usually larger. Compare against the browser-UA byte count from §1.
+**Detection — check size against the browser, not against 20 KB.** A challenged interstitial is often smaller than the real page, but a static page of 11–18 KB that matches the browser byte-for-byte is a real page. Compare to the browser-UA count from §1. **SUSPECT** only when the bot body is under 90% of that baseline. Within 10% is **PASS**, including pages under 20 KB.
 
-**One-liner that classifies every case:**
+**Classifier:**
 
 ```bash
 check() {
   hdr=$(curl -sS -o /tmp/body -D - -A "$2" "$1")
-  code=$(printf '%s' "$hdr" | head -1 | awk '{print $2}')
+  code=$(printf '%s' "$hdr" | head -n 1 | awk '{print $2}')
   mit=$(printf '%s' "$hdr" | grep -i '^cf-mitigated' | tr -d '\r')
-  bytes=$(wc -c < /tmp/body)
-  if printf '%s' "$mit" | grep -qi challenge; then verdict="FAIL — Cloudflare interstitial"
-  elif grep -qiE 'just a moment|challenges\.cloudflare\.com|cf_chl_' /tmp/body; then verdict="FAIL — interstitial in body"
-  elif [ "$code" = "200" ] && [ "$bytes" -lt 20000 ]; then verdict="SUSPECT — 200 but small, inspect body"
-  elif [ "$code" = "200" ]; then verdict="PASS"
-  else verdict="FAIL — HTTP $code"; fi
+  bytes=$(wc -c < /tmp/body | tr -d '[:space:]')
+  base=${3:-0}
+  floor=$(( base * 90 / 100 ))
+  if printf '%s' "$mit" | grep -qi challenge; then
+    verdict="FAIL — Cloudflare interstitial"
+  elif grep -qiE 'just a moment|challenges\.cloudflare\.com|cf_chl_' /tmp/body; then
+    verdict="FAIL — interstitial in body"
+  elif [ "$code" != "200" ]; then
+    verdict="FAIL — HTTP $code"
+  elif [ "$base" -gt 0 ] && [ "$bytes" -lt "$floor" ]; then
+    verdict="SUSPECT — bot body under 90% of browser baseline (${base} bytes)"
+  else
+    verdict="PASS"
+  fi
   printf '%-60s %-9s %-9s %s\n' "$1" "$code" "$bytes" "$verdict"
 }
-check https://example.com/pricing 'Claude-SearchBot'
+base=$(curl -sS -o /dev/null -w '%{size_download}' \
+  -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0 Safari/537.36' \
+  https://example.com/pricing)
+check https://example.com/pricing 'Claude-SearchBot' "$base"
 ```
 
 ### Interstitial vs genuine 403
@@ -263,7 +290,7 @@ check https://example.com/pricing 'Claude-SearchBot'
 | Status | `403` | `403` **or `200`** |
 | `cf-mitigated` | absent | `challenge` |
 | `server` | origin (`nginx`, `Apache`, …) | `cloudflare` |
-| `cf-ray` | absent | present |
+| `cf-ray` | present — every Cloudflare response, including a genuine 403. Not a discriminator | present |
 | Body markers | none of the Cloudflare markers | `Just a moment`, `challenges.cloudflare.com`, `cf_chl_*` |
 | Body size | origin error page, usually small | 10–20 KB, mostly script |
 | Fix | remove the WAF rule | remove the challenge: Bot Management override, or a `Skip` for the security products on the rule carrying the retrieval UAs |
@@ -312,7 +339,9 @@ curl -sS -o /dev/null -w '%{http_code}\n' \
   https://example.com/pricing
 ```
 
-Free options if you have no second network: any cloud shell, a second network interface, a phone hotspot. All of them are residential or mobile except the cloud shell — the cloud shell is the more representative test, because that is where crawlers come from.
+**Single-vantage mode.** If you have only one network, still run the matrix and label the report `vantage: single`. Name the exit path. A box that leaves through Cloudflare WARP is on the edge vendor's own network, so a clean 200 from there is weaker evidence than a clean 200 from a datacenter IP, and a block from there may be WARP-specific. Do not report the edge result as definitive. Say what you could not see.
+
+Free options when you can get a second network: any cloud shell, a second network interface, a phone hotspot. All of them are residential or mobile except the cloud shell — the cloud shell is the more representative test, because that is where crawlers come from.
 
 **Ground truth, if you have it — and it is free:**
 
@@ -337,6 +366,6 @@ Never report "open" or "blocked" from a single-network curl without stating whic
 
 ## Pass condition
 
-> Every citation-class bot, on every audited URL, returns **HTTP 200**, with a `text/html` body whose size is within ~10% of the browser-UA baseline, **no** `cf-mitigated: challenge`, **no** interstitial markers in the body, and no asset references under a robots-disallowed prefix — confirmed from at least two networks, or from two networks plus origin logs.
+> Every citation-class bot, on every audited URL, returns **HTTP 200**, with a `text/html` body whose size is within ~10% of the browser-UA baseline, **no** `cf-mitigated: challenge`, **no** interstitial markers in the body, and no asset references under a robots-disallowed prefix — confirmed from at least two networks, or from two networks plus origin logs. A single-vantage run states `vantage: single` and does not call the edge result definitive. An absolute body size under 20 KB is not, by itself, a fail.
 
 Any single failure is a CRITICAL finding. Do not average it away.

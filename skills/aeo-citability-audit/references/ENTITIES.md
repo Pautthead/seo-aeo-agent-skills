@@ -53,13 +53,20 @@ win, and never cite the field test as if it were a measurement.
 The seventh-highest factor, and one of the few high-scoring factors that is
 structurally in reach.
 
-**Rule.** **PASS** if, within the internal link graph reachable from the audited page:
+**Rule.** A generic first path segment — `casos`, `blog`, `articles`, `posts`,
+`news` — makes the path-stem derivation **N/A**. A flat site such as `/casos/*`
+does not pass E-02 because every URL shares `casos`.
 
-- ≥3 **outbound** links to pages sharing the page's topic stem, **and**
-- ≥1 **inbound** link from a sibling page on that same stem.
+**PASS** only when both of these hold:
 
-**Topic stem derivation — language-agnostic.** Two acceptable derivations, both valid,
-pick one and state which:
+- ≥3 **outbound** links whose slug or anchor shares a non-stopword token with the
+  `h1` (stopwords are the lists in [EXTRACTABILITY.md](EXTRACTABILITY.md), X-08), and
+- ≥1 **inbound** link from a sibling page that meets the same token test.
+
+Otherwise **N/A**, not a pass. State which derivation you used.
+
+**Topic stem derivation — language-agnostic, when the first segment is not generic.**
+Two acceptable derivations, both valid, pick one and state which:
 
 1. **URL-path derived** (recommended, works identically in every language): the
    directory segments of the audited URL. `/blog/magnesium-glycinate/dosage/` and
@@ -92,18 +99,23 @@ available signal you can build that tells a model what your site is authoritativ
 
 ## E-03 — Trust surface · Shepard 6.8
 
-**Rule.** **PASS** if all three are present:
+**Rule.** Three parts. Say which part is a measurement and which is a judgement.
 
-1. A **named author** with a credential or bio — a person's name and either a role,
-   a qualification, or a linked author page.
-2. An **About path reachable** from the audited page within one click, returning 200.
-3. `Organization` or `Person` markup whose `name` matches the visible byline (E-01's
-   consistency rule, applied here).
+1. A **visible person name** in `author` meta, JSON-LD `author.name`, or a byline in
+   the main content (including an `<article>` footer). **Deterministic.**
+2. An **About path** reachable from the audited page within one click, returning 200.
+   **Deterministic.**
+3. `Organization` or `Person` markup whose `name` matches the visible byline.
+   **Deterministic** as a string compare.
+
+A **credential** counts only when `jobTitle` (or an equivalent schema role) is
+present. Inferring a credential from prose is a **labelled judgement**. Do not pass
+the credential half on that inference alone.
 
 **Partial:** all three present = pass; two = report as fail with the missing item
 named; one or zero = fail.
 
-**Language-agnostic.** This is element and link counting plus a name comparison.
+**Language-agnostic** for the string and link counts.
 
 **Where this stops.** 6.8 is a middling score and it should stay middling. Shepard's
 factor is about recognisable, attributable authorship — not about fame. Authority

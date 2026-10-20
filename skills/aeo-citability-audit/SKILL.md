@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Network access optional — accepts pasted HTML when offline. No API keys, no MCP, no dependencies.
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.4"
+  version: "1.1.0"
   updated: "2026-10-20"
   keys-required: "none"
 ---
@@ -60,8 +60,8 @@ survives being *cut out* of its page and *pasted* into someone else's answer.
 
 | Input | Required | Notes |
 |---|---|---|
-| Page URL or raw HTML | yes | Raw HTML is preferred — it is the only way to test server-side rendering |
-| Target query / question the page should be cited for | recommended | Enables the fact-coverage check; without it that check is N/A |
+| Page URL or raw HTML | yes | Raw HTML is preferred. X-02 needs **both** the raw response and a rendered snapshot; with only one of them, X-02 is **N/A** |
+| Target query | recommended | Ladder in [EXTRACTABILITY.md](references/EXTRACTABILITY.md) X-01. Record the rung. A rung-3 fail is query selection, not a page fail |
 | Facts cited pages agree on (a short list) | optional | If absent, check W-02 is N/A, not a failure |
 | Language of the page | auto-detected | Override if wrong; changes word-count calibration |
 | Rank data (position, SERP) | optional upgrade | Unlocks the two highest-scoring factors. Never required |
@@ -86,8 +86,7 @@ headers, final URL after redirects, and the fetch timestamp.
 - **Check:** raw HTML is stored in full, headers included.
 - **Pass:** you can answer "was this text in the initial response?" from the
   snapshot alone, without executing JavaScript.
-- **Fail:** you fetched only the rendered DOM. Continue, but mark every server-render
-  check as *unverifiable* rather than passing it.
+- **Fail:** you have only one snapshot. Continue. Mark X-02 **N/A** (`no-raw-snapshot` or `no-rendered-snapshot`). Do not pass it and do not fail it.
 
 If the fetch returns a 4xx/5xx, a JS wall, or an interstitial, **stop and report
 the failure**. Do not score a page you did not receive.
@@ -101,7 +100,8 @@ order.
 
 - **Check:** block count, and the character offset of each block.
 - **Pass:** every visible sentence in the main content region belongs to exactly one
-  block.
+  block. Main content is defined in [EXTRACTABILITY.md](references/EXTRACTABILITY.md):
+  first `article`, else `main`, else `body`. Keep a footer inside `article` or `main`.
 - **Explicitly handle `<dl>/<dd>`**: each `<dd>` is its own block, each `<dt>` is its
   own block. FAQ answers in definition lists are the single most common place a page
   hides its answer, and they are invisible to naive splitters that only split on
@@ -241,7 +241,8 @@ TOP 3 FIXES (ordered by Shepard score, not by points lost)
 3. ...
 
 FACTOR COVERAGE
-Scored keylessly: <n> of 23 Shepard factors (13 direct, 5 partial)
+Scored keylessly: 11 of 23 Shepard factors directly, 5 partially.
+Reported, not scored: length (6.7) and structured data (5.6).
 Not measurable keylessly: search rank (9.4), fan-out rank (9.3), domain
 authority (5.0), known-source recognition (5.4); brand/entity trust (6.8) is
 partial — the on-page authorship half scores, the off-site half does not.
@@ -278,11 +279,7 @@ judgement calls. The rules are in Step 2; the thresholds are in the reference fi
   Band labels are a communication convenience, not a measured threshold. Labelled
   as such.
 
-**Formatting-only edits do not earn points.** arXiv 2605.25517 (252,000 trials,
-6 LLMs, two-source injected RAG, 2026-05-25) found formatting-only edits had little
-impact; topical relevance and list position dominate. So the band moves when the
-page's *substance* and *position* move — not when you re-wrap it. An agent that
-reports a score jump from CSS reflow has made an error.
+**Formatting-only edits do not earn points.** arXiv 2605.25517 (2026-05-25, 252,000 trials) found them close to inert. An agent that reports a score jump from CSS reflow has made an error.
 
 **Determinism is the point.** The numbers come from the rules in Step 2. Prose,
 rewrites and recommendations come from the model. Do not let the model adjust a
@@ -292,11 +289,9 @@ number it does not like.
 
 1. **It cannot see ranking.** The #2 and #3 factors (9.4, 9.3) are outside scope
    keylessly. See [references/LIMITS.md](references/LIMITS.md).
-2. **It cannot predict citation.** Outputs are not reproducible: run the same
-   prompt 10 times, get different outputs (`r/DigitalMarketing`, 2026-04-17). This
-   audit measures page readiness, never outcome.
-3. **It cannot see AI-platform data.** GSC is ~75% incomplete for AI features; 91.07% of
-   cited URLs appear in exactly one of ChatGPT, Perplexity and Google AI Overviews.
+2. **It cannot predict citation.** See the 91.07% single-engine figure in
+   [LIMITS.md](references/LIMITS.md). This audit measures readiness, never outcome.
+3. **It cannot see AI-platform data.** GSC is ~75% incomplete for AI features.
 4. **Lexical checks are N/A outside 7 languages.** X-05, W-03, W-06.
 5. **Word counts are means, not measurements.** ±15% (Step 3).
 6. **It reads one page.** Not the cluster, internal links, or off-site profile — where,
@@ -309,7 +304,7 @@ Full ceiling: [LIMITS.md](references/LIMITS.md).
 
 | Source | Unlocks | Keyless fallback |
 |---|---|---|
-| DataForSEO Labs `historical_rank_overview/live` ($0.12/task + $0.0012/item; DB refresh 30–90 days — not real-time) | Search rank (9.4), fan-out rank (9.3) | Report them as "not measured"; do not estimate |
+| DataForSEO Labs `historical_rank_overview/live` ($0.12/task + $0.0012/item, the 10× Labs exception; SERP live advanced is $0.002/task; DB refresh 30–90 days) | Search rank (9.4), fan-out rank (9.3) | Report them as "not measured"; do not estimate |
 | Google Search Console | Which queries surface the page at all | None needed — the audit completes without it |
 | Operator-supplied fact list | W-02 | Ask the operator, or mark N/A |
 | Server log / crawler data | Whether bots fetched the page | None — never block on this |
@@ -330,20 +325,17 @@ contradicts them. Google, in its docs:
 > itself doesn't use them."*
 > — [Google Search Central](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
 
-**The nuance worth shipping:** the file **is** fetched. Ahrefs: *"AI agents, and the
-infrastructure built to serve them, drive 10.5% of llms.txt requests — more than any other
-type of AI bot"* — though **77% of the bots fetching it are not AI tools**. Announced in
-robots.txt, crawlers fetch it (Hall, Zenodo `10.5281/zenodo.23128812`: 1,549 fetches / 165
-site-days; ten un-referenced siblings got zero across 60 file-months) — **"discovery, not
-adoption."** Mueller, on Google's markdown dev-docs mirrors, called it *"a temporary crutch,
-perhaps to save some tokens"*. Shepard scores it **2.0/10**, lowest of 23. Ship it in an hour at most; budget **zero** on it.
+**The nuance:** the file is fetched. Ahrefs: AI agents are 10.5% of `llms.txt` requests, and 77% of the bots fetching it are not AI tools. Hall (Zenodo `10.5281/zenodo.23128812`): 1,549 fetches / 165 site-days when announced; ten un-referenced siblings got zero — discovery, not adoption. Shepard scores it 2.0/10. Budget zero.
 
 **(b) FAQPage schema is not a GEO lever.** Shepard scores structured data 5.6/10 and
 notes *"LLMs don't typically ingest schema as part of their training"* with *"limited
 evidence they can at least see schema when searching."* Google stopped showing FAQ rich
-results for most sites a while back (`r/AskMarketing`, 2026-09-29). Several 2026 skills
-still auto-recommend adding FAQPage. Do not repeat it. Schema earns its place for rich
-results and entity clarity — not for GEO.
+results for most sites a while back
+([r/AskMarketing, 2026-09-29](https://www.reddit.com/r/AskMarketing/comments/1wt41hp/guys_have_you_used_any_ai_seo_tools_for_aeogeo/)).
+Google limited FAQ rich results to government and health sites in 2023
+(<https://developers.google.com/search/blog/2023/08/howto-faq-changes>).
+Several 2026 skills still auto-recommend adding FAQPage. Do not repeat it. Schema
+earns its place for rich results and entity clarity — not for GEO.
 
 **(c) Never automate Reddit posting.** Reddit removed **all four subreddit communities
 OtterlyAI built for its own 60-day GEO experiment**, for a breach of **Rule 2 of Reddit's

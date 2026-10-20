@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires network access to the audited origin only. No API keys, no MCP servers, no paid accounts. Requires curl (or an equivalent HTTP client).
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.4"
+  version: "1.1.0"
   updated: "2026-10-20"
   keys-required: "none"
 ---
@@ -126,11 +126,15 @@ Batch form and per-token strings, response-code meanings, and the Cloudflare int
 
 **Pass condition:** for every citation-class bot, every target URL returns `200` with a `text/html` body, and **no** `cf-mitigated: challenge`, no `cf_chl_*` cookie requirement, and no login/interstitial page.
 
-### Step 5 — Confirm sitemap discovery
+### Step 5 — Confirm sitemap discovery and the canonical scheme
 
-**Check:** the `Sitemap:` directive in robots.txt resolves and returns `200 application/xml`, and the target URLs appear in it.
+**Check:**
 
-**Pass condition:** sitemap fetches 200 and contains the audited URLs.
+1. The `Sitemap:` URL in robots.txt resolves, returns `200` with an XML body, and the audited URLs appear in it.
+2. A conventional `/sitemap.xml` that returns **404** while the **declared** sitemap returns 200 is **ADVISORY**, not rule 7. Recommend a 301 from `/sitemap.xml` to the declared file. Rule 7's −10 applies only when there is no absolute `Sitemap:` or the declared sitemap itself does not resolve.
+3. `http://` → `https://` on the same host. If the client cannot open port 80 — the request times out, and a control host such as `example.com` also times out — report **NOT SCORED**. A timeout you could not distinguish from a blocked port is not a fail.
+
+**Pass condition:** the declared sitemap fetches 200 and contains the audited URLs. http→https is scored only when port 80 answered.
 
 This is the one discovery mechanism with measured evidence behind it. Nathan Hall (Zenodo, 2026-09-17, v1.2 2026-10-03, `https://doi.org/10.5281/zenodo.23128812`) found an `/ai/llms.txt` announced via `Sitemap:` in robots.txt drew **1,549 fetches across 165 site-days** (ClaudeBot = 1,131), while ten un-referenced files in the same directory drew **zero requests across 60 file-months**. Note the author's own caveat: *"Tell a crawler where a file is and it fetches the file. That is discovery, not adoption."* A fetch is not a citation, and it is not evidence the file was parsed, indexed, or used in an answer. Announcing a file in robots.txt is worth doing because it costs one line — budget zero against it.
 
@@ -174,6 +178,7 @@ Verify: <the command that proves the fix, and the pass condition>
 
 ## Sitemap discovery
 robots.txt `Sitemap:` → <url> → <status>. Target URLs present: <n>/<n>.
+`/sitemap.xml` (conventional path, only if it differs): <status or not checked>. http→https: <200 | NOT SCORED — port 80 unreachable>.
 
 ## Preview control
 nosnippet: <yes/no, where>. Effect: <one line>.
@@ -201,10 +206,15 @@ Deterministic. 100 points. Every rule is a pass/fail check, not a judgement.
 | 6 | `nosnippet` / `data-nosnippet` present on pages the owner wants cited | **−10, MAJOR** |
 | 7 | No absolute `Sitemap:` in robots.txt, or sitemap does not resolve | **−10, MAJOR** |
 | 8 | Edge behaviour differs from robots.txt intent (challenge rule masking an allow) | **−15, MAJOR** |
-| 9 | No `Crawl-delay` above 10 on a citation-class bot | −0 (advisory only) |
+| 9 | `Crawl-delay` above 10 on a citation-class bot | **−0, ADVISORY, once for the file** — not once per bot |
 | 10 | Training crawlers allowed (`GPTBot`, `ClaudeBot`, `CCBot`, …) | **−0, ADVISORY only** |
+| 11 | A training token is explicitly allowed and its retrieval token has **no group** (`ClaudeBot` allowed, `Claude-SearchBot` absent; same pair for `GPTBot` / `OAI-SearchBot`) | **−5 once per vendor, MINOR** |
 
 Bands: **90–100 OPEN** · 70–89 RESTRICTED · below 70 BLOCKED (or BLOCKED outright if any CRITICAL fired).
+
+Rule 9 fires once. Five citation bots each carrying `Crawl-delay: 20` is still one advisory, not five.
+
+Rule 11 fires once per vendor. `Claude-User` missing beside a missing `Claude-SearchBot` is the same Anthropic pair: do not deduct a second −5. A site that allows `ClaudeBot` and never names `Claude-SearchBot` scores **95/100, OPEN**, not 100. That 95 is this rule applied to that fact. It is not a measurement of citations.
 
 ### Rule 10 is scored zero on purpose
 
@@ -215,7 +225,7 @@ Bands: **90–100 OPEN** · 70–89 RESTRICTED · below 70 BLOCKED (or BLOCKED o
 State these in every report. They are not hedges; they are the boundary of what the technique can see.
 
 1. **A fetch succeeding from your laptop is not a fetch succeeding from the origin's perspective.** IP reputation, ASN, geolocation, and rate-based rules change what a bot receives. A `200` from a residential IP is evidence, not proof. Server logs are the only ground truth.
-2. **This cannot see WAF rules that respond differently to a specific IP reputation.** Bot-Management scores, challenge thresholds and allowlists keyed to ASN or IP are invisible to `curl` from one vantage point. Repeat from a second network (a different ASN, ideally a datacenter IP, which is what real crawlers use) before reporting an edge block as definitive.
+2. **This cannot see WAF rules that respond differently to a specific IP reputation.** Bot-Management scores, challenge thresholds and allowlists keyed to ASN or IP are invisible to `curl` from one vantage point. Repeat from a second network (a different ASN, ideally a datacenter IP, which is what real crawlers use) before reporting an edge block as definitive. **Single-vantage mode** is allowed when you have only one network: label the report `vantage: single`, name the network (a box exiting through Cloudflare WARP is the edge's own network, so the bias is likely), and do not call the edge result definitive.
 3. **This cannot measure citation impact — only access.** Nothing here predicts whether an AI answer will cite the page. **91.07% of cited URLs appeared in exactly one of ChatGPT, Perplexity and Google AI Overviews** for the same prompt (Kevin Indig, "The Consensus Gap," Growth Memo, 2026-05-11; 20,000 prompts, 3.7M URL citations — vendor research on Omnia's own tracking data, which Indig states is skewed toward Omnia's customer base). It is a three-engine overlap figure, not a general claim about "platforms". Google Search Console is also ~75% incomplete for AI features with no separate AI Mode data. Access is necessary and not sufficient.
 4. **It cannot distinguish a WAF challenge from a deliberate deny in every vendor's implementation.** Detection rules for the common vendors are in `references/EDGE_VERIFICATION.md`, but a custom error page can mimic either.
 5. **robots.txt is advisory by specification.** Bots that ignore it will ignore an allow too. Passing this audit does not guarantee a compliant crawler fetches anything.
