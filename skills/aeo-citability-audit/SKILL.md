@@ -1,12 +1,12 @@
 ---
 name: aeo-citability-audit
-description: "Score a page for AI citability - how it fares when extracted and cited, not just ranked. Audits a URL or HTML against 23 measured AEO factors (Shepard 2026) plus extractability and citation-worthiness checks. Use for GEO/AEO audits, AI Overview checks, 'why isn't ChatGPT citing us'. Keyless."
+description: "Score a page for AI citability - how it fares when extracted and cited, not just ranked. Audits a URL or HTML against 23 hand-scored AEO factors (Shepard 2026, correlation not measurement) plus extractability checks. Use for GEO/AEO audits, AI Overview checks, 'why isn't ChatGPT citing us'. Keyless."
 license: Apache-2.0
 compatibility: Network access optional — accepts pasted HTML when offline. No API keys, no MCP, no dependencies.
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.0"
-  updated: "2026-10-19"
+  version: "1.0.3"
+  updated: "2026-10-20"
   keys-required: "none"
 ---
 
@@ -14,12 +14,11 @@ metadata:
 
 > **Evidence:** METHODOLOGY-BRIEF §1.1 (23 Shepard / Zyppy factors, 2026-05-07, 54 experiments);
 > §1.2 (arXiv 2605.25517, 2026-05-25 — price and recent timestamp help, formatting-only edits do
-> not); §1.8 (Jeremy Moser via Digiday, 2026-03-10 — "80 percent of GEO is good, fundamental
-> SEO"); §1.4 (six independent 2026 `llms.txt` measurements plus Google's first-party
-> documentation); §1.9 (**no reliable public source gives a specific citation-lift window**);
-> §1.10 (GeoTest Citation Worthiness 34/100; Muck Rack 25M+ cited links); §1.12 (Ahrefs
-> 2026-03 — contested, direction only). Research window September–October 2026. Type: audit.
-> Multilingual: language-agnostic checks with a per-language calibration table.
+> not); §1.8 (Jeremy Moser via Digiday, 2026-03-10); §1.4 (six 2026 `llms.txt` studies plus
+> Google's first-party documentation); §1.9 (**no reliable public source gives a specific
+> citation-lift window**); §1.10 (GeoTest Citation Worthiness 34/100; Muck Rack 25M+ cited links);
+> §1.12 (Ahrefs 2026-03 — contested, direction only). Research window September–October 2026.
+> Type: audit. Multilingual: language-agnostic checks with a per-language calibration table.
 
 Scores a single page for **a second consumption mode**: being extracted, quoted and
 attributed inside a synthesized answer. It deliberately reuses ordinary SEO checks
@@ -32,8 +31,8 @@ GEO as a separate, purchasable thing.
 > are selling you snake oil."
 > — Jeremy Moser (uSERP) via Digiday, 2026-03-10
 
-So: **~80% of this audit is a normal on-page SEO audit** and the score will say so.
-The differentiator is the remaining checks — answer position, self-containment,
+So **~80% of this audit is a normal on-page SEO audit**, and the score says so.
+The differentiator is the rest — answer position, self-containment,
 server-rendered visibility, sourced-fact density — which ask whether a page
 survives being *cut out* of its page and *pasted* into someone else's answer.
 
@@ -48,14 +47,12 @@ survives being *cut out* of its page and *pasted* into someone else's answer.
 ## When not to use this
 
 - **Ranking diagnosis.** If the page does not rank, fix that first. Search rank is
-  Shepard's #2 factor at 9.4/10 and it is not an on-page property. This skill
-  cannot see it. Use a rank/rank-gap skill.
-- **Off-site authority.** Earned media is 84% of AI citations (Muck Rack, 25M+
-  cited links) versus 0.3% paid. This skill audits one page. It cannot audit your
-  digital PR.
-- **Post-launch measurement.** This skill measures readiness, not outcomes. Outcomes
-  are non-reproducible; see [references/LIMITS.md](references/LIMITS.md).
-- **Any page you have not permission to fetch.** Respect robots and terms.
+  Shepard's #2 factor (9.4/10) and not an on-page property. Use a rank-gap skill.
+- **Off-site authority.** Earned media is 84% of AI citations (Muck Rack, 25M+ cited
+  links) versus 0.3% paid. This audits one page, not your digital PR.
+- **Post-launch measurement.** Measures readiness, not outcomes; see
+  [references/LIMITS.md](references/LIMITS.md).
+- **Any page you have no permission to fetch.** Respect robots and terms.
 
 ## Inputs
 
@@ -139,12 +136,12 @@ see the multilingual rules in Step 3 and in
 
 | ID | Check | Source |
 |---|---|---|
-| W-01 | ≥2 externally attributable facts per 1,000 effective words (number, date, named person/study) | GeoTest 2026-06 |
-| W-02 | Covers the facts cited pages agree on (N/A if no fact list supplied) | GeoTest 2026-06 |
-| W-03 | ≥1 attributed quotation with a named speaker **and** a source | GeoTest 2026-06 |
-| W-04 | ≥3 outbound citations to URLs outside the page's own registrable domain | GeoTest 2026-06 |
-| W-05 | ≥1 comparison table (≥2 rows × ≥2 columns) | GeoTest 2026-06 |
-| W-06 | ≥1 quotable definition: definitional marker + ≤40 words | GeoTest 2026-06 |
+| W-01 | ≥2 externally attributable facts per 1,000 effective words (number, date, named person/study) | [GeoTest GEO Score v6.0](https://geotest.ai/geo-score), 2026-09-10 |
+| W-02 | Covers the facts cited pages agree on (N/A if no fact list supplied) | [GeoTest GEO Score v6.0](https://geotest.ai/geo-score), 2026-09-10 |
+| W-03 | ≥1 attributed quotation with a named speaker **and** a source | [GeoTest GEO Score v6.0](https://geotest.ai/geo-score), 2026-09-10 |
+| W-04 | ≥3 outbound citations to URLs outside the page's own registrable domain | [GeoTest GEO Score v6.0](https://geotest.ai/geo-score), 2026-09-10 |
+| W-05 | ≥1 comparison table (≥2 rows × ≥2 columns) | [GeoTest GEO Score v6.0](https://geotest.ai/geo-score), 2026-09-10 |
+| W-06 | ≥1 quotable definition: definitional marker + ≤40 words | [GeoTest GEO Score v6.0](https://geotest.ai/geo-score), 2026-09-10 |
 | W-07 | A visible price **and** a visible date, both on the page | arXiv 2605.25517 |
 
 **Entity & page integrity — 5 checks, 25 pts** ([references/ENTITIES.md](references/ENTITIES.md))
@@ -298,16 +295,15 @@ number it does not like.
 2. **It cannot predict citation.** Outputs are not reproducible: run the same
    prompt 10 times, get different outputs (`r/DigitalMarketing`, 2026-04-17). This
    audit measures page readiness, never outcome.
-3. **It cannot see AI-platform data.** GSC is ~75% incomplete for AI features, with no
-   separate AI Mode data; 91.07% of cited URLs appear in exactly one of ChatGPT,
-   Perplexity and Google AI Overviews.
+3. **It cannot see AI-platform data.** GSC is ~75% incomplete for AI features; 91.07% of
+   cited URLs appear in exactly one of ChatGPT, Perplexity and Google AI Overviews.
 4. **Lexical checks are N/A outside 7 languages.** X-05, W-03, W-06.
 5. **Word counts are means, not measurements.** ±15% (Step 3).
-6. **It reads one page.** It does not audit the cluster, the internal link graph, or
-   the off-site profile — where, per Muck Rack, most of the answer actually lives.
-7. **W-02 needs a fact list.** Without one it is N/A, and the report must say so.
+6. **It reads one page.** Not the cluster, internal links, or off-site profile — where,
+   per Muck Rack, most of the answer lives.
+7. **W-02 needs a fact list.** Without one it is N/A.
 
-Full ceiling discussion: [references/LIMITS.md](references/LIMITS.md).
+Full ceiling: [LIMITS.md](references/LIMITS.md).
 
 ## Optional data sources
 
@@ -318,42 +314,41 @@ Full ceiling discussion: [references/LIMITS.md](references/LIMITS.md).
 | Operator-supplied fact list | W-02 | Ask the operator, or mark N/A |
 | Server log / crawler data | Whether bots fetched the page | None — never block on this |
 
-Auth note if used: HTTP Basic, credentials from `app.dataforseo.com/api-access`.
+Auth: HTTP Basic, credentials from `app.dataforseo.com/api-access`.
 
 ## Debunked tactics — do not recommend these
 
-**(a) `llms.txt` does not get you cited in AI answers.** Say it that narrowly — six
-independent 2026 measurements are negative or null on citation, and a 15-day origin
-log (Zenodo `10.5281/zenodo.23018429`) recorded **zero** `/llms.txt` requests from any of
-the 22 published crawler tokens. Details: [references/LIMITS.md](references/LIMITS.md) §8.
+**(a) `llms.txt` does not get you cited in AI answers.** Say it that narrowly — six 2026
+studies find no link between the file and more citations or more crawling, and a 15-day
+origin log (Zenodo `10.5281/zenodo.23018429`) recorded **zero** `/llms.txt` requests from
+any of the 22 published crawler tokens. Details: [LIMITS.md](references/LIMITS.md) §8.
 
-**Never say "does not work" or "does nothing."** Those overclaim, and this repo's own
-evidence contradicts them. In Google's own documentation:
-> *"You don't need to create new machine readable files, AI text files, or markup to appear
-> in these features."*
-> — [Google Search Central, "AI features and your website"](https://developers.google.com/search/docs/appearance/ai-features)
+**Never say "does not work" or "does nothing."** Those overclaim, and this repo's evidence
+contradicts them. Google, in its docs:
+> *"You don't need to create new machine readable files, AI text files, markup, or Markdown
+> to appear in Google Search (including its generative AI capabilities), as Google Search
+> itself doesn't use them."*
+> — [Google Search Central](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
 
 **The nuance worth shipping:** the file **is** fetched. Ahrefs: *"AI agents, and the
 infrastructure built to serve them, drive 10.5% of llms.txt requests — more than any other
-type of AI bot"*; announced in robots.txt, crawlers fetch it (Nathan Hall, Zenodo
-`10.5281/zenodo.23128812`: 1,549 fetches across 165 site-days; ten un-referenced siblings
-got zero across 60 file-months). His caveat is the correct reading: **"That is discovery,
-not adoption."** Mueller, on Google's markdown dev-docs mirrors, called it *"a temporary
-crutch, perhaps to save some tokens"*. Shepard scores it **2.0/10**, lowest of 23 factors.
-Ship it in an hour if at all, announce it, and budget **zero** against it.
+type of AI bot"* — though **77% of the bots fetching it are not AI tools**. Announced in
+robots.txt, crawlers fetch it (Hall, Zenodo `10.5281/zenodo.23128812`: 1,549 fetches / 165
+site-days; ten un-referenced siblings got zero across 60 file-months) — **"discovery, not
+adoption."** Mueller, on Google's markdown dev-docs mirrors, called it *"a temporary crutch,
+perhaps to save some tokens"*. Shepard scores it **2.0/10**, lowest of 23. Ship it in an hour at most; budget **zero** on it.
 
 **(b) FAQPage schema is not a GEO lever.** Shepard scores structured data 5.6/10 and
-notes *"LLMs don't typically ingest schema as part of their training"* with
-*"limited evidence they can at least see schema when searching."* Google stopped
-showing FAQ rich results for most sites a while back (`r/AskMarketing`,
-2026-09-29). Several 2026 skills still auto-recommend adding FAQPage. Do not repeat it.
-Schema earns its place for rich results and entity clarity — not for GEO.
+notes *"LLMs don't typically ingest schema as part of their training"* with *"limited
+evidence they can at least see schema when searching."* Google stopped showing FAQ rich
+results for most sites a while back (`r/AskMarketing`, 2026-09-29). Several 2026 skills
+still auto-recommend adding FAQPage. Do not repeat it. Schema earns its place for rich
+results and entity clarity — not for GEO.
 
 **(c) Never automate Reddit posting.** Reddit removed **all four subreddit communities
-OtterlyAI built for its own 60-day GEO engagement experiment**, for a breach of **Rule 2
-of Reddit's Content Policy** — not specifically for upvote automation
-(`https://otterly.ai/blog/reddit-geo-2026/`, a vendor's self-report of its own failed
-experiment). **Measure Reddit. Never post to it.**
+OtterlyAI built for its own 60-day GEO experiment**, for a breach of **Rule 2 of Reddit's
+Content Policy** — not specifically upvote automation (`https://otterly.ai/blog/reddit-geo-2026/`,
+a vendor's self-report). **Measure Reddit. Never post to it.**
 
 ## References
 

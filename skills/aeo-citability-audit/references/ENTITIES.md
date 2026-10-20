@@ -145,7 +145,7 @@ without permission.
 **The bot-wall variant.** A Cloudflare / DataDome / PerimeterX challenge returns 200
 with a challenge body — so check 1 passes, check 3 catches it if the body is thin, and
 the honest report must call it what it is. A 200 that contains a challenge is not a
-page. See X-07 in [EXTRACTABILITY.md](references/EXTRACTABILITY.md).
+page. See X-07 in [EXTRACTABILITY.md](EXTRACTABILITY.md).
 
 ---
 
@@ -227,4 +227,4 @@ to let an entity-optimisation pass run unsupervised.
 
 \* Shepard 5.8; rated materially more important in an underpowered 5-client field
 test. Cheap and low-risk either way. Full caveat in
-[LIMITS.md](references/LIMITS.md).
+[LIMITS.md](LIMITS.md).

@@ -5,8 +5,8 @@ license: Apache-2.0
 compatibility: Requires network access to the SERP results being baselined. No API keys, no MCP servers, no paid accounts. Refuses to run rather than guessing when the host has no web access at all.
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.0"
-  updated: "2026-10-19"
+  version: "1.0.3"
+  updated: "2026-10-20"
   keys-required: "none"
 ---
 

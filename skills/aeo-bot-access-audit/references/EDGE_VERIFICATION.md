@@ -51,7 +51,7 @@ Record the byte counts. You will compare bot responses against them in §5.
 
 ## 2. Per-bot verification
 
-Exact tokens from [`CRAWLERS.md`](references/CRAWLERS.md). These are the **citation-class** bots — the ones whose absence removes your pages from an engine's answers. Test all of them.
+Exact tokens from [`CRAWLERS.md`](CRAWLERS.md). These are the **citation-class** bots — the ones whose absence removes your pages from an engine's answers. Test all of them.
 
 > **On the strings below.** OpenAI and Perplexity publish exact User-Agent strings; OpenAI
 > explicitly notes that **"the version number may change"**, so `OAI-SearchBot/1.4` here is
@@ -125,17 +125,19 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36; compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot' \
+  -A 'PerplexityBot' \
   https://example.com/pricing
 ```
 
 ### YouBot, DuckAssistBot, MistralAI-User
 
 ```bash
-curl -sS -o /dev/null -D - -A 'Mozilla/5.0 (compatible; YouBot/1.0; https://about.you.com/youbot/)'                          https://example.com/pricing
-curl -sS -o /dev/null -D - -A 'DuckAssistBot/1.0; +http://duckduckgo.com/duckduckbot.html'                                   https://example.com/pricing
-curl -sS -o /dev/null -D - -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' https://example.com/pricing
+curl -sS -o /dev/null -D - -A 'YouBot'         https://example.com/pricing
+curl -sS -o /dev/null -D - -A 'DuckAssistBot'  https://example.com/pricing
+curl -sS -o /dev/null -D - -A 'MistralAI-User' https://example.com/pricing
 ```
+
+> **Use the bare token here.** `YouBot`'s published verification page (`about.you.com/youbot/`) returned **404** when checked on 2026-10-19, so its full string is unverified. `MistralAI-User` has no published string we could locate, so the token is the only testable claim. An earlier version of this block sent a plain browser UA for the third line, which tested nothing at all — it was indistinguishable from the baseline.
 
 > **Do not add `Accept-Language`, `Accept-Encoding` or `Sec-Fetch-*` headers to "make it realistic".** A bare UA is the correct test: it isolates the one variable under audit. Real crawlers send a sparse request, so a rich header set makes the test *less* representative, not more.
 
@@ -155,10 +157,10 @@ declare -A UA=(
   [OAI-SearchBot]='Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot'
   [ChatGPT-User]='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot'
   [Googlebot]='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
-  [Google-Agent]='Mozilla/5.0 (compatible; Google-Agent/1.0)'
+  [Google-Agent]='Google-Agent'
   [Bingbot]='Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'
-  [PerplexityBot]='Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)'
-  [YouBot]='Mozilla/5.0 (compatible; YouBot/1.0; https://about.you.com/youbot/)'
+  [PerplexityBot]='PerplexityBot'
+  [YouBot]='YouBot'
   [DuckAssistBot]='DuckAssistBot/1.0; +http://duckduckgo.com/duckduckbot.html'
 )
 

@@ -12,7 +12,7 @@ npx skills add Pautthead/seo-aeo-agent-skills
 [![Instalación](https://img.shields.io/badge/instalar-npx%20skills-8a2be2.svg)](https://www.npmjs.com/package/skills)
 [![Claves de API](https://img.shields.io/badge/claves%20de%20API-ninguna%20requerida-brightgreen.svg)](skills/)
 [![Skills](https://img.shields.io/badge/skills-4-orange.svg)](skills/)
-[![Release](https://img.shields.io/badge/release-v1.0.1-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.3-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
 
 ---
 
@@ -112,7 +112,7 @@ Es lo que más se les escapa a los profesionales, y todo lo demás del repositor
 
 **Multilingüe, y honesto al respecto.** El recuento de palabras se basa en caracteres por idioma (tabla `chars/token` para 11 familias de idiomas), las comprobaciones de posición se basan en caracteres en lugar de palabras, y las etapas léxicas de X-05, W-03 y W-06 incluyen léxicos para **en, nl, es, pt, it, fr, de**. En cualquier otro idioma esos tres devuelven **N/A**, nunca una puntuación fallida. El principal scorer de citabilidad del mercado es solo inglés y por expresiones regulares —un bug documentado en su propio rastreador de incidencias—, y el informe siempre lista las comprobaciones N/A por su ID. Un informe que dice 95/100 con dos N/A silenciosos es peor que uno que dice 90/95.
 
-La auditoría imprime esta línea siempre que puntúa por encima de 70 sin ningún N/A: *«nada está mal en la página»*. No «vas a ser citado». El factor mejor situado en la ordenación de Shepard es la posición de búsqueda, y esta auditoría no puede medirlo sin datos de pago.
+La auditoría imprime esta línea siempre que puntúa por encima de 70 sin ningún N/A: *«nada está mal en la página»*. No «vas a ser citado». El factor mejor situado de Shepard es la accesibilidad de URL, con 9,5; la posición de búsqueda es el segundo, con 9,4, y esta auditoría no puede medirlo sin datos de pago.
 
 ### `information-gain-analysis` — por qué te citan o te recortan
 
@@ -195,14 +195,16 @@ Seis estudios de 2026. Ninguno encuentra relación entre publicar `llms.txt` y o
 
 Así que: si tu objetivo es aparecer en ChatGPT, Perplexity o AI Overviews, un archivo llms.txt es, en palabras de Ahrefs, *«en gran medida decorativo»*. Si publicas documentación para desarrolladores y los agentes de código van dirigidos a ella, tiene posibilidades reales de leerse. Presupuesta cero frente al tráfico en ambos casos.
 
-La propia documentación de Google, en una sección titulada *«Mythbusting generative AI search: what you don't need to do»*:
+La propia documentación de Google, en una sección titulada *«Mythbusting generative AI search: what you don't need to do»*, dentro del punto **«LLMS.txt files and other "special" markup»**:
 
-> *«No necesitas crear nuevos archivos legibles por máquina, archivos de texto para IA ni marcado para aparecer en estas funciones.»*
-> — [Google Search Central, «AI features and your website»](https://developers.google.com/search/docs/appearance/ai-features)
+> *«No necesitas crear nuevos archivos legibles por máquina, archivos de texto para IA, marcado ni Markdown para aparecer en Google Search (incluidas sus capacidades de IA generativa), porque Google Search no los usa.»*
+>
+> *«No hay ningún problema en que decidas crear y mantener archivos LLMS.txt (u otros similares) para otros servicios o sistemas que usan esos archivos. Hacerlo no perjudicará ni mejorará la visibilidad ni el posicionamiento de tu sitio en Google Search, porque Google Search los ignora.»*
+> — [Google Search Central, «Optimizing your website for generative AI features on Google Search»](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
 
 Los avisos propios de Ahrefs viajan junto a la cifra: el 28% de adopción es una **cota superior** (su base de clientes se inclina hacia lo técnico), y *«cada cifra de este estudio es, por tanto, un techo del consumo real de llms.txt»*.
 
-**Lo que recomendamos en su lugar.** Espejos en Markdown. Con un índice más espejos `.md` presentes, el coste de ingesta de los agentes bajó a ~123K tokens / ~10 llamadas a herramientas frente a ~240K / ~20 sin ellos ([a14y](https://a14y.dev/research/llms-txt-linking/)). La calidad de las respuestas se mantuvo. *«El coste es la ingesta, no la generación»*. Y fíjate en lo que **no** funcionó ahí: se probaron tres formatos de enlace — `<link rel="llms-txt">`, `<link rel="alternate" type="text/markdown">`, un enlace visible «For agents» en el pie — y **los tres obtuvieron 0/5 de adopción**. El único brazo que se movió fue una línea en el prompt.
+**Lo que recomendamos en su lugar.** Espejos en Markdown. Con un índice más espejos `.md` presentes, el coste de ingesta de los agentes bajó a ~123K tokens / ~10 llamadas a herramientas frente a ~240K / ~20 sin ellos ([a14y](https://a14y.dev/research/llms-txt-linking/) - estudio de un proveedor sobre su propia herramienta; n=5 por brazo, un solo sitio, así que direccional). La calidad de las respuestas se mantuvo. *«El coste es la ingesta, no la generación»*. Y fíjate en lo que **no** funcionó ahí: se probaron tres formatos de enlace — `<link rel="llms-txt">`, `<link rel="alternate" type="text/markdown">`, un enlace visible «For agents» en el pie — y **los tres obtuvieron 0/5 de adopción**. El único brazo que se movió fue una línea en el prompt.
 
 ### El schema FAQPage no es una palanca de GEO
 

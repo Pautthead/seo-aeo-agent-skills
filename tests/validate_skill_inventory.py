@@ -371,10 +371,12 @@ def extract_section(body: str, wanted: str) -> str | None:
 
 
 def check_links(path: Path, skill_root: Path, report: Report, skill: str) -> tuple[int, int]:
-    """Validate every relative markdown link in `path` against the skill root.
+    """Validate every relative markdown link in `path`.
 
-    Links are resolved relative to the *skill root*, not the containing file, so a
-    reference file links to `references/FOO.md` rather than `../references/FOO.md`.
+    Links are resolved relative to the *containing file*, exactly as GitHub and every
+    other Markdown renderer resolve them. So a file inside `references/` links to
+    `FOO.md`, and `SKILL.md` links to `references/FOO.md`. Links may not escape the
+    skill root.
     Returns (checked, ok).
     """
     try:
@@ -399,16 +401,8 @@ def check_links(path: Path, skill_root: Path, report: Report, skill: str) -> tup
                 report.error(
                     skill,
                     "link-absolute",
-                    "%s:%d: link is not skill-root relative: %s" % (where, lineno, target),
-                )
-                checked += 1
-                continue
-            if target.startswith("../"):
-                report.error(
-                    skill,
-                    "link-parent",
-                    "%s:%d: link escapes the skill root (%s); links must be relative to "
-                    "the skill root, e.g. references/FOO.md" % (where, lineno, target),
+                    "%s:%d: link is absolute; use a path relative to this file: %s"
+                    % (where, lineno, target),
                 )
                 checked += 1
                 continue
@@ -429,8 +423,20 @@ def check_links(path: Path, skill_root: Path, report: Report, skill: str) -> tup
                     checked += 1
                     continue
 
+            resolved = (path.parent / path_part).resolve()
+            try:
+                resolved.relative_to(skill_root.resolve())
+            except ValueError:
+                report.error(
+                    skill,
+                    "link-escapes-skill",
+                    "%s:%d: link escapes the skill root (%s)" % (where, lineno, path_part),
+                )
+                checked += 1
+                continue
+
             checked += 1
-            if (skill_root / path_part).is_file():
+            if resolved.is_file():
                 ok += 1
             else:
                 report.error(

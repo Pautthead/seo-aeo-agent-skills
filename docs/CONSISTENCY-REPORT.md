@@ -323,14 +323,17 @@ stating plainly because it will bite the 5th skill:
 - markdown renderer does when displaying `references/SOMEFILE.md` in a GitHub-style browser view.
 
 The alternatives are (a) keep as-is — status quo per the brief, 26 links now follow it;
-(b) switch `references/*.md` files to bare sibling links (`[Extractability](EXTRACTABILITY.md)`),
+(b) switch `references/*.md` files to bare sibling links (`[Extractability](../skills/aeo-citability-audit/references/EXTRACTABILITY.md)`),
 which renders correctly but contradicts the brief and re-creates the original inconsistency;
 (c) keep the `references/` prefix in `SKILL.md` only and use bare siblings inside
 `references/`, which is the most robust of the three but is a partial revert of the requested
 fix.
 
-I implemented (a) as instructed. Recommend deciding before the 5th skill is written, because it
-is cheap to be consistent and expensive to be inconsistent twice.
+**Resolved in v1.0.3: option (c), the robust one.** `SKILL.md` keeps `references/FOO.md`; files
+inside `references/` now link to bare siblings (`FOO.md`). The validator resolves links relative to
+the containing file, exactly as GitHub does, and rejects any link that escapes the skill root. That
+surfaced 30 links that rendered as 404 on GitHub while the old check passed them. The brief and
+`AGENTS.md` are updated to match. Decision taken before the 5th skill, as recommended.
 
 ---
 

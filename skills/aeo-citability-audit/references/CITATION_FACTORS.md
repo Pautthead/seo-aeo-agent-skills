@@ -159,7 +159,7 @@ recites like a lone page.
 **Check:** E-02 — ≥3 outbound links to pages sharing the topic stem, ≥1 inbound link
 from a sibling page. Cluster membership is computed from the URL path and `href`
 graph, which is language-agnostic.
-**Keyless:** yes, with a stated limit (see [ENTITIES.md](references/ENTITIES.md)).
+**Keyless:** yes, with a stated limit (see [ENTITIES.md](ENTITIES.md)).
 
 ### 8 — Answer near the top · 8.8
 
@@ -167,7 +167,7 @@ graph, which is language-agnostic.
 after 900 words of preamble.
 **Check:** X-01 — answer-bearing text within the first 400 visible characters or the
 first 2 blocks. Character-based on purpose.
-**Keyless:** yes. See [EXTRACTABILITY.md](references/EXTRACTABILITY.md).
+**Keyless:** yes. See [EXTRACTABILITY.md](EXTRACTABILITY.md).
 
 ### 9 — AI-ready structure · 8.6
 
@@ -182,7 +182,7 @@ text inside `p`/`li`/`td`/`th`/`dd`/`dt`/`blockquote`/`figcaption`).
 **Means:** specifics — numbers, dates, named studies, named people — are what survive
 being quoted. Vague claims are paraphrased away or dropped.
 **Check:** W-01 — ≥2 externally attributable facts per 1,000 effective words. See
-[CITATION_WORTHINESS.md](references/CITATION_WORTHINESS.md) for the per-language word
+[CITATION_WORTHINESS.md](CITATION_WORTHINESS.md) for the per-language word
 normalisation, which is mandatory outside English.
 **Keyless:** yes.
 
@@ -190,7 +190,7 @@ normalisation, which is mandatory outside English.
 
 **Means:** say the thing plainly in a quotable sentence rather than implying it
 across a paragraph. "Magnesium glycinate is supported by 137 scientific studies"
-beats "this ingredient has better evidence" — see [EXTRACTABILITY.md](references/EXTRACTABILITY.md)
+beats "this ingredient has better evidence" — see [EXTRACTABILITY.md](EXTRACTABILITY.md)
 for the full contrast.
 **Check:** X-01 plus W-06 (definitional sentences ≤40 words).
 **Keyless:** partial — fully yes in the 7 languages with shipped lexicons.
@@ -265,8 +265,8 @@ title, `h1`, body, schema, and across the wider web. Inconsistent naming splits
 your entity and weakens the association.
 **Check:** E-01. Shepard's score is low; in an underpowered 5-client field test it
 surfaced as materially more important in practice. (That source could not be
-verified — treat it as a hypothesis, per [LIMITS.md](references/LIMITS.md) §7.) It
-is cheap. See [ENTITIES.md](references/ENTITIES.md).
+verified — treat it as a hypothesis, per [LIMITS.md](LIMITS.md) §7.) It
+is cheap. See [ENTITIES.md](ENTITIES.md).
 **Keyless:** yes.
 
 ### 20 — Structured data · 5.6

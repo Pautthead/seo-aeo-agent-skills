@@ -89,7 +89,7 @@ create a failure.
 | `dataforseo_onpage` | **1 day** | Live crawl, `observed` semantics | judgement call |
 | `screaming_frog` | **1 day** | Local crawl, `observed` | judgement call |
 | `scraped_page` | **1 day** | Live fetch, `observed` | judgement call |
-| `dataforseo_labs` | **45 days** | Documented **30–90 day** database refresh cycle, midpoint | documented range, not a date |
+| `dataforseo_labs` | **45 days** | Chosen so 2L equals 90 days, the upper bound of the documented **30–90 day** refresh cycle | documented range, not a date |
 | `dataforseo_backlinks` | 45 days | Vendor index refresh cycle | vendor-reported |
 | `ahrefs` / `semrush` | 45 days | Vendor index refresh cycle | vendor-reported |
 | `dataforseo_content_analysis` | 45 days | Runs over its own crawl/index data | judgement call |

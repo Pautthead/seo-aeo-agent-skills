@@ -5,8 +5,8 @@ license: Apache-2.0
 compatibility: Requires network access to the audited origin only. No API keys, no MCP servers, no paid accounts. Requires curl (or an equivalent HTTP client).
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.0"
-  updated: "2026-10-19"
+  version: "1.0.3"
+  updated: "2026-10-20"
   keys-required: "none"
 ---
 
@@ -118,7 +118,7 @@ The two questions practitioners get wrong, and which this skill exists to preven
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot' \
+  -A 'OAI-SearchBot' \
   https://example.com/pricing
 ```
 
@@ -188,6 +188,8 @@ nosnippet: <yes/no, where>. Effect: <one line>.
 ## Scoring
 
 Deterministic. 100 points. Every rule is a pass/fail check, not a judgement.
+
+**The weights and bands below are design thresholds of this skill, not measurements.** They are set so a single CRITICAL dominates the total, and they are not calibrated against citation outcomes. Treat the score as an ordering device, not as a probability or an effect size.
 
 | # | Rule | Points |
 |---|---|---|

@@ -292,7 +292,7 @@ curl -sS -o /dev/null -w '%{http_code}\n' -A 'Mozilla/5.0' https://example.com/p
 2. Browser `200` + bot `200` → pass, for this bot from this network. See the caveat below before calling the site open.
 3. Bot `200` but with a challenge or interstitial body → see the "Just a moment" detection in `EDGE_VERIFICATION.md`. **This is a fail.**
 
-Status codes, header discriminators and per-vendor detection are in [`EDGE_VERIFICATION.md`](references/EDGE_VERIFICATION.md) — read it before writing the finding.
+Status codes, header discriminators and per-vendor detection are in [`EDGE_VERIFICATION.md`](EDGE_VERIFICATION.md) — read it before writing the finding.
 
 ### Fix
 

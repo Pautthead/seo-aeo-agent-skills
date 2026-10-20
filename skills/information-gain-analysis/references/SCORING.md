@@ -326,7 +326,7 @@ appendix.
 
 - **R6 (publish a dataset) does not mean "publish a data product."** It means publish
   the artefact and make it findable. Do **not** propose `llms.txt` as part of this —
-  six independent 2026 measurements are negative or null on citation, and bots fetch
+  six 2026 studies find no link between the file and more citations or more crawling, and bots fetch
   what they are *pointed at*, nobody goes hunting (Ahrefs, 2026-06-15,
   n=137,210 domains). Budget zero against it.
 
@@ -400,5 +400,5 @@ into a measurement, which is the exact failure this repo exists to prevent.
 - Cyrus Shepard / Zyppy — 2026-05-07 — ⚠️ **hand-assigned correlation scores, not measurements**
 - `r/SEO_Xpert` — agent reproducibility failure, 2026-07-19 — practitioner anecdote
 
-Caveats: **[HONESTY.md](references/HONESTY.md)**. Method: **[METHODOLOGY.md](references/METHODOLOGY.md)**.
-Baseline construction: **[COMPETITOR_SERP.md](references/COMPETITOR_SERP.md)**.
+Caveats: **[HONESTY.md](HONESTY.md)**. Method: **[METHODOLOGY.md](METHODOLOGY.md)**.
+Baseline construction: **[COMPETITOR_SERP.md](COMPETITOR_SERP.md)**.

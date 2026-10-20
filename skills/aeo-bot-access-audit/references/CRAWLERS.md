@@ -134,18 +134,30 @@ Claude-User:      Mozilla/5.0 (compatible; Claude-User/1.0; +claudebot@anthropic
 | `Google-Read-Aloud` | **U** | Read-aloud / voice surfacing. | **Allow** |
 | `Google-PageRenderer` | **—** | JS rendering, not a user-facing crawler. | **Allow** |
 
-Token strings as commonly observed (Google documents the bots and their purpose, not full
-headers — verify against the live vendor page before quoting one):
+Google publishes full user-agent strings for most of its crawlers. Copy them, or match
+the token substring. Two tokens are exceptions and are marked below.
 
 ```
 Googlebot:              Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
-Google-Agent:           Mozilla/5.0 (compatible; Google-Agent/1.0)
-Google-Extended:        Mozilla/5.0 (compatible; Google-Extended)
-Google-CloudVertexBot:  Mozilla/5.0 (AppleWebKit/537.36 (KHTML, like Gecko); compatible; Google-CloudVertexBot/1.0; +https://developers.google.com/search/docs/crawling-indexing/overview-google-crawlers)
+Google-Agent (mobile):  Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z Mobile Safari/537.36 (compatible; Google-Agent; +https://developers.google.com/crawling/docs/crawlers-fetchers/google-agent)
+Google-Agent (desktop): Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko; compatible; Google-Agent; +https://developers.google.com/crawling/docs/crawlers-fetchers/google-agent) Chrome/W.X.Y.Z Safari/537.36
+Google-Extended:        (no separate UA string - robots.txt control token only)
+Google-CloudVertexBot:  match the token substring; verify the full string before quoting it
 GoogleOther:            Mozilla/5.0 (compatible; GoogleOther)
-Google-Read-Aloud:      Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.76 Mobile Safari/537.36 (compatible; Google-Read-Aloud)
-Google-PageRenderer:    Mozilla/5.0 (compatible; Google-PageRenderer)
+Google-Read-Aloud:      match the token substring; the Chrome version in its UA changes over time
 ```
+
+> **`Google-Agent` has no version number.** Google's published strings carry the bare
+> token, `Google-Agent`, plus a verification URL. A string like `Google-Agent/1.0` is
+> not Google's and will not appear in their documentation. Do not invent a version.
+>
+> **`Google-Extended` has no UA of its own.** In Google's words: *"Google-Extended
+> doesn't have a separate HTTP request user agent string. Crawling is done with existing
+> Google user agent strings; the robots.txt user-agent token is used in a control
+> capacity."* Do not test it by sending a dedicated UA — test the robots.txt control.
+>
+> **`Google-PageRenderer` is not in Google's current crawler documentation.** Treat any
+> string circulated for it as legacy and unverified.
 
 > ### ⚠️ `Google-Extended` — a genuine judgement call, flagged as such
 >
@@ -212,9 +224,9 @@ still deserves citation weight — classify by observed behaviour in your logs, 
 | `Amazonbot` | Amazon | **T** | Amazon training and discovery. | **Either** — it also has a shopping index function. |
 
 ```
-YouBot:          Mozilla/5.0 (compatible; YouBot/1.0; https://about.you.com/youbot/)
+YouBot:          YouBot            (verification page about.you.com/youbot/ returned 404 on 2026-10-20 - full string unverified)
 DuckAssistBot:   DuckAssistBot/1.0; +http://duckduckgo.com/duckduckbot.html
-MistralAI-User:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+MistralAI-User:  MistralAI-User    (no published string located - token only)
 Applebot:        Mozilla/5.0 (compatible; Applebot/0.1; +http://www.apple.com/go/applebot)
 ```
 

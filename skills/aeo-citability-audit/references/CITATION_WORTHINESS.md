@@ -1,13 +1,13 @@
 # Citation-worthiness — is this page worth quoting?
 
-Extractability (see [EXTRACTABILITY.md](references/EXTRACTABILITY.md)) asks whether a passage
+Extractability (see [EXTRACTABILITY.md](EXTRACTABILITY.md)) asks whether a passage
 *can* be lifted. Citation-worthiness asks whether it is *worth* lifting — whether the
 page carries the kind of material a synthesizer will keep.
 
 **Where this sits in the weighting:** GeoTest weights Citation Worthiness at
 **34 of 100** — the largest single category in its model (GEO Score v6.0, in force since
 2026-10-04), ahead of technical structure, authority and crawlability. Worthiness is not a
-garnish on an audit; it is the biggest block of the score. ⚠️ **Vendor research** — GeoTest
+garnish on an audit; it is the biggest block of the score. ⚠️ **Vendor research** — [GeoTest](https://geotest.ai/geo-score)
 sells the scoring product and the rubric is self-published with weights asserted, not
 derived. Useful as an outside shape for the rubric; not evidence.
 
@@ -32,7 +32,7 @@ repeats off-site. These are not two problems.
 > **hand-assigned** 0–10 score against repeatability, evidence strength and official support,
 > **not a measurement**. Shepard: *"These are not confirmed ranking factors. Correlation is
 > not causation."* Read them as a priority ordering. See
-> [CITATION_FACTORS.md](references/CITATION_FACTORS.md).
+> [CITATION_FACTORS.md](CITATION_FACTORS.md).
 
 ---
 
@@ -218,7 +218,7 @@ answer "what is X" without re-reading your whole page.
 **Related Shepard factor — explicit phrasing (8.1):** the same principle applied to
 claims rather than definitions. "Magnesium glycinate is supported by 137 scientific
 studies" is quotable; "this ingredient has better evidence" is not. Full contrast in
-[EXTRACTABILITY.md](references/EXTRACTABILITY.md), X-05.
+[EXTRACTABILITY.md](EXTRACTABILITY.md), X-05.
 
 ---
 
@@ -313,4 +313,4 @@ And the qualitative ones, stated plainly because they do not reduce to a number:
   `著者名 (year)` rather than by quotation. W-03 should accept an attribution form,
   not require a `blockquote`.
 - **Do not port English paragraph-length habits.** See
-  [EXTRACTABILITY.md](references/EXTRACTABILITY.md), multilingual summary.
+  [EXTRACTABILITY.md](EXTRACTABILITY.md), multilingual summary.

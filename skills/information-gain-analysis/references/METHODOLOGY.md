@@ -97,7 +97,7 @@ report it.
 This is the mechanism the fact-pruning hypothesis rests on. It is a *description of
 how an assistant assembles an answer from sources*, documented in a granted patent.
 It is **not** a description of a ranking factor, and no one has shown Google applies
-it as one. Read §1 of [HONESTY.md](references/HONESTY.md) before relying on it.
+it as one. Read §1 of [HONESTY.md](HONESTY.md) before relying on it.
 
 ## 4. Ranked lists versus synthesized answers
 
@@ -164,7 +164,7 @@ Ruled out explicitly, because each of these is routinely sold as information gai
   topical relevance, position, explicit price information, and a recent timestamp.
 - **Sampled statistics.** A number that restates what the paragraph already says in
   numeric form carries no information. See the informativeness test in
-  [SCORING.md](references/SCORING.md).
+  [SCORING.md](SCORING.md).
 - **`llms.txt`.** Not information gain, and not a lever at all. Six independent
   negative measurements — see the repo README. Shipping it costs an hour; budget zero.
 - **FAQPage schema.** Shepard hand-assigns structured data 5.6/10 — and he is *more*
@@ -221,5 +221,5 @@ from 76% in July 2025. That sits awkwardly against Shepard's 9.4. Treat the
 - Jeremy Moser (uSERP) via Digiday — 2026-03-10
 - Practitioner dissent, r/SEO — 2026-01-26
 
-Caveats, dissent, and the mandatory disclosure block: **[HONESTY.md](references/HONESTY.md)**.
-Rubric and thresholds: **[SCORING.md](references/SCORING.md)**.
+Caveats, dissent, and the mandatory disclosure block: **[HONESTY.md](HONESTY.md)**.
+Rubric and thresholds: **[SCORING.md](SCORING.md)**.

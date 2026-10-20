@@ -12,7 +12,7 @@ npx skills add Pautthead/seo-aeo-agent-skills
 [![Install](https://img.shields.io/badge/install-npx%20skills-8a2be2.svg)](https://www.npmjs.com/package/skills)
 [![API keys](https://img.shields.io/badge/API%20keys-none%20required-brightgreen.svg)](skills/)
 [![Skills](https://img.shields.io/badge/skills-4-orange.svg)](skills/)
-[![Release](https://img.shields.io/badge/release-v1.0.1-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.3-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
 
 ---
 
@@ -112,7 +112,7 @@ Practitioners most often miss this, and everything else in the repo is downstrea
 
 **Multilingual, and honest about it.** Word counting is character-based per language (`chars/token` table for 11 language families), position checks are character-based rather than word-based, and the lexical stages of X-05, W-03 and W-06 ship lexicons for **en, nl, es, pt, it, fr, de**. In any other language those three return **N/A**, never a failing score. The market's leading citability scorer is English-only by regex — a bug documented in its own issue tracker — and the report always lists N/A checks by ID. A report that says 95/100 with two silent N/As is worse than one that says 90/95.
 
-The audit prints this line whenever it scores above 70 with no N/A: *"nothing is wrong on-page."* Not "you will be cited." The top-ranked factor in Shepard's ordering is search rank, and this audit cannot measure it without paid data.
+The audit prints this line whenever it scores above 70 with no N/A: *"nothing is wrong on-page."* Not "you will be cited." Shepard's top-ranked factor is URL accessibility at 9.5; search rank is second at 9.4, and this audit cannot measure it without paid data.
 
 ### `information-gain-analysis` — why you get cited or cut
 
@@ -187,7 +187,7 @@ Six 2026 studies. None finds a relationship between publishing `llms.txt` and mo
 | [Ahrefs](https://ahrefs.com/blog/llmstxt-study/) | 2026-06-15 | 137,210 domains | 28% publish one; **97% received zero requests**; *"Zero AI bots go looking for llms.txt files that don't exist"* | measured |
 | [SE Ranking](https://seranking.com/blog/llms-txt/) | 2026-10-15 | ~300,000 domains | 10.13% adoption; their model got **more** accurate when the variable was removed — *"LLMs.txt might currently introduce more noise than value"* | vendor research |
 | [Otterly.AI](https://otterly.ai/blog/the-llms-txt-experiment/) | 2026-02-05 | 62,100 AI bot visits / 90d | 84 requests hit `/llms.txt` (~0.1%); no positive correlation with AI crawl activity | vendor research |
-| [Search Engine Land](https://searchengineland.com/does-llms-txt-matter-467740) | 2026-01-20 | 10 sites, before/after | 8 no change; sites that shipped **new functional content** grew, sites that merely documented existing content grew nothing | editorial |
+| [Search Engine Land](https://searchengineland.com/does-llms-txt-matter-467740) | 2026-01-20 | 10 sites, before/after | 8 no change; sites that shipped **new functional content** grew, sites that merely documented existing content grew nothing. **One site fell 19.7%**, and their own 2+8+1 does not reconcile with the stated n=10 | editorial |
 | [CueScout](https://cuescout.com/blog/does-llms-txt-work) | 2026-10-15 | 537 SaaS sites, 80 AI Mode answers | 24.3% cited *with* vs 21.8% *without* (p=0.53); **none of the 708 cited links pointed at an llms.txt file** | vendor research |
 | [Arsentev, origin log](https://doi.org/10.5281/zenodo.23018429) | 2026-09-28 | 345,808 requests / 15 days | **Zero** crawler-token requests to `/llms.txt`; robots.txt got 698, sitemap.xml got 282 | measured |
 
@@ -195,14 +195,16 @@ Six 2026 studies. None finds a relationship between publishing `llms.txt` and mo
 
 So: if your goal is showing up in ChatGPT, Perplexity or AI Overviews, an llms.txt file is, in Ahrefs' words, *"largely decoration."* If you ship developer documentation and coding agents are directed at it, it has a real chance of being read. Budget zero against traffic either way.
 
-Google's own documentation, in a section headed *"Mythbusting generative AI search: what you don't need to do"*:
+Google's own documentation, in a section headed *"Mythbusting generative AI search: what you don't need to do"*, under the bullet **"LLMS.txt files and other 'special' markup"**:
 
-> *"You don't need to create new machine readable files, AI text files, or markup to appear in these features."*
-> — [Google Search Central, "AI features and your website"](https://developers.google.com/search/docs/appearance/ai-features)
+> *"You don't need to create new machine readable files, AI text files, markup, or Markdown to appear in Google Search (including its generative AI capabilities), as Google Search itself doesn't use them."*
+>
+> *"It's completely fine if you decide to create and maintain LLMS.txt files (or other similar files) for other services or systems that use these files. Doing so will neither harm nor help your site's visibility or rankings in Google Search, as Google Search ignores them."*
+> — [Google Search Central, "Optimizing your website for generative AI features on Google Search"](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
 
 Ahrefs' own caveats travel with the number: 28% adoption is an **upper bound** (their customers skew technical), and *"every figure in this study is therefore a ceiling on actual llms.txt consumption."*
 
-**What we recommend instead.** Markdown mirrors. With an index plus `.md` mirrors present, agent ingestion cost fell to ~123K tokens / ~10 tool calls versus ~240K / ~20 without them ([a14y](https://a14y.dev/research/llms-txt-linking/)). Answer quality tied. *"The cost is ingestion, not generation."* And note what did **not** work there: three link formats were tested — `<link rel="llms-txt">`, `<link rel="alternate" type="text/markdown">`, a visible "For agents" footer link — and **all three scored 0/5 adoption**. The only arm that moved was one line in the prompt.
+**What we recommend instead.** Markdown mirrors. With an index plus `.md` mirrors present, agent ingestion cost fell to ~123K tokens / ~10 tool calls versus ~240K / ~20 without them ([a14y](https://a14y.dev/research/llms-txt-linking/) - a vendor study of its own tooling; n=5 per arm, one site, so directional). Answer quality tied. *"The cost is ingestion, not generation."* And note what did **not** work there: three link formats were tested — `<link rel="llms-txt">`, `<link rel="alternate" type="text/markdown">`, a visible "For agents" footer link — and **all three scored 0/5 adoption**. The only arm that moved was one line in the prompt.
 
 ### FAQPage schema is not a GEO lever
 

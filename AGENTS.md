@@ -13,7 +13,7 @@ required service.
 
 Installs into Claude Code, Codex, Cursor, OpenCode, Grok Build, Gemini CLI, Cline,
 Hermes, OpenClaw, OpenHands, Goose, Amp, Kiro and ~75 other hosts via
-`npx skills add Pauthead/seo-aeo-agent-skills`. Any host that can read `SKILL.md`
+`npx skills add Pautthead/seo-aeo-agent-skills`. Any host that can read `SKILL.md`
 can use them.
 
 Every skill is a `SKILL.md` plus a `references/` directory. Skills are loaded
@@ -112,8 +112,9 @@ The hard requirements:
   `repo`, `version`, `updated`, `keys-required`. Anything else belongs in an
   `> **Evidence:**` line under the H1, not in frontmatter.
 - Body under 500 lines. Detail goes to `references/`.
-- Internal links are relative to the **skill root**, one level deep:
-  `references/FOO.md`, even from inside another reference file.
+- Internal links are ordinary relative paths from the containing file, the way GitHub
+  renders them: `references/FOO.md` from `SKILL.md`, plain `FOO.md` from inside
+  `references/`. One level deep, no nested chains.
 - No `context: fork`. No hooks in the core — both are Claude Code only and would break
   portability.
 - **Zero required API keys.** If your skill cannot complete without a paid account, it

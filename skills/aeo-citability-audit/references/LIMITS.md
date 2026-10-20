@@ -181,7 +181,7 @@ which is how it is used below.)
    with arXiv 2605.25517's "recent timestamp helps consistently", but measured on
    clients, not trials.
 4. **Entity-naming consistency.** Covered by E-01. See
-   [ENTITIES.md](references/ENTITIES.md) for why the cheap/low-risk synthesis beats both
+   [ENTITIES.md](ENTITIES.md) for why the cheap/low-risk synthesis beats both
    "it's the 5.8 factor, ignore it" and "it's the biggest win".
 5. **On-page citation infrastructure.** Whether the page is built so that a claim
    *can* be extracted — answer-first structure, tables, self-contained blocks,
@@ -221,10 +221,12 @@ otherwise would be exactly the false negative this repo refuses to publish.
   base skews technical — and their words are: *"Every figure in this study is therefore a
   ceiling on actual llms.txt consumption."*
 
-  **Google, first-party.** Not a secondhand quote:
-  > *"You don't need to create new machine readable files, AI text files, or markup to
-  > appear in these features."*
-  > — [Google Search Central, "AI features and your website"](https://developers.google.com/search/docs/appearance/ai-features)
+  **Google, first-party.** Not a secondhand quote, and not the `ai-features` page — the
+  sentence sits on the newer AI optimization guide:
+  > *"You don't need to create new machine readable files, AI text files, markup, or Markdown
+  > to appear in Google Search (including its generative AI capabilities), as Google Search
+  > itself doesn't use them."*
+  > — [Google Search Central, "AI features and your website"](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)
 
   **Mueller's framing.** His *"temporary crutch, perhaps to save some tokens"* came from a
   Bluesky reply to Lily Ray about Google's **markdown mirrors of developer documentation**,

@@ -316,5 +316,5 @@ window, so do not quote one.
 - Jochen Madler (Sitefire), "SlopShape: Identifying AI-Generated Commercial Web Content" — `https://arxiv.org/abs/2609.15369` — 2026-09 — **97.0 macro-F1 on held-out companies.** Earlier drafts of this repo rendered this as an accuracy percentage; it is a macro-averaged F1 against a balanced-class definition, not a share of pages classified correctly.
 - ProCloser field test — 2026-05-27 — n=5 — **removed: NOT FOUND.** No URL, no snippet, no primary text located. It was cited for a "60–120 days to citation lift" window, and the figure is widely repeated without a traceable primary. Do not reinstate either the number or the attribution.
 
-Method: **[METHODOLOGY.md](references/METHODOLOGY.md)**. Rubric: **[SCORING.md](references/SCORING.md)**.
-Baseline: **[COMPETITOR_SERP.md](references/COMPETITOR_SERP.md)**.
+Method: **[METHODOLOGY.md](METHODOLOGY.md)**. Rubric: **[SCORING.md](SCORING.md)**.
+Baseline: **[COMPETITOR_SERP.md](COMPETITOR_SERP.md)**.

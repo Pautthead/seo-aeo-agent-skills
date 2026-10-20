@@ -28,12 +28,13 @@ the target query plus a claim about it, rather than a promise to address it late
 - The answer in the page's last section, under a heading like "Conclusion".
 - A hero section with three marketing sentences above the actual first paragraph.
 
-**Why characters, not words.** 400 characters is roughly 60 English words but roughly
-90 Spanish words or 65 German words. The threshold is therefore *lenient* in
-space-separated languages and roughly neutral in CJK (400 CJK characters is a
-substantial passage). For a position check this is the correct error direction: we
-would rather under-flag a marginal page than fail a good one. Do not convert this
-threshold into words.
+**Why characters, not words.** A fixed character budget buys *fewer* words in languages
+that spend more characters per token: at the values in the table below, a 400-character
+window holds roughly a sixth fewer Spanish words than English ones. The threshold is
+therefore slightly *stricter* in Spanish, German and French, not more lenient — which is
+the wrong error direction for a position check, because it can flag a good page as late.
+Report a near-boundary result in those languages as **not scored** rather than as a fail.
+Do not convert this threshold into words.
 
 **Multilingual:** the check is on document position and character count, so it is
 language-agnostic. The only language-dependent part is the query-term match, which
@@ -340,7 +341,8 @@ per-1,000-words threshold means roughly the same thing in every language. An err
 of ±15% in word count does not move W-01 across a realistic boundary.*
 
 **Position checks are character-based, not word-based.** X-01 uses the first 400
-visible characters and the first 2 blocks. This is deliberate: 400 characters is
-roughly 60 English words but roughly 90 Spanish words, so the threshold is
-*lenient* in space-separated languages. Leniency is the correct error direction for
-a position check — we would rather miss a marginal page than fail a good one.
+visible characters and the first 2 blocks. This is deliberate: it keeps the check
+language-agnostic. But a character budget is not neutral across languages — 400
+characters is fewer Spanish words than English ones, so the threshold is mildly
+*stricter* there. A near-boundary result in a long-token language is **not scored**,
+not a fail. Missing a marginal page is acceptable; failing a good one is not.

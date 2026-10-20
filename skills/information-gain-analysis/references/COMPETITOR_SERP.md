@@ -229,5 +229,5 @@ independently retrieved**, and that URLs were not verified as live.
   of zero is a real and important answer — report it as such rather than manufacturing
   gaps.
 
-Baseline caveats in full: **[HONESTY.md](references/HONESTY.md)**. Scoring:
-**[SCORING.md](references/SCORING.md)**. Method: **[METHODOLOGY.md](references/METHODOLOGY.md)**.
+Baseline caveats in full: **[HONESTY.md](HONESTY.md)**. Scoring:
+**[SCORING.md](SCORING.md)**. Method: **[METHODOLOGY.md](METHODOLOGY.md)**.

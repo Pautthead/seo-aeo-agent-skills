@@ -5,8 +5,8 @@ license: Apache-2.0
 compatibility: No dependencies, no API keys, no network required. Runs fully offline.
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.0"
-  updated: "2026-10-19"
+  version: "1.0.3"
+  updated: "2026-10-20"
   keys-required: "none"
 ---
 
@@ -310,11 +310,11 @@ None required. Nothing in this skill needs a paid tool.
 
 ## References
 
-- `references/ENVELOPE.md` — full field-by-field schema, allowed values, and how to populate each field
+- [references/ENVELOPE.md](references/ENVELOPE.md) — full field-by-field schema, allowed values, and how to populate each field
   from an MCP tool output, a pasted CSV, a fetched page, or a typed number. Worked JSON for four
   source types.
-- `references/FRESHNESS.md` — the three questions, thresholds and their derivation, the four classes
+- [references/FRESHNESS.md](references/FRESHNESS.md) — the three questions, thresholds and their derivation, the six classes
   and what to do at each, the traps (token expiry vs staleness, GSC's 16-month retention and 1,000-row
   cap, DataForSEO's 30–90 day refresh), and the classifier function.
-- `references/SOURCES.md` — every source family an SEO agent touches: what it can prove, its
+- [references/SOURCES.md](references/SOURCES.md) — every source family an SEO agent touches: what it can prove, its
   characteristic failure mode, its retention window, and whether it can be trusted for freshness.
