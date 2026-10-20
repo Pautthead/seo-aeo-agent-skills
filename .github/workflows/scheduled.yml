@@ -27,7 +27,7 @@ concurrency:
 jobs:
   external-links:
     name: "external links"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Checkout
@@ -77,7 +77,7 @@ jobs:
 
   install:
     name: "install smoke test"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Set up Node

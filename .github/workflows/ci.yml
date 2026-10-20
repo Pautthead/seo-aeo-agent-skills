@@ -17,7 +17,7 @@ permissions:
 jobs:
   gates:
     name: "gates (py${{ matrix.python-version }})"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     strategy:
       fail-fast: false
@@ -73,7 +73,7 @@ jobs:
 
   docs:
     name: "docs gate"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
 
     steps:

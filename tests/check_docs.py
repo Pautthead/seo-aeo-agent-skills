@@ -247,6 +247,9 @@ def run_bash_syntax(blocks, bash: str, report: Report) -> None:
 
 def run_shellcheck(blocks, shellcheck: str, report: Report) -> None:
     severity = "error" if not report.strict else "warning"
+    # SC2016/SC2086/SC2034 etc. are excluded because these blocks are fragments:
+    # $BASE is set in one block and used in the next, and quoting is deliberate in
+    # the curl -A examples. Excluding them keeps the gate about correctness.
     for where, body in blocks:
         try:
             result = subprocess.run(
@@ -257,7 +260,7 @@ def run_shellcheck(blocks, shellcheck: str, report: Report) -> None:
                     "-S",
                     severity,
                     "-e",
-                    "SC2016,SC2086,SC1090,SC1091,SC2001",
+                    "SC2016,SC2086,SC1090,SC1091,SC2001,SC2034",
                     "-f",
                     "gcc",
                     "-",
