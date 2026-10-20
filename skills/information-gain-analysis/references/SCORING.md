@@ -3,7 +3,7 @@
 Two things to know before you read the table:
 
 1. **Rank position scores zero points.** By design. See §1.
-2. **This rubric is measured by meaning.** The counting steps are deterministic and
+2. **This rubric is judged by meaning.** The counting steps are deterministic and
    reproducible. The informativeness test in §3 is not — it is a judgement, and you
    must label it as one. Never present §3 output as a measurement.
 
@@ -65,12 +65,15 @@ Not a data point:
 
 **This is the anti-gaming step. Run it on every candidate before counting it anywhere.**
 
-A candidate passes only if it clears **all five**. Failing **2 or more** disqualifies
-it entirely: it is excluded from every count and from the ranked gain list.
+A candidate passes only if it clears every gate that applies. **ABSENT** candidates
+(not in the baseline) are exempt from gate 1. They must still pass gates 2–5.
+Failing **exactly one** applicable gate excludes the candidate from the counts and
+from the ranked list; list it under rejected. It does **not** trigger the stuffing
+penalty. Failing **2 or more** also excludes it.
 
 | # | Gate | Pass condition | Fails when |
 |---|---|---|---|
-| 1 | **Contrast** | It disagrees with, qualifies, or refines something a baseline page states outright. | It restates the baseline in different words. |
+| 1 | **Contrast** | It disagrees with, qualifies, or refines something a baseline page states outright. **ABSENT candidates skip this gate.** | It restates the baseline in different words. |
 | 2 | **Attribution** | Traceable to a named source, or to an observation the author names themselves. | An orphan number with no source. |
 | 3 | **Boundary** | Has a stated scope — sample size, date range, segment, geography, version. | A number with no boundary. It cannot be evaluated or cited, so it is not information. |
 | 4 | **Non-derivable** | Cannot be computed from another number already on the page. | "87% of 340" next to "340 users" — the second is arithmetic, not evidence. |
@@ -159,9 +162,11 @@ and on 0–1 baseline pages. Fringe per Huang: adjacent to the topic, not at its
 | 1 | 2 |
 | 0 | 0 |
 
-Counting rule: an entity counts once regardless of repetition. A named product,
-standard, person, organisation, dataset, failure mode, or segment qualifies. A generic
-noun ("agencies", "platforms") does not.
+Counting rule: an entity counts once, and only if it sits in a sentence that makes a
+checkable claim about it. A title, a nav label, or an index-page mention with no
+claim does not count. A named product, standard, person, organisation, dataset,
+failure mode, or segment qualifies when that sentence exists. A generic noun
+("agencies", "platforms") does not.
 
 ### C. First-hand or proprietary observation — 20 points
 
@@ -175,8 +180,11 @@ Distinct observations where **someone is named as having observed something spec
 | 1 | 5 |
 | 0 | 0 |
 
-Pass condition for a single observation: a named actor **and** a specific observation.
-"Our team tested this" with no name and no result is not an observation. "We ran this
+Pass condition for a single observation: a named actor **and** a specific observation
+that actor made. A named third party counts only when the page attributes that
+observation to them. "Gamma's plan is $40" is a price, not dimension C. A named
+person who measured something is C even if they do not work for the site. "Our team
+tested this" with no name and no result is not an observation. "We ran this
 against 340 client sites in Q3 2026; 41 returned a 200 for the same URL with different
 canonical tags" is.
 
@@ -307,20 +315,25 @@ has *is* dimension A and D, at full value, on day one.
 
 ### Ranking rule
 
-Order the gain list by **acquisition value**, not by the score total:
+Order the gain list by **acquisition value**. The weights are labelled judgement,
+not a measurement:
+
+| Cost | `cost_weight` | Time | `time_weight` |
+|---|---|---|---|
+| 0 currency | 1 | ≤30 min | 1 |
+| up to 20 (same currency as the brief) | 2 | ≤2 h | 2 |
+| above 20 | 4 | ≤1 day | 4 |
+| | | longer | 8 |
 
 ```
-rank = (score dimension contribution) ÷ (cost + time weight)
+rank = dimension_points / (cost_weight + time_weight)
 ```
 
-Highest-value-and-cheapest first. An R4 fact worth 6 points reachable in an hour outranks
-an R5 fact worth 12 points needing six weeks. **Never present an R5 route as the
-first recommendation** — it implies effort the team has not committed to and reads as
-excuse-making.
+Highest rank first. An R4 fact worth 6 points in an hour outranks an R5 fact worth
+12 points over weeks. **Never lead with R5.**
 
-Cap the list at **10 rows**. A 40-item worklist gets none of them done. If more than 10
-candidates survive, keep the top 10 by rank and record the remainder as a secondary
-appendix.
+Cap a **full** list at **10 rows** and a **lite** list at **5**. A longer worklist
+gets none of it done. Record the remainder as a secondary appendix.
 
 ### 6.1 Route caveats
 
@@ -372,7 +385,7 @@ appendix.
 Two agents running this on the same page **can and will produce different candidate
 sets**, because the candidate set is produced by a meaning judgement. Treat that
 difference as a finding worth surfacing, not as noise to average away. (Compare
-`r/SEO_Xpert` 2026-07-19: ~150 internal links proposed with total confidence, ~20
+`r/SEO_Xpert` 2026-07-10: ~150 internal links proposed with total confidence, ~20
 actually usable, and the same page in a fresh session produced different
 recommendations.)
 
@@ -398,7 +411,7 @@ into a measurement, which is the exact failure this repo exists to prevent.
 - Bernard Huang (ex-Clearscope), fringe-of-knowledge-graph formulation — cited in Ahrefs, 2026-08-20
 - Jochen Madler (Sitefire), *"SlopShape: Identifying AI-Generated Commercial Web Content"* — `https://arxiv.org/abs/2609.15369` — 2026-09-14, v3 2026-09-28 — **97.0 macro-F1 on held-out companies**, 176 structural features of a 203-feature instrument; 2,250 pre-ChatGPT human blog posts (268 domains) vs 11,250 AI mirrors from 5 frontier models
 - Cyrus Shepard / Zyppy — 2026-05-07 — ⚠️ **hand-assigned correlation scores, not measurements**
-- `r/SEO_Xpert` — agent reproducibility failure, 2026-07-19 — practitioner anecdote
+- `r/SEO_Xpert` — agent reproducibility failure, 2026-07-10 — practitioner anecdote, [permalink](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/)
 
 Caveats: **[HONESTY.md](HONESTY.md)**. Method: **[METHODOLOGY.md](METHODOLOGY.md)**.
 Baseline construction: **[COMPETITOR_SERP.md](COMPETITOR_SERP.md)**.

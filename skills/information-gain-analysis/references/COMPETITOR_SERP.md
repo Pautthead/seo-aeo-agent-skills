@@ -40,9 +40,26 @@ Determine what retrieval you actually have:
 | Browser automation | Good. Handles JS-rendered pages, which step 4 requires. |
 | None of the above | **Go to §8. Stop here.** |
 
+**Section map.** The headings below are this file's steps. They are not the step
+numbers in `SKILL.md`.
+
+| This file | What it is |
+|---|---|
+| §0 | Prompt-injection guard, before any fetch |
+| §1 | Capability check |
+| §2 | Lock the query |
+| §3 | Select the top results (3 in lite, up to 5 in full) |
+| §4 | Retrieve |
+| §5 | Fact ledger |
+| §6 | Fringe scan |
+| §7 | Assemble the baseline summary |
+| §8 | No web access. Stop |
+
 **Check:** can I list ≥3 real, currently-live URLs for this query?
 **Pass:** yes, with the retrieval mechanism named.
-**Fail:** no web access at all → §8. No retrieval but a search tool → §7.
+**Fail:** no web access at all → §8 and stop. A search tool with no separate HTTP
+fetch still proceeds through §3–§7: the search result is the retrieval. Do not jump
+to §7, which is the assembly step, and do not treat a search tool as "no retrieval".
 
 Do not proceed from memory. You know a great deal about most topics. That knowledge is
 **not** the SERP, it is not current, it is not what ranks, and it is exactly the
@@ -126,8 +143,10 @@ Split until the row cannot be split further:
 - `CONTESTED` — baseline pages contradict each other. **High-value candidate**;
   resolving it in your favour is worth more than adding a new fact.
 
-Expect 40–120 rows for 3–5 substantial pages. If you have fewer than 20, you have
-extracted topics rather than facts. Go back.
+Expect **40–120 rows in full mode** for 3–5 substantial pages. **Lite mode stops at
+25 rows** and reads 3 pages. If a full-mode ledger has fewer than 20, you have
+extracted topics rather than facts. Go back. A lite ledger under 25 is a cap, not a
+sign you stopped early, and its score is not comparable to a full score.
 
 ### Enumerate what the SERP *asks* but does not answer
 

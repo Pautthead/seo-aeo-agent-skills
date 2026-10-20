@@ -9,7 +9,12 @@ real invariant and a gate that is merely noise.
 python tests/validate_skill_inventory.py
 python tests/reference_freshness.py
 python tests/check_docs.py            # add --external for the network check
+python -m unittest tests.test_freshness_examples
 ```
+
+The freshness test extracts the `classify` function from
+`skills/seo-data-contract/references/FRESHNESS.md` and checks it against examples
+5a–5c. CI runs it in the gates job.
 
 `--strict` makes warnings / review triggers fatal. CI enforces gates 2 and 3 at their
 defaults and runs `--strict` separately, non-blocking (see the workflow for why).

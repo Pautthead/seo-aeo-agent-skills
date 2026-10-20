@@ -6,7 +6,7 @@ The input check must answer three *separate* questions. Collapsing them is the w
 
 > *"the input check needs to answer three separate questions: can it authenticate now, when did a
 > retrieval last succeed, and what is the newest date represented in the retrieved data?"*
-> — `r/AiAutomations`, 2026-09-07
+> — [r/AiAutomations, 2026-09-07](https://www.reddit.com/r/AiAutomations/comments/1w9h1sv/an_seo_agent_kept_working_for_two_weeks_after_its/)
 
 | # | Question | Field | Failure it catches |
 |---|---|---|---|
@@ -31,7 +31,7 @@ against an input that should no longer be trusted."*
 ## 2. A fast query returning old data is still old data
 
 Against a ClickHouse-backed GSC MCP product advertising *"sub-5-second analysis without hallucination
-risks"*, `r/SideProject`, 2026-09-24:
+risks"*, [r/SideProject, 2026-09-24](https://www.reddit.com/r/SideProject/comments/1wp4s2r/do_unique_stuff_a_real_mcp_data_server/) (comment by Mister-Node):
 
 > *"a fast ClickHouse query can still return confidently outdated Search Console data unless every
 > report exposes its latest import time."*
@@ -88,7 +88,8 @@ create a failure.
 | `dataforseo_serp` | **1 day** | Live fetch; observed at `captured_at` | judgement call |
 | `dataforseo_onpage` | **1 day** | Live crawl, `observed` semantics | judgement call |
 | `screaming_frog` | **1 day** | Local crawl, `observed` | judgement call |
-| `scraped_page` | **1 day** | Live fetch, `observed` | judgement call |
+| `scraped_page` | **1 day** | Applies to a `content_claim` or a response-header date. A live fetch recorded as `date_semantics: observed` bypasses `L` (observed-object override). Do not put both semantics on one envelope | judgement call |
+| `cdn_analytics` | **1 day** | Cloudflare, Fastly, Akamai, or similar analytics. A dated export is `row_date`; a live dashboard read with no row date is `observed` | judgement call |
 | `dataforseo_labs` | **45 days** | Chosen so 2L equals 90 days, the upper bound of the documented **30–90 day** refresh cycle | documented range, not a date |
 | `dataforseo_backlinks` | 45 days | Vendor index refresh cycle | vendor-reported |
 | `ahrefs` / `semrush` | 45 days | Vendor index refresh cycle | vendor-reported |
@@ -96,10 +97,12 @@ create a failure.
 | `dataforseo_ai_optimization` | 45 days | Vendor score over an index snapshot | judgement call |
 | `user_pasted` | n/a → `unknown` | No date | — |
 
-At `L=45` for Labs, the boundaries are: fresh ≤45d (impossible in practice), aging ≤90d, stale >90d.
-**In practice DataForSEO Labs output is `aging` at best and frequently `unknown`, because the 30–90
-cycle is a range and the payload does not tell you where in it you are.** Write it that way. The
-honest statement is "position unknown, between 30 and 90 days old", not "current".
+At `L=45` for Labs, the boundaries are: fresh ≤45d, aging ≤90d, stale >90d.
+**A Labs payload has no observation date.** When `date_semantics` is `provider_refresh_window`,
+the class is **`aging`**: the documented window's upper bound is `2L` (90 days), so it cannot be
+`fresh`, and it is not `unknown` — `unknown` is reserved for no date *and* no documented window.
+The reason must say the actual refresh date is unknown and the position is between 30 and 90 days
+old. Do not write "current".
 
 ### The two overrides
 
@@ -121,7 +124,9 @@ is a **starting condition**. Only transitions warrant a hard gate.
 
 **Override B — truncated.**
 If `truncated: true` at a known cap, the dataset is **partial**, not merely old. Age classification
-still applies, but no aggregate may be computed and the report must say the set is a slice.
+still applies — a fresh slice is still `fresh` — but `class_reason` must say the set is a slice,
+and no aggregate may be computed from it. The classifier appends that sentence. A reason that
+does not mention the cap has not applied this override.
 
 ### Observed-object override
 
@@ -157,19 +162,32 @@ from datetime import date, datetime, timezone
 L = {
     "gsc": 3, "ga4": 3, "bing_webmaster": 3,
     "server_log": 1, "dataforseo_serp": 1, "dataforseo_onpage": 1,
-    "screaming_frog": 1, "scraped_page": 1,
+    "screaming_frog": 1, "scraped_page": 1, "cdn_analytics": 1,
     "dataforseo_labs": 45, "dataforseo_backlinks": 45,
     "dataforseo_content_analysis": 45, "dataforseo_ai_optimization": 45,
     "ahrefs": 45, "semrush": 45, "se_ranking": 45,
 }
 
-# Documented retention windows in days, or None where not documented.
+# Documented retention windows in days. None means "not documented; do not expire".
+# `retention_days` on the envelope overrides the default (GA4 properties are often
+# set to 2 months; this default is the common 14-month setting).
 RETENTION = {
-    "gsc": 16 * 30,          # ~16 months
-    "dataforseo_serp": None,
+    "gsc": 16 * 30,             # ~16 months, Search Console performance
+    "ga4": 14 * 30,             # default event retention; 2 months is also a valid setting
+    "bing_webmaster": 16 * 30,  # lower end of the ~16–24 month range in SOURCES.md
 }
 
 BLOCKING_AUTH = {"expired", "revoked"}  # `unavailable` is NOT blocking - see Override A
+
+def _with_truncation(env: dict, reason: str) -> str:
+    """Override B. Age class is unchanged; the reason must name the slice."""
+    if env.get("truncated") is True:
+        return (
+            reason
+            + "; truncated at a known cap — partial slice, do not compute aggregates (Override B)"
+        )
+    return reason
+
 
 def classify(env: dict, today: date | None = None) -> tuple[str, str]:
     """Returns (freshness_class, class_reason). Pure function of the envelope."""
@@ -178,39 +196,72 @@ def classify(env: dict, today: date | None = None) -> tuple[str, str]:
     semantics = env.get("date_semantics")
 
     if semantics == "observed":
-        return "observed", "directly observed at capture; recency gate n/a"
+        return "observed", _with_truncation(
+            env, "directly observed at capture; recency gate n/a"
+        )
 
     ndd = env.get("newest_data_date")
+    latency = L.get(family)
+
+    # A documented refresh window stands in for a missing date. The upper bound
+    # is 2L, which is aging, never fresh. Unknown is only for no date AND no window.
+    if not ndd and semantics == "provider_refresh_window":
+        if latency is None:
+            return "unknown", _with_truncation(
+                env, f"no documented latency for source_family '{family}'"
+            )
+        return "aging", _with_truncation(
+            env,
+            (
+                f"no observation date in payload; class bounded at aging by the documented "
+                f"refresh window for {family} (L={latency}d, stale above {2 * latency}d). "
+                f"Actual age unknown — not fresh"
+            ),
+        )
+
     if not ndd:
-        return "unknown", "no date represented in the payload"
+        return "unknown", _with_truncation(env, "no date represented in the payload")
 
     age = (today - date.fromisoformat(ndd)).days
-    l = L.get(family)
-    if l is None:
-        return "unknown", f"no documented latency for source_family '{family}'"
+    # A future date makes every `age <= L` comparison succeed. That is a clock
+    # skew or a templated dateModified, not fresh data.
+    if age < 0:
+        return "unknown", _with_truncation(
+            env,
+            f"newest_data_date {ndd} is {-age}d in the future; treat age < 0 as unknown",
+        )
 
-    ret = RETENTION.get(family)
-    if ret is not None and age > ret:
-        return "expired", f"age {age}d exceeds {family} retention of ~{ret//30} months"
+    if latency is None:
+        return "unknown", _with_truncation(
+            env, f"no documented latency for source_family '{family}'"
+        )
 
-    if age <= l:
+    retention = env.get("retention_days")
+    if retention is None:
+        retention = RETENTION.get(family)
+    if retention is not None and age > retention:
+        return "expired", _with_truncation(
+            env, f"age {age}d exceeds {family} retention of ~{retention // 30} months"
+        )
+
+    if age <= latency:
         cls = "fresh"
-    elif age <= 2 * l:
+    elif age <= 2 * latency:
         cls = "aging"
     else:
         cls = "stale"
 
-    reason = f"age {age}d vs L={l}d for {family} (newest data {ndd}, via {env.get('date_field')})"
+    reason = (
+        f"age {age}d vs L={latency}d for {family} "
+        f"(newest data {ndd}, via {env.get('date_field')})"
+    )
 
     # Override A: credential lost and data already aged out.
-    # No `cls == "fresh"` guard here: that condition is unsatisfiable, because
-    # age > l can never coexist with cls == "fresh" (fresh is defined as age <= l).
-    # It was dead code, so a dead OAuth token silently produced "aging" - the
-    # exact silent-stale failure this skill exists to prevent.
-    if env.get("auth_state") in BLOCKING_AUTH and age > l:
+    # age > latency can never coexist with cls == "fresh".
+    if env.get("auth_state") in BLOCKING_AUTH and age > latency:
         cls = "stale"
         reason += "; auth unusable, cannot refresh — floored at stale"
-    return cls, reason
+    return cls, _with_truncation(env, reason)
 ```
 
 The override is a **floor at `stale`, not a warning**. That is a deliberate hard line: the
@@ -278,8 +329,10 @@ pricing with no queue* — **not** live data. It is a live query against a perio
 database. The `SERP` API is the live-fetch product; `Labs` is the index product. Conflating them is
 how a 60-day-old rank gets reported as today's.
 
-And the payload does not tell you where in the cycle you are. So the class cannot be computed from the
-response — only bounded: *"position between 30 and 90 days old"*. Write it that way.
+And the payload does not tell you where in the cycle you are. The class is therefore not an exact
+age. With `date_semantics: provider_refresh_window` it is **`aging`**, and the reason must say
+*"position between 30 and 90 days old"*. Write it that way. Do not call it `unknown` merely because
+the payload has no timestamp, and do not call it `fresh` because the query returned today.
 
 Also watch the silent cap: 700 keywords max per `keyword_overview` task and 1,000 items per response.
 The API **does not error** on the overflow; it returns the first N. Coverage claims from an oversized
@@ -309,8 +362,8 @@ the class is `unknown` and you report that, rather than reading the first optimi
 - **Empty ≠ stale.** Zero rows means the filter matched nothing, or the property is new, or access is
   wrong. It is not "old data". Report `row_count: 0` and investigate; do not classify it `stale`.
 - **Future dates.** A `newest_data_date` after today means a clock skew, a timezone bug, or a
-  `dateModified` template. `age` goes negative and every comparison passes, which is the worst possible
-  failure mode: the gate approves garbage. Treat `age < 0` as `unknown`.
+  `dateModified` template. A negative age would make every `age <= L` comparison succeed, so the
+  classifier returns `unknown` before that branch: `newest_data_date {date} is {n}d in the future`.
 - **`dateModified` is not a data date.** A CMS template or a plugin that rewrites the timestamp sitewide
   makes every page look fresh. Check for identical values across pages before trusting one.
 - **Seasonality.** A 28-day window with no prior-year comparison cannot distinguish a decline from a
@@ -318,7 +371,7 @@ the class is `unknown` and you report that, rather than reading the first optimi
 
 ## 6. Reproducibility, which is the sibling problem
 
-`r/SEO_Xpert`, 2026-07-19: an agent proposed **~150 internal link suggestions with total confidence;
+[r/SEO_Xpert, 2026-07-10](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/): an agent proposed **~150 internal link suggestions with total confidence;
 ~20 were usable.** The same page in a **fresh session** produced different recommendations.
 
 That is not a freshness bug — no date is wrong. It is the same underlying condition: **input the agent

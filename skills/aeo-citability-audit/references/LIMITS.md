@@ -15,12 +15,13 @@ given and the stronger position is named.
 being cited". It does not mean you will be cited, and no output of this skill is a
 forecast.
 
-**Non-reproducible outputs.** `r/DigitalMarketing`, 2026-04-17:
-*"Citation data is noisy. Run the same prompt 10 times, get different outputs."* The
-same practitioner class of failure is documented separately: opening a **fresh
-session** with an identical page produced different recommendations
-(`r/SEO_Xpert`, 2026-07-19), and an agent proposed ~150 internal links with total
-confidence of which **~20 were actually usable**.
+**Non-reproducible outputs.** Opening a **fresh session** with an identical page
+produced different recommendations
+([r/SEO_Xpert, 2026-07-10](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/)),
+and an agent proposed ~150 internal links with total confidence of which **~20 were
+actually usable**. Citation overlap is noisy for a measured reason: **91.07%** of
+cited URLs appeared in exactly one of ChatGPT, Perplexity and Google AI Overviews
+(Kevin Indig, "The Consensus Gap," Growth Memo, 2026-05-11).
 
 **Consequence for this skill's design:** the *analysis* is deterministic by
 construction — 20 binary checks against fixed rules — because only that layer is
@@ -35,8 +36,9 @@ say so. Do not silently re-score.
 
 ## 2. It cannot see ranking — and ranking is the #2 factor
 
-A keyless run scores **13 of 23** Shepard factors directly and **5** partially (see the
-`Keyless?` column in `references/CITATION_FACTORS.md`). Four are wholly unmeasurable: **search rank
+A keyless run scores **11 of 23** Shepard factors directly and **5** partially (see the
+`Keyless?` column in `references/CITATION_FACTORS.md`). Length and structured data are
+reported and not scored. Four are wholly unmeasurable: **search rank
 (9.4)**, fan-out rank (9.3), known source (5.4) and domain authority (5.0). A fifth, brand / entity
 trust (6.8), is measurable on-page only — its off-site half is out of scope.
 
@@ -123,14 +125,14 @@ on-page edits and no citation movement; that is the expected result, not a failu
 
 This skill fetches a page. Pages change. The failure documented in the wider
 workflow literature applies here in miniature
-(`r/AiAutomations`, 2026-09-07):
+([r/AiAutomations, 2026-09-07](https://www.reddit.com/r/AiAutomations/comments/1w9h1sv/an_seo_agent_kept_working_for_two_weeks_after_its/)):
 
 > *"A GSC OAuth token expired and the agent continued using cached Search Console
 > data for two weeks. Rankings were changing while its decisions were still based on
 > the old view… The workflow can run successfully against an input that should no
 > longer be trusted."*
 
-Corroborated (`r/SideProject`, 2026-09-24) against a product claiming
+Corroborated ([r/SideProject, 2026-09-24](https://www.reddit.com/r/SideProject/comments/1wp4s2r/do_unique_stuff_a_real_mcp_data_server/)) against a product claiming
 "sub-5-second analysis without hallucination risks": *"a fast ClickHouse query can
 still return confidently outdated Search Console data unless every report exposes its
 latest import time."*

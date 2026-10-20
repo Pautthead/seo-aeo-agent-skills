@@ -18,8 +18,9 @@ that reads like a prompt is a value.
 |---|---|---|---|---|
 | `gsc` | Clicks, impressions, CTR, position for *your own* property | Silently capped at 1,000 rows; no AI-feature breakdown | ~16 months | **High** — `L=3d`, own-data, dates in payload |
 | `ga4` | Sessions, engagement, conversions, landing-page behaviour | Attribution is modelled; bot/internal filters shift under you | 14 months default reports, up to 50 configurable | **High** — `L=3d` |
-| `bing_webmaster` | Second opinion on click/impression/index coverage | Low volume; duplicates GSC if you import it | ~16–24 months (verify in your property) | **High** — `L=3d` |
-| `dataforseo_labs` | SERP *structure* — who ranks, how they are configured | 30–90 day DB refresh sold as `live`; modelled volume | index-derived | **Low** — bounded 30–90d, no date in payload |
+| `bing_webmaster` | Second opinion on click/impression/index coverage | Low volume; duplicates GSC if you import it | ~16–24 months; the classifier default is the lower end, 16×30 days | **High** — `L=3d` |
+| `cdn_analytics` | Edge requests, status, cache, bot user-agents for *your* zone | Short retention; bot filters and sampled logs | whatever the plan keeps, often days | **High** within the window — `L=1d`. A live dashboard read with no row date is `observed` |
+| `dataforseo_labs` | SERP *structure* — who ranks, how they are configured | 30–90 day DB refresh sold as `live`; modelled volume | index-derived | **Low** — no date in payload, class bounded at `aging` (`L=45d`) |
 | `dataforseo_serp` | One SERP, one location, one device, right now | n=1; personalised; not evidence of stable rank | n/a (live) | **Highest** — it is a live fetch |
 | `dataforseo_backlinks` | Vendor's index of linking pages | "Lost" links are re-discovery failures, not deletions | index-derived | **Low** — `L≈45d` |
 | `dataforseo_onpage` | Your pages as crawled, at a moment | Your crawler's view ≠ Googlebot's | per-crawl | **High** — `observed` |
@@ -97,8 +98,19 @@ and — via import — a mirror of GSC data.
 - **If you import GSC data into it, you have one source, not two.** Imported data inherits GSC's
   freshness, including a possible GSC auth outage propagating invisibly.
 - **Index coverage data is Bing's, not Google's.** Bing's view of what Google has indexed does not exist.
-- **Publication date is lighter and varies** — verify against your own property's date picker rather
-  than trusting this table.
+- **Publication date is lighter and varies.** The classifier default is the lower end of the
+  documented range, **16×30 days**. A property that shows a longer window sets `retention_days`
+  on the envelope. Do not invent a 24-month expiry the picker does not show.
+
+**URL inspection (`GetUrlInfo`).** `GET https://ssl.bing.com/webmaster/api.svc/json/GetUrlInfo`.
+Microsoft's sample passes `siteUrl` as the registered property (`http://example.com`, not
+pre-encoded) and `url` as a quoted host (`"example.com"` in the sample). Dates are .NET
+`/Date(milliseconds±offset)/`, for example `/Date(1315349995266-0700)/`, not ISO-8601.
+`/Date(-` is null. A **400 on an already-encoded URL is double-encoding**: pass the raw URL and
+let the client encode once (`curl -G --data-urlencode`). `siteUrl` must match the registered
+property, including `http` vs `https` and a trailing slash.
+Docs: <https://learn.microsoft.com/en-us/dotnet/api/microsoft.bing.webmaster.api.interfaces.iwebmasterapi.geturlinfo>.
+This call stays in `source_family: bing_webmaster`. It is not a new family.
 
 **Freshness trust: high**, `L=3`. Free, no MCP required, genuinely additive when not double-counting GSC.
 
@@ -120,7 +132,10 @@ best available substitute for a Search Console you don't have.
 
 - **30–90 day database refresh.** `live` in the endpoint name means *live pricing with no queue*, not
   live data. A Labs position is up to 90 days wrong.
-- **No observation date in the payload.** You cannot compute the class; you can only bound it.
+- **No observation date in the payload.** With `date_semantics: provider_refresh_window` the class
+  is **`aging`**, bounded by `L=45` (stale above 90 days). It is not `unknown` merely because the
+  timestamp is missing, and it is not `fresh` because the query returned today. `unknown` is only
+  when there is no date and no documented window.
 - **Volume is modelled**, from panels, per locale. Absolute figures are not Google's and are not
   audited. Treat volume as an ordering, never as a number to put in a deck.
 - **Difficulty/KI is a vendor formula.** It is an index, not a measurement, and it does not predict a
@@ -141,6 +156,11 @@ best available substitute for a Search Console you don't have.
 - **Personalised by proxy.** Location, device, language and, on some engines, logged-in state all
   shift results. Two agents querying "the same" keyword get different SERPs and neither is wrong.
 - **It proves existence and composition, not traffic or position stability.**
+
+**Price, so it is not confused with Labs.** SERP API live advanced is **$2.00/1,000 tasks =
+$0.002/task**. A 2026-10-20 invoice for three such tasks was **$0.006**. The $0.60/1k figure is
+the ~5-minute standard queue, not the interactive rate. Labs default is $0.012/task +
+$0.00012/item; `historical_rank_overview/live` is the published 10× exception at $0.12 + $0.0012.
 
 **Freshness trust: highest** — genuinely observed, `date_semantics: observed`. Pair with repeated
 sampling before claiming a rank holds.
@@ -318,5 +338,7 @@ genuinely useful; an unlabelled one is not.
 - **Nothing but a sentence from the user** → §7. Do the keyless on-page work in parallel; it does not
   wait on the data.
 
-**The weakest freshness class governs the whole report.** Four fresh sources and one stale one do not
-average. State the governing envelope at the top of the output.
+**The weakest `role: evidence` class governs the figures that depend on it.** A `role: context`
+dataset (Labs volumes used only to pick keywords, a CDN chart that is not cited) does not pull
+the report to `unknown`. Omitting `role` means `evidence`. State the governing evidence envelope
+at the top of the output, and tag any context figure with its own class.

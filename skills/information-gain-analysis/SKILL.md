@@ -1,11 +1,11 @@
 ---
 name: information-gain-analysis
-description: "Measures what a page adds beyond what already ranks, then ranks the facts nobody else has. Use for content gaps, GEO/AEO audits, writer briefs, and diagnosing why AI engines skip you. Triggers: information gain, unique data, fact-pruning, content gap."
+description: "Judges what a page adds beyond the SERP, full or lite. Use for content gaps, writer briefs, and why AI engines skip a page. Triggers: information gain, unique data, fact-pruning, content gap, lite mode."
 license: Apache-2.0
 compatibility: Requires network access to the SERP results being baselined. No API keys, no MCP servers, no paid accounts. Refuses to run rather than guessing when the host has no web access at all.
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.4"
+  version: "1.1.0"
   updated: "2026-10-20"
   keys-required: "none"
 ---
@@ -14,7 +14,7 @@ metadata:
 
 > **Evidence:** METHODOLOGY-BRIEF §1.3 (US11354342B2 answer-composition / fact-pruning mechanism;
 > Ahrefs, Louise Linehan, 2026-08-20 — "there is no position four"; On-Page.ai study of 150 top-3
-> pages; Google has not confirmed any information gain requirement; `r/SEO` 2026-01-26 dissent);
+> pages; Google has not confirmed any information gain requirement; [r/SEO, 2026-01-26](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/) dissent);
 > §1.9 (measurement reality — **no reliable public source gives a specific
 > citation-lift window**); §1.2 and §1.6 (formatting-only edits and
 > structural slop detection). Research window September–October 2026.
@@ -39,9 +39,10 @@ The end product is **not a score**. It is a worklist.
 
 ## When not to use this
 
-- **The page does not rank.** Rank is the strongest single predictor of AI citation
-  (Shepard/Zyppy 2026-05-07, score 9.4/10). Fix that first. This skill cannot help a
-  page that is not in the candidate set.
+- **The page is not indexed, or you have not checked.** Step 0 is the precondition.
+  A page that is not in the index is not in the candidate set. Fix indexing first.
+  Continue only if the user explicitly asks, and then label the report
+  `PRECONDITION FAILED`. The score is not an action list.
 - **You want a citation forecast.** Information gain is a plausibility mechanism, not
   a predictor. See [HONESTY.md](references/HONESTY.md).
 - **Technical accessibility is broken.** Render-blocking JS, `nosnippet`, or content
@@ -55,13 +56,31 @@ The end product is **not a score**. It is a worklist.
 |---|---|---|
 | Target query | Yes | User supplies verbatim |
 | Target URL or page text | Yes | User pastes or you fetch it |
-| Web access to top results | Yes | Any one of: web search tool, `webfetch`/HTTP GET, browser automation. See [COMPETITOR_SERP.md](references/COMPETITOR_SERP.md) |
+| Web access to top results | Yes | Web search or HTTP GET. A SERP API is optional and costs money. DataForSEO SERP live advanced was **$0.002/task** on 2026-10-20. Say the cost before any paid call. Lite mode: at most 3 paid SERP calls, and only if the user asked |
 | Search Console / rank data | No | Optional. Used only to corroborate, never to score |
 | Paid API | No | Not required. See [SCORING.md](references/SCORING.md) |
 
 No key is required for any step. This skill must complete with zero credentials.
 
 ## Procedure
+
+Two modes. **`mode: full`** reads up to 5 baseline pages and a ledger of 40–120 rows;
+the worklist cap is 10. **`mode: lite`** reads 3 baseline pages, stops the ledger at
+25 rows, and caps the worklist at 5. A lite score is not comparable to a full score.
+Label the mode. The weekly loop uses lite. The keyless path is web search or HTTP GET.
+
+**Step 0 — Indexing precondition.**
+Before any baseline, check whether the target URL is indexed.
+
+- GSC URL Inspection, when that export is in the session.
+- Else a `site:` query. No result is **not** proof the URL is excluded.
+- If you cannot check, the precondition is **not scored**. Do not assume the page ranks.
+
+If the URL is not indexed, **stop**, unless the user explicitly asked you to continue.
+If you continue, the header says `PRECONDITION FAILED` and the score is not an action list.
+
+**Check:** index state is recorded, or recorded as not scored.
+**Pass:** you did not analyse an unindexed URL in silence.
 
 **Step 1 — Lock the query and the unit.**
 Record the query string verbatim as a user would type it, and record the single URL
@@ -102,9 +121,11 @@ A candidate only counts if it passes all five gates in
 [SCORING.md](references/SCORING.md): contrast, attribution, boundary, non-derivability,
 load-bearing. This is the anti-gaming step and it is not optional.
 
-**Check:** every counted candidate passes 5/5.
-**Pass:** no candidate that fails 2+ gates is included in any count. Numbers that fail
-attribution and boundary are deleted *and* incur the stuffing penalty.
+**Check:** every counted candidate passes the gates that apply to it.
+**Pass:** a candidate that fails exactly one gate is excluded from the counts and from
+the ranked list, and it is listed under rejected. It does not trigger the stuffing
+penalty. The stuffing penalty stays "3 or more numbers fail gate 2 and gate 3".
+ABSENT candidates are exempt from gate 1 and must still pass gates 2–5.
 
 **Step 6 — Classify and score.** Assign each surviving candidate to a production
 route (run the number / ask the expert / instrument the product / read the primary doc /
@@ -116,10 +137,9 @@ the seven deterministic dimensions. Both are specified in
 **Pass:** arithmetic verified. The score is a *summary*, the inventory is the
 deliverable.
 
-**Step 7 — Emit the ranked gain list.** Order by acquisition value —
-dimension contribution divided by cost and time — highest-and-cheapest first. Cap at
-10 rows; a 40-item worklist gets none of it done. Full ranking rule in
-[SCORING.md](references/SCORING.md).
+**Step 7 — Emit the ranked gain list.** Order by acquisition value. The weights are in
+[SCORING.md](references/SCORING.md): cost 1 / 2 / 4, time 1 / 2 / 4 / 8. Cap a full
+list at 10 and a lite list at 5. Never lead with R5.
 
 **Check:** every row has a route, a rough cost, and a rough time.
 **Pass:** no row says "add more unique content". If you cannot name how to obtain a
@@ -139,6 +159,8 @@ include the mandatory disclosure block in the output.
 
 **Query:**      <verbatim query string>
 **Page:**       <URL>
+**Mode:**       <full | lite>
+**Precondition:** <indexed | not indexed — PRECONDITION FAILED | not scored>
 **Baseline:**   <n> ranking pages read, <n> URLs, retrieved <YYYY-MM-DD>
 **Fetcher:**    <web search tool | webfetch | browser | none>
 **Unread:**     <n> pages that could not be retrieved — excluded from baseline

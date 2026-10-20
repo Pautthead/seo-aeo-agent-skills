@@ -12,9 +12,41 @@ npx skills add Pautthead/seo-aeo-agent-skills
 [![Install](https://img.shields.io/badge/install-npx%20skills-8a2be2.svg)](https://www.npmjs.com/package/skills)
 [![API keys](https://img.shields.io/badge/API%20keys-none%20required-brightgreen.svg)](skills/)
 [![Skills](https://img.shields.io/badge/skills-4-orange.svg)](skills/)
-[![Release](https://img.shields.io/badge/release-v1.0.4-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
+[![Release](https://img.shields.io/badge/release-v1.1.0-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
 
 ---
+
+## Quick start
+
+```bash
+npx skills add Pautthead/seo-aeo-agent-skills
+```
+
+Ask the agent:
+
+> Run `aeo-bot-access-audit` on https://fluyeporlaweb.com
+
+A real run on 2026-10-20, shortened. The full four reports are in [`examples/`](examples/).
+
+```
+# Bot Access Audit — fluyeporlaweb.com
+Date: 2026-10-20 · Method: keyless (curl)
+
+Verdict (that run): OPEN — 100/100
+robots.txt 200, User-agent: * Allow: /. Edge: 16 user-agents × 5 pages, all 200,
+same bytes as the browser. No cf-mitigated, no challenge.
+
+Re-scored with rule 11 (this release): 95/100, still OPEN.
+ClaudeBot is allowed and Claude-SearchBot has no group: −5 once.
+The 95 is the new rule applied to that fact. The 2026-10-20 run printed 100.
+```
+
+| Skill | Worked example |
+|---|---|
+| `seo-data-contract` | [examples/seo-data-contract-fluyeporlaweb.md](examples/seo-data-contract-fluyeporlaweb.md) |
+| `aeo-bot-access-audit` | [examples/aeo-bot-access-audit-fluyeporlaweb.md](examples/aeo-bot-access-audit-fluyeporlaweb.md) |
+| `aeo-citability-audit` | [examples/aeo-citability-audit-fluyeporlaweb.md](examples/aeo-citability-audit-fluyeporlaweb.md) |
+| `information-gain-analysis` | [examples/information-gain-analysis-fluyeporlaweb.md](examples/information-gain-analysis-fluyeporlaweb.md) |
 
 ## The four skills
 
@@ -24,8 +56,6 @@ npx skills add Pautthead/seo-aeo-agent-skills
 | [`aeo-bot-access-audit`](skills/aeo-bot-access-audit/SKILL.md) | Can AI bots actually fetch this site? | No (just `curl`) |
 | [`aeo-citability-audit`](skills/aeo-citability-audit/SKILL.md) | Would this page survive being extracted and cited? | No |
 | [`information-gain-analysis`](skills/information-gain-analysis/SKILL.md) | What does this page know that the SERP does not? | No |
-
-Roughly 80% of GEO is good, fundamental SEO. If a GEO service doesn't tell you that openly, they're selling you snake oil ([Jeremy Moser, via Digiday, 2026-03-10](https://digiday.com/media/geo-hype-busted-experts-call-it-more-seo-than-new-discipline/)).
 
 These skills score the same pages for a second job: being **extracted, quoted and attributed** inside a synthesized answer.
 
@@ -59,13 +89,13 @@ That distinction is the point of the skill. A clean `robots.txt` proves nothing 
 
 Three failure modes, all structural rather than clever.
 
-**1. Silent stale data.** The most-cited structural complaint in agentic SEO. From `r/AiAutomations`, 2026-09-07:
+**1. Silent stale data.** The most-cited structural complaint in agentic SEO. From [r/AiAutomations, 2026-09-07](https://www.reddit.com/r/AiAutomations/comments/1w9h1sv/an_seo_agent_kept_working_for_two_weeks_after_its/):
 
 > *"At analook dot com, a GSC OAuth token expired and the agent continued using cached Search Console data for two weeks. Rankings were changing while its decisions were still based on the old view... The workflow can run successfully against an input that should no longer be trusted."*
 
 The workflow exits 0. The report looks fine. Every number in it is a fact about the past phrased in the present tense.
 
-**2. Confident, unreproducible output.** From `r/SEO_Xpert`, 2026-07-19: an agent proposed ~150 internal links with total confidence; ~20 were usable. The same page, in a fresh session, produced different recommendations. Nothing in the output told you which items came from data and which came from the model's priors.
+**2. Confident, unreproducible output.** From [r/SEO_Xpert, 2026-07-10](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/): an agent proposed ~150 internal links with total confidence; ~20 were usable. The same page, in a fresh session, produced different recommendations. Nothing in the output told you which items came from data and which came from the model's priors.
 
 **3. Techniques that were never earning their keep.** `llms.txt` has been sold, blogged and shipped as an AI-visibility lever all year. Six 2026 studies find no link between publishing the file and more citations or more crawling. [The evidence table is below](#what-these-skills-refuse-to-do).
 
@@ -176,7 +206,7 @@ That is a subset of the ~80 agents the `skills` CLI supports. Any host that can 
 
 ## What these skills refuse to do
 
-Check this section if you are here to evaluate us.
+Check this section if you are here to evaluate us. Roughly 80% of GEO is ordinary SEO. A service that will not say so is selling a separate discipline the evidence does not support ([Jeremy Moser, via Digiday, 2026-03-10](https://digiday.com/media/geo-hype-busted-experts-call-it-more-seo-than-new-discipline/)).
 
 ### `llms.txt` does not get you cited in AI answers
 
@@ -191,9 +221,7 @@ Six 2026 studies. None finds a relationship between publishing `llms.txt` and mo
 | [CueScout](https://cuescout.com/blog/does-llms-txt-work) | 2026-10-15 | 537 SaaS sites, 80 AI Mode answers | 24.3% cited *with* vs 21.8% *without* (p=0.53); **none of the 708 cited links pointed at an llms.txt file** | vendor research |
 | [Arsentev, origin log](https://doi.org/10.5281/zenodo.23018429) | 2026-09-28 | 345,808 requests / 15 days | **Zero** crawler-token requests to `/llms.txt`; robots.txt got 698, sitemap.xml got 282 | measured |
 
-**The nuance that stops us overclaiming.** "Doesn't work" is too strong, and Ahrefs' own data says why. Of the 3% of files that get fetched at all, 96% of requests are bots — but **77% of those bots are not AI tools**. Named AI bots are 19.5% of requests and become the largest single bucket only when the four AI categories are combined. Within that, AI agents and the agentic infrastructure serving them are the biggest individual AI category at **10.5%**, yet they sit **fifth overall**, behind SEO audit tools (21.7%), unidentified clients (14.9%), general web crawlers (13.1%) and tech-profiling tools (11.6%). What the fetches do show is a coding-agent audience: *"Aside from statespace-indexer and GPTBot, Claude-Code … out-fetched every AI retrieval bot, every AI assistant, and every AI training crawler."* Mueller's answer, which Ahrefs characterises as responding to Lily Ray, was about Google's own **markdown developer documentation**, not about the `llms.txt` file as a standalone standard — he called it *"not done for search"* but *"a temporary crutch, perhaps to save some tokens"* for AI coding tools parsing developer docs. Ahrefs extends that reading to the file; we label it as their extension, not Mueller's words about `llms.txt`. CueScout's 537-site null result is the cleanest statement of it: **nothing that gets cited points at the file.**
-
-So: if your goal is showing up in ChatGPT, Perplexity or AI Overviews, an llms.txt file is, in Ahrefs' words, *"largely decoration."* If you ship developer documentation and coding agents are directed at it, it has a real chance of being read. Budget zero against traffic either way.
+**The nuance.** "Doesn't work" overclaims. Of the files that are fetched, most of the traffic is not an AI tool: Ahrefs puts AI agents at 10.5% of requests and fifth overall. Named AI bots reach 19.5% only when the four AI categories are added together. Mueller's "temporary crutch" line, which Ahrefs extends to this file, was about Google's markdown developer docs. CueScout's null result is the short version: nothing that gets cited points at the file. For ChatGPT, Perplexity or AI Overviews, Ahrefs calls the file "largely decoration." Budget zero against traffic.
 
 Google's own documentation, in a section headed *"Mythbusting generative AI search: what you don't need to do"*, under the bullet **"LLMS.txt files and other 'special' markup"**:
 
@@ -261,7 +289,7 @@ Prices checked 2026-10-19 against [dataforseo.com/pricing](https://dataforseo.co
 
 **Auth gotcha:** HTTP Basic only, and credentials come from the **API** login at `app.dataforseo.com/api-access`. Using the dashboard login is the single most common auth failure.
 
-**Getting started:** $1 trial credit, $50 minimum top-up. → [try.dataforseo.com/jijqq4kuyyde](https://try.dataforseo.com/jijqq4kuyyde)
+**Getting started:** $1 trial credit, $50 minimum top-up. → [fluyeporlaweb.com/go/dataforseo](https://fluyeporlaweb.com/go/dataforseo/) (affiliate link).
 
 ---
 
@@ -386,7 +414,7 @@ Built by [Pautthead](https://github.com/Pautthead). Full verification table with
 - [Google Search Central — AI features and your website](https://developers.google.com/search/docs/appearance/ai-features)
 - [OpenAI — crawler documentation](https://platform.openai.com/docs/bots) · [Perplexity — bots](https://docs.perplexity.ai/guides/bots)
 
-**Community reports** (anecdotal, used as illustrative of a failure mode, not as evidence): `r/AiAutomations`, `r/SEO_Xpert`, `r/SideProject`, `r/SEO`, `r/DigitalMarketing`, `r/AskMarketing`.
+**Community reports** (anecdotal, a failure mode, not evidence): [r/AiAutomations, 2026-09-07](https://www.reddit.com/r/AiAutomations/comments/1w9h1sv/an_seo_agent_kept_working_for_two_weeks_after_its/) · [r/SEO_Xpert, 2026-07-10](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/) · [r/SideProject, 2026-09-24](https://www.reddit.com/r/SideProject/comments/1wp4s2r/do_unique_stuff_a_real_mcp_data_server/) · [r/SEO, 2026-01-26](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/) · [r/AskMarketing, 2026-09-29](https://www.reddit.com/r/AskMarketing/comments/1wt41hp/guys_have_you_used_any_ai_seo_tools_for_aeogeo/).
 
 **Distribution:** the `skills` CLI by Vercel Labs, verified against the [Agent Skills specification](https://agentskills.io/specification) rather than blog posts — several 2026 install guides publish paths that do not exist.
 

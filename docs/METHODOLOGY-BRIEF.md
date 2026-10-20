@@ -77,7 +77,7 @@ load-bearing sentence: **"Within the top 3, position was unrelated to the score.
 150 pages were top-3, so nothing in the data separates position 1 from position 3.
 Originality is the variable, not rank.
 
-**Caveat to carry:** Ahrefs is explicit that Google has not confirmed this. The score is measured by *meaning*, so statistic-stuffing fails. There is practitioner dissent (`r/SEO`, 2026-01-26: *"there is no information gain requirement — how do I know this — I publish 100's of 000's of PAAs/FAQs a month"*). Keep that dissent in the reference file.
+**Caveat to carry:** Ahrefs is explicit that Google has not confirmed this. The score is judged by *meaning*, so statistic-stuffing fails. There is practitioner dissent ([r/SEO, 2026-01-26](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/): *"there is no information gain requirement — how do I know this — I publish 100's of 000's of PAAs/FAQs a month"*). Keep that dissent in the reference file.
 
 ### 1.4 `llms.txt` — it does not get you cited in AI answers
 
@@ -201,15 +201,15 @@ You cannot paraphrase your way out — the shape is the tell. This is the empiri
 any anti-slop guidance in this repo.
 
 ### 1.7 Stale-input failure mode — the gap this repo leads with
-`r/AiAutomations`, 2026-09-07:
+[r/AiAutomations, 2026-09-07](https://www.reddit.com/r/AiAutomations/comments/1w9h1sv/an_seo_agent_kept_working_for_two_weeks_after_its/):
 > *"At analook dot com, a GSC OAuth token expired and the agent continued using cached Search Console data for two weeks. Rankings were changing while its decisions were still based on the old view. That is an awkward failure to catch with a simple 'did the workflow run?' check. The workflow can run successfully against an input that should no longer be trusted."*
 
 The proposed fix, and the basis for `seo-data-contract`:
 > *"the input check needs to answer three separate questions: can it authenticate now, when did a retrieval last succeed, and what is the newest date represented in the retrieved data?"*
 
-Corroborating, `r/SideProject` 2026-09-24, against a ClickHouse-backed GSC MCP product claiming "sub-5-second analysis without hallucination risks": *"a fast ClickHouse query can still return confidently outdated Search Console data unless every report exposes its latest import time."*
+Corroborating, [r/SideProject, 2026-09-24](https://www.reddit.com/r/SideProject/comments/1wp4s2r/do_unique_stuff_a_real_mcp_data_server/) (comment by Mister-Node), against a ClickHouse-backed GSC MCP product claiming "sub-5-second analysis without hallucination risks": *"a fast ClickHouse query can still return confidently outdated Search Console data unless every report exposes its latest import time."*
 
-Practitioner consensus, `r/SEO_Xpert` 2026-07-19 — an agent proposed ~150 internal links with total confidence; **~20 were actually usable**. And: opening a **fresh session** with the identical page produced different recommendations, i.e. the agent cannot reproduce its own prior analysis.
+Practitioner consensus, [r/SEO_Xpert, 2026-07-10](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/) — an agent proposed ~150 internal links with total confidence; **~20 were actually usable**. And: opening a **fresh session** with the identical page produced different recommendations, i.e. the agent cannot reproduce its own prior analysis.
 
 ### 1.8 GEO ≈ 80% ordinary SEO
 Jeremy Moser (uSERP) via Digiday, 2026-03-10:
@@ -242,7 +242,7 @@ Positioning consequence: this repo must never imply AEO/GEO is a separate discip
   actually searching on Google"*), on the grounds that SimpleQA is OpenAI-built and
   unrepresentative. Any honest citation carries the dispute.
 - Google's own Search Console data is reported ~75% incomplete for AI features; there is **no separate AI Mode data** in Search Console.
-- "Citation data is noisy. Run the same prompt 10 times, get different outputs" (`r/DigitalMarketing`, 2026-04-17).
+- **91.07% of cited URLs appeared in exactly one of ChatGPT, Perplexity and Google AI Overviews** for the same prompt (Kevin Indig, "The Consensus Gap," Growth Memo, 2026-05-11). That is the sourced statement of how noisy a citation snapshot is.
 - **No reliable public source gives a specific citation-lift window.** The "60–120 days to
   first citation lift" figure this brief previously carried came from a field test that
   could not be verified, and it has been removed (see §1.9c). What survives is the
@@ -317,7 +317,7 @@ automation. Cite `https://otterly.ai/blog/reddit-geo-2026/` and state plainly th
 monitoring). Automate *measurement*; never automate *posting*.
 
 ### 1.11 FAQPage schema is not a GEO lever
-Shepard scores structured data at 5.6 and notes *"LLMs don't typically ingest schema as part of their training"* and *"limited evidence they can at least see schema when searching."* Practitioner dissent (`r/AskMarketing`, 2026-09-29): *"First: drop the FAQ schema. Google stopped showing those for most sites a while back."* Several 2026 skills still auto-recommend adding FAQPage — that is a direct contradiction. Do not repeat it.
+Shepard scores structured data at 5.6 and notes *"LLMs don't typically ingest schema as part of their training"* and *"limited evidence they can at least see schema when searching."* Practitioner dissent ([r/AskMarketing, 2026-09-29](https://www.reddit.com/r/AskMarketing/comments/1wt41hp/guys_have_you_used_any_ai_seo_tools_for_aeogeo/), comment by SpecialistApple129): *"First: drop the FAQ schema. Google stopped showing those for most sites a while back."* Google's own 2023-08 post limited FAQ rich results to government and health sites (<https://developers.google.com/search/blog/2023/08/howto-faq-changes>). Several 2026 skills still auto-recommend adding FAQPage — that is a direct contradiction. Do not repeat it.
 
 ### 1.12 Divergence between AEO surfaces
 Ahrefs (863K keywords / 4M AIO URLs, reported 2026-03): Google AI Overviews drew only **38%** of citations from top-10 organic results, down from **76% in July 2025**.
@@ -404,7 +404,7 @@ Limits that bite agents: max **700 keywords** per `keyword_overview` task, max *
 
 **Pricing trap to document.** SERP API headline rates are $2.00/1k live, $1.20/1k priority, $0.60/1k standard. The $0.60 figure is the standard queue, which takes ~5 minutes. For an interactive agent that is not an equivalent product, so **$2.00 is the honest comparison**. State this whenever a rate is quoted.
 
-Referral link (README only, optional-data table): `https://try.dataforseo.com/jijqq4kuyyde`
+Referral link, used wherever the README recommends DataForSEO: `https://fluyeporlaweb.com/go/dataforseo/` with a short disclosure ("affiliate link" / "enlace de afiliado"). Do not revert this to a bare `try.dataforseo.com` URL.
 
 ## 5. Market gaps this repo occupies
 

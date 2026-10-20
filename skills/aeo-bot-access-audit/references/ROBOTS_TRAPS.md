@@ -51,7 +51,7 @@ grep -n -i -A3 '^user-agent:[[:space:]]*\*' robots.txt
 
 Deterministic rule the agent applies:
 
-> If the file contains a `User-agent: *` group whose rule set includes `Disallow: /` (or `Disallow: /` with a trailing wildcard), that group applies to **every** bot not named in another group that has a longer, more specific match. Report **CRITICAL** if any citation-class bot (`OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, `Googlebot`, `Bingbot`) is not explicitly allowed at the root.
+> If the file contains a `User-agent: *` group whose rule set includes `Disallow: /` (or `Disallow: /` with a trailing wildcard), that group applies to every product token that has **no group of its own**. RFC 9309 merges every group whose token matches. It does not pick a longer token, and `*` does not have to come last. Report **CRITICAL** if any citation-class bot (`OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, `Googlebot`, `Bingbot`) is covered by a root `Disallow: /` — in its own group, or in `*` when it has no group.
 
 Also check the **other** order, which is just as common and just as fatal:
 
@@ -186,9 +186,9 @@ Then apply the classification rule from `CRAWLERS.md`:
 | Finding | Class | Rule |
 |---|---|---|
 | `GPTBot` disallowed, `OAI-SearchBot` absent | T blocked, R allowed | Privacy goal met. Working as intended. Report as a **confirmed correct configuration**. |
-| `GPTBot` **allowed**, `OAI-SearchBot` absent | T allowed, R allowed | Coincidentally correct for citations. Flag: the reason is wrong, and the file invites a future edit that fixes the visible group and breaks the invisible one. **MAJOR — write the explicit allow.** |
+| `GPTBot` **allowed**, `OAI-SearchBot` absent | T allowed, R allowed | Coincidentally correct for citations. The file invites a later edit that "fixes" the visible group and breaks the invisible one. **MINOR.** Score rule 11: **−5 once** for OpenAI. Write the explicit allow. |
 | `ClaudeBot` disallowed, `Claude-SearchBot` absent | T blocked, R allowed | Correct. Report as confirmed. |
-| `ClaudeBot` allowed, `Claude-SearchBot` absent | T allowed, R allowed | Same as the GPTBot case above. **MAJOR.** |
+| `ClaudeBot` allowed, `Claude-SearchBot` absent | T allowed, R allowed | Same shape as the GPTBot row. **MINOR.** Score rule 11: **−5 once** for Anthropic. A missing `Claude-User` is the same vendor pair — do not deduct again. |
 | Any citation-class token disallowed | R blocked | **CRITICAL.** The site has chosen to exit that engine. Spell out the consequence. |
 
 The check that catches the worst version of this bug is not in robots.txt at all:

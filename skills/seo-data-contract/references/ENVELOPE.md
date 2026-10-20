@@ -5,9 +5,8 @@ The envelope is a small JSON object attached to every dataset before analysis. I
 
 Design constraint that governs everything below: **the envelope must be cheaper to produce than the
 analysis.** If applying the contract costs more than the audit, nobody applies it. Hence a two-tier
-schema — 11 fields for a pasted file or a typed number, 18 for a live authenticated pull. The 7
-extra fields in Tier 2 are all optional; three of them are freely nullable, so Tier 1 is not
-meaningfully more work than Tier 2.
+schema — 11 fields for a pasted file or a typed number, 19 for a full envelope. Two of the
+extra fields are conditionally required (`date_grain`, `date_field`); the other six are optional.
 
 ---
 
@@ -34,10 +33,17 @@ Required for any input, including a number typed in chat.
 If `provenance_note` is the only honest thing you can write — `"user typed this in chat"` — that is a
 complete envelope. Fill the rest later or never.
 
-## 2. Tier 2 — the full envelope (18 fields)
+## 2. Tier 2 — the full envelope (19 fields)
 
-Adds subject scoping, the audit trail for the date, and completeness metadata — the 7 optional
-fields `subject`, `date_grain`, `date_field`, `row_count`, `truncated`, `truncation_note`, `filters`.
+Adds subject scoping, the audit trail for the date, completeness, and the dataset's role in the
+report. Eight fields beyond Tier 1.
+
+Two are **conditionally required**: `date_grain` and `date_field` must be filled whenever
+`newest_data_date` is non-null. They are not Tier 1, and they are not freely optional.
+
+Six are optional: `subject`, `row_count`, `truncated`, `truncation_note`, `filters`, `role`.
+`role` defaults to `evidence` when omitted. Set `role: context` for a dataset whose figures are
+not used in the analysis (a Labs volume used only to pick a keyword, a CDN chart that is not cited).
 
 ```json
 {
@@ -57,7 +63,7 @@ fields `subject`, `date_grain`, `date_field`, `row_count`, `truncated`, `truncat
   "date_field": "date",
 
   "freshness_class": "fresh",
-  "class_reason": "age 3d ≤ L 3d for gsc (latest complete day)",
+  "class_reason": "age 3d vs L=3d for gsc (newest data 2026-10-16, via date); truncated at a known cap — partial slice, do not compute aggregates (Override B)",
 
   "row_count": 1000,
   "truncated": true,
@@ -92,7 +98,12 @@ property numeric ID, the URL set, or the competitor domain. Without it, two enve
 source are indistinguishable.
 
 ### `source_family` — enum | required
-One of: `gsc` · `ga4` · `bing_webmaster` · `dataforseo_labs` · `dataforseo_serp` · `dataforseo_backlinks` · `dataforseo_onpage` · `dataforseo_content_analysis` · `dataforseo_ai_optimization` · `ahrefs` · `semrush` · `se_ranking` · `screaming_frog` · `server_log` · `scraped_page` · `crawl_api` · `user_pasted` · `unknown`
+One of: `gsc` · `ga4` · `bing_webmaster` · `cdn_analytics` · `dataforseo_labs` · `dataforseo_serp` · `dataforseo_backlinks` · `dataforseo_onpage` · `dataforseo_content_analysis` · `dataforseo_ai_optimization` · `ahrefs` · `semrush` · `se_ranking` · `screaming_frog` · `server_log` · `scraped_page` · `crawl_api` · `user_pasted` · `unknown`
+
+`cdn_analytics` is Cloudflare, Fastly, Akamai, or a similar edge analytics export. `L=1` day.
+Bing URL-inspection style calls (`GetUrlInfo`) stay in `bing_webmaster`; see `SOURCES.md` for the
+`/Date(ms)/` format and the encoding trap. Do not invent a family and then classify `unknown`
+because the family is missing from the `L` table.
 
 See `SOURCES.md` for latency `L`, retention, and blind spots per family.
 
@@ -118,12 +129,12 @@ ago from one it wrote weeks ago.
 timezone (note that timezone in `provenance_note`). Not the fetch time. Not the nominal filter end.
 See §4 for extraction per source.
 
-`null` is legitimate for: typed numbers, evergreen SERP snapshots, and any vendor payload that does
-not carry a data date (notably DataForSEO Labs). `null` forces `freshness_class: unknown` unless a
-documented provider refresh window is substituted, in which case set
-`date_semantics: provider_refresh_window`.
+`null` is legitimate for: typed numbers, and any vendor payload that does not carry a data date
+(notably DataForSEO Labs). `null` with no documented window forces `freshness_class: unknown`.
+`null` with `date_semantics: provider_refresh_window` is **`aging`**, not `unknown`: the window
+is the substitute, and its upper bound is not fresh. See `FRESHNESS.md` §3.
 
-### `date_grain` — enum | required
+### `date_grain` — enum | Tier 2, conditionally required
 `day` · `week` · `month` · `quarter` · `point_in_time` · `none`
 
 Sets how much error a one-day miss introduces. A `month` source with newest date 2026-09-30 is up to
@@ -141,7 +152,7 @@ data timestamp.
 | `provider_refresh_window` | The vendor's stated index/database refresh cycle | vendor-reported, usually unaudited |
 | `none` | No date exists in the payload | — routes to `unknown` |
 
-### `date_field` — string | required (nullable)
+### `date_field` — string | Tier 2, conditionally required (nullable)
 The exact field or column the value came from: `"date"`, `"metrics.cpc[].date"`, `"HTTP:Last-Modified"`,
 `"sitemap:lastmod"`. Non-null whenever `newest_data_date` is non-null. This is what lets a reviewer
 recompute the class without re-running the query.
@@ -170,6 +181,18 @@ export and per view; **DataForSEO 1,000 items** per response, 700 keywords per `
 Any aggregate computed across a truncated set is invalid — say so in `truncation_note`.
 
 `false` means "not known to be truncated", not "complete". Absence of evidence.
+
+### `role` — enum | optional
+
+`evidence` (default) or `context`.
+
+- `evidence`: a figure from this dataset is used in the analysis. Its class gates those figures.
+- `context`: the dataset chose a sample, a keyword, or a priority, and none of its figures are
+  cited. It does not enter the combined gate. If you do print one of its figures, that figure
+  still carries its own class inline.
+
+Omitting `role` means `evidence`. A mixed report does not become `unknown` because a context
+dataset is `unknown`. See §7.
 
 ### `filters` — object | optional
 The exact query parameters. For GSC this is load-bearing: `dataState: "final"` vs `"all"` changes
@@ -236,7 +259,7 @@ surfaces a "data updated" or "last crawled" field, use it and cite the URL.
 
 ### 5a. GSC export CSV, pasted by the user
 
-User pastes a CSV. No credentials in session. The export is 34 days old.
+User pastes a CSV. No credentials in session. Newest row 2026-09-08, read on 2026-10-19: **41 days**, not 11.
 
 ```json
 {
@@ -252,7 +275,7 @@ User pastes a CSV. No credentials in session. The export is 34 days old.
   "date_semantics": "row_date",
   "date_field": "date (current comparison block)",
   "freshness_class": "stale",
-  "class_reason": "age 11d > 2×L(3d) for gsc",
+  "class_reason": "age 41d vs L=3d for gsc (newest data 2026-09-08, via date (current comparison block)); truncated at a known cap — partial slice, do not compute aggregates (Override B)",
   "row_count": 1000,
   "truncated": true,
   "truncation_note": "Export at the 1,000-row GSC cap. Rows are the top 1,000 by impressions; no totals computable.",
@@ -266,9 +289,7 @@ User pastes a CSV. No credentials in session. The export is 34 days old.
 }
 ```
 
-Read correctly: the export is not just old, it is **capped**. The 11-day age is mild; the cap is the
-real hazard, because a top-1,000 slice renders as "your pages" and invites totals. Both facts go in
-the report.
+Read correctly: the export is not just old, it is **capped**, and it is **41 days** old (2026-09-08 read on 2026-10-19), which is past `2×L` (6 days), so the class is `stale`. Both facts go in the report. Summing the 1,000 rows is not allowed.
 
 ### 5b. DataForSEO Labs response
 
@@ -286,7 +307,7 @@ the report.
   "date_semantics": "provider_refresh_window",
   "date_field": "provider refresh cycle (30–90 days, documented)",
   "freshness_class": "aging",
-  "class_reason": "no observation date in payload; class assigned from documented 30–90d refresh cycle, midpoint L=45d. Actual refresh date unknown — could be 30d or 89d old.",
+  "class_reason": "no observation date in payload; class bounded at aging by the documented refresh window for dataforseo_labs (L=45d, stale above 90d). Actual age unknown — not fresh; truncated at a known cap — partial slice, do not compute aggregates (Override B)",
   "row_count": 700,
   "truncated": true,
   "truncation_note": "700 keywords submitted = max for keyword_overview-family tasks. 1,340 keywords in the input set were dropped silently by the API.",
@@ -320,8 +341,8 @@ set was ≤700.
   "date_grain": "point_in_time",
   "date_semantics": "content_claim",
   "date_field": "JSON-LD article.dateModified",
-  "freshness_class": "observed",
-  "class_reason": "observed-object override: live fetch at captured_at, so the age gate does not apply. Age of the content itself is unknown and is not what this field measures. State the n=1 representativeness limit instead.",
+  "freshness_class": "aging",
+  "class_reason": "age 2d vs L=1d for scraped_page (newest data 2026-10-17, via JSON-LD article.dateModified)",
   "row_count": 1,
   "truncated": false,
   "filters": null,
@@ -329,11 +350,13 @@ set was ≤700.
 }
 ```
 
-Note `freshness_class: observed` — a documented override value, not an undocumented extension of
-the enum. For non-indexed, directly-observed objects (the page exists, has these elements) the age
-question is about *content*, not *data*, so the class gates do not apply and
-`FRESHNESS.md` §3 "Observed-object override" handles it. `class_reason` must still say what the
-override was and what the real limit is (representativeness), never just `observed`.
+This envelope is the publisher's date, not the fetch. `date_semantics: content_claim` cannot
+produce `freshness_class: observed` — validation rule 6. Read on 2026-10-19, `dateModified`
+2026-10-17 is age 2d against `L=1`, which is `aging`.
+
+The fetch itself is a second envelope: `date_semantics: observed`, `newest_data_date` equal to the
+capture date, class `observed`. That one records that the page was seen. It does not vouch for
+`dateModified`. Do not merge the two into one object.
 
 ### 5d. User typed a number, no provenance
 
@@ -403,5 +426,12 @@ Two levels, both required.
 a footnote. A freshness caveat at the bottom of a report is read after the conclusions and loses the
 argument.
 
-Multiple datasets in one report get multiple envelopes and a combined gate: **the weakest class
-governs the whole report.** Two fresh sources and one stale one do not average.
+Multiple datasets in one report get multiple envelopes. The combined gate is the **weakest class
+among datasets with `role: evidence`**. A `role: context` dataset does not pull the report down.
+Two fresh evidence sources and one stale evidence source do not average: the stale one governs
+the figures that depend on it, and the report says which figures those are.
+
+A report that cites only fresh GSC rows, and uses Labs volumes only to choose keywords
+(`role: context`), is gated by the GSC class. Printing a Labs number anyway requires that
+number's own class on the figure. There is no report-level `unknown` caused by a source you
+did not use.

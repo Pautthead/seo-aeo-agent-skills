@@ -2,7 +2,7 @@
 
 **This is the most heavily caveated skill in the repo.** The framework it implements is
 over-claimed in the market, including by people selling services based on it. Read this
-before running the skill, and reproduce §8 in every report you generate.
+before running the skill, and reproduce §10 in every report you generate.
 
 ---
 
@@ -28,7 +28,7 @@ AI citations," delete that sentence and replace it.
 
 ## 2. There is practitioner dissent, and it is substantive
 
-From r/SEO, 2026-01-26:
+From [r/SEO, 2026-01-26](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/) (comment by WebLinkr):
 > "there is no information gain requirement — how do I know this — I publish 100's of
 > 000's of PAAs/FAQs a month"
 
@@ -46,7 +46,7 @@ This is not a weak objection, and it should not be dismissed:
 Present dissent when asked, and whenever the report is going to someone deciding whether
 to act on the finding.
 
-## 3. The score is measured by meaning, so it is not automatable
+## 3. The score is judged by meaning, so it is not automatable
 
 **This is the most important honesty point in the repo. Read it twice.**
 
@@ -74,7 +74,7 @@ way twice.
   a reasoned reading of the text, that a human must confirm.
 - Two runs can differ. That is a property of the method, not a bug. Surface the
   disagreement rather than averaging it away — the reproducibility failure documented at
-  `r/SEO_Xpert`, 2026-07-19 (~150 internal links proposed with total confidence, ~20
+  [r/SEO_Xpert, 2026-07-10](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/) (~150 internal links proposed with total confidence, ~20
   usable; the same page in a fresh session gave different recommendations), is exactly
   this failure mode.
 
@@ -84,7 +84,7 @@ way twice.
 ## 4. The 2026 enforcement cycle is tightening
 
 Google has run **four spam updates in 2026, versus one in all of 2025**
-(§1.5, sourced).
+(METHODOLOGY-BRIEF §1.5, sourced).
 
 Gary Illyes, Search Central Live Barcelona, 2026-10: Google now considers **scaled AI
 content a bigger problem than link spam.**
@@ -126,8 +126,8 @@ Perplexity and Google AI Overviews** for the same prompt (Kevin Indig, "The Cons
 Growth Memo, 2026-05-11; 20,000 prompts, 3.7M URL citations). Single-engine tracking is close
 to no tracking. That is a three-engine overlap figure, not a general statement about
 "platforms", and the data is Omnia's own tracking set, which Indig states is skewed toward
-Omnia's customer base. Citation data is also unstable — run the same prompt ten times, get
-different outputs (`r/DigitalMarketing`, 2026-04-17).
+Omnia's customer base. The overlap figure is the sourced statement of how noisy a
+single citation snapshot is.
 
 ## 6. Review at volume does not scale, and review is not the same as originality
 
@@ -275,9 +275,9 @@ output format, not an optional appendix.
 **Information gain is not a confirmed Google requirement.** It is modelled from
 US11354342B2 (answer composition) and an Ahrefs analysis (2026-08-20). Google has not
 confirmed any information gain requirement. There is active practitioner dissent
-(r/SEO, 2026-01-26).
+([r/SEO, 2026-01-26](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/)).
 
-**This score is measured by meaning.** Fact enumeration, baseline matching, and
+**This score is judged by meaning.** Fact enumeration, baseline matching, and
 dimension arithmetic are deterministic. Whether a number is informative or is padding
 is a judgement about meaning and is not reproducible. Treat the score as a structured
 opinion, not a measurement.
@@ -287,14 +287,15 @@ rate. GEO vendor data shows AI visibility can rise while organic traffic falls 6
 (Lily Ray). Authority gets sites into the indexes feeding AI products; correlation is
 not causation.
 
-**Human review is not sufficient.** Documented pattern: sites claiming human editors on
-AI drafts were devalued anyway, because the problem was the overall pattern of what the
-site published (Lily Ray). Google ran four spam updates in 2026 versus one in 2025;
-Gary Illyes (Search Central Live Barcelona, 2026-10) says scaled AI content is now a
-bigger problem than link spam.
+**Review does not create the original fact.** Lily Ray, *The AI Slop Loop*, 2026-04-14:
+a human forwarded wrong information and the artefact still arrived wrong. Review
+catches errors. It does not manufacture the missing fact. Google ran four spam updates
+in 2026 versus one in 2025; Gary Illyes (Search Central Live Barcelona, 2026-10) says
+scaled AI content is now a bigger problem than link spam.
 
-**Coverage is a sample.** The baseline is 3–5 retrieved pages. It is not the source set
-an AI answer was synthesized from. No reliable public source gives a citation-lift
+**Coverage is a sample.** Full mode reads 3–5 pages. Lite mode reads 3 and stops the
+ledger at 25 rows. Neither is the source set an AI answer was synthesized from. A lite
+score is not comparable to a full score. No reliable public source gives a citation-lift
 window, so do not quote one.
 ```
 
@@ -302,8 +303,8 @@ window, so do not quote one.
 
 - Ahrefs, "Information Gain in SEO," Louise Linehan — 2026-08-20 — includes the explicit statement that Google has not confirmed it
 - US11354342B2, Google LLC — answer composition, overlap deletion
-- Practitioner dissent, r/SEO — 2026-01-26
-- Practitioner dissent / reproducibility failure, r/SEO_Xpert — 2026-07-19
+- Practitioner dissent, r/SEO — 2026-01-26 — [permalink](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/)
+- Practitioner dissent / reproducibility failure, r/SEO_Xpert — 2026-07-10 — [permalink](https://www.reddit.com/r/SEO_Xpert/comments/1ush4r6/my_experience_with_using_ai_claude_codecodex_for/)
 - Lily Ray — GEO vendor case study (66% traffic decline), human-in-the-loop failure, cycle summary
 - Gary Illyes, Search Central Live Barcelona — 2026-10
 - Google Search Central, AI-generated content guidance — updated 2026-10-01
@@ -312,7 +313,6 @@ window, so do not quote one.
 - Jochen Madler (Sitefire), "SlopShape: Identifying AI-Generated Commercial Web Content" — `https://arxiv.org/abs/2609.15369` — 2026-09-14, v3 2026-09-28 — **97.0 macro-F1 on held-out companies**, 176 structural features of a 203-feature instrument, 2,250 human posts vs 11,250 AI mirrors
 - Nathan Hall, Zenodo — `https://doi.org/10.5281/zenodo.23128812` — v1.2 2026-10-03 — **disclosed competing interest: the author owns Lefty Media Co and builds the plugin that announces the file measured**
 - Muck Rack, "What is AI Reading" — 2026-05-07 — **vendor research**; 84% is "earned media" as Muck Rack defines it (Wikipedia and PubMed Central included; journalism alone is 27%), and Muck Rack's own pages contradict each other by 25× on sample size
-- `r/DigitalMarketing` — 2026-04-17 — prompt-output instability
 - Jochen Madler (Sitefire), "SlopShape: Identifying AI-Generated Commercial Web Content" — `https://arxiv.org/abs/2609.15369` — 2026-09 — **97.0 macro-F1 on held-out companies.** Earlier drafts of this repo rendered this as an accuracy percentage; it is a macro-averaged F1 against a balanced-class definition, not a share of pages classified correctly.
 - ProCloser field test — 2026-05-27 — n=5 — **removed: NOT FOUND.** No URL, no snippet, no primary text located. It was cited for a "60–120 days to citation lift" window, and the figure is widely repeated without a traceable primary. Do not reinstate either the number or the attribution.
 

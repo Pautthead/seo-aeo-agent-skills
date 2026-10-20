@@ -12,14 +12,38 @@ measured. Everything in X-01…X-08 is an attempt to observe that mechanically.
 
 ## X-01 — Answer in the first 1–2 paragraphs · Shepard 8.8
 
+**Main content region.** The first `<article>`, else `<main>`, else `<body>`. Drop
+`<nav>`, a `<header>` that is a direct child of `<body>`, and a `<footer>` or
+`[role=contentinfo]` that is a direct child of `<body>` and not inside `article` or
+`main`. Do not drop a footer inside `article` or `main`. That footer holds the byline
+and the sources.
+
+**Where the target query comes from.** Record the rung. Do not skip a rung.
+
+1. The GSC top query for this URL in the current comparison block, when that export
+   is in the session.
+2. Else the single `h1`, with a brand suffix after `|`, `—` or `–` stripped.
+3. Else the first JSON-LD `keywords` value.
+
+A sitewide keyword such as "ia para programar" is rung 3. It is not a reason to skip
+the H1. A fail that used rung 3 is a **query-selection result**. Say which rung, and
+do not treat it as a page failure until rung 1 or 2 was tried.
+
 **Rule.** Compute the first 400 visible characters of the main content region, in
 document order, from the block list built in Step 1. **PASS** if either:
 
 - the first 400 visible characters contain a block that answers the target query, **or**
 - the target query's answer-bearing block appears within the first 2 non-empty blocks.
 
-The query-answer test is explicit-phrasing test: does that block contain a term from
+The query-answer test is an explicit-phrasing test: does that block contain a term from
 the target query plus a claim about it, rather than a promise to address it later?
+Whether a sentence is a claim is a **labelled judgement**. The character offset is
+the measurement.
+
+**Near-boundary.** If the answer starts at visible characters **340–460** (400 ± 15%)
+**and** `chars_per_token` for the page language is **above 5.5**, the check is
+**not scored**. It is not a fail. The table is in the multilingual calibration
+section of this file.
 
 **Failing shapes** (all common, all cheap to fix):
 
@@ -33,7 +57,7 @@ that spend more characters per token: at the values in the table below, a 400-ch
 window holds roughly a sixth fewer Spanish words than English ones. The threshold is
 therefore slightly *stricter* in Spanish, German and French, not more lenient — which is
 the wrong error direction for a position check, because it can flag a good page as late.
-Report a near-boundary result in those languages as **not scored** rather than as a fail.
+Report a near-boundary result, defined above, as **not scored** rather than as a fail.
 Do not convert this threshold into words.
 
 **Multilingual:** the check is on document position and character count, so it is
@@ -45,19 +69,16 @@ required — the audit does not stem, and should not.
 
 ## X-02 — Text present in the initial HTML · Shepard 7.6
 
-**Rule.** From the raw HTTP response body (Step 0 snapshot), strip `<script>`,
-`<style>`, `<noscript>` and all tags, then count visible characters in the main
-content region.
+**Rule.** X-02 needs **both** snapshots: the raw HTTP body and a rendered DOM of the
+same URL at the same moment.
 
-- **PASS** if `visible_chars_raw >= 400` and the raw-HTML block list (built the same
-  way as the rendered one) contains at least as many non-empty blocks as the
-  rendered one.
-- **FAIL** otherwise. `200 <= visible_chars_raw < 400` is **FAIL (thin)** — the
-  page returns prose, but too little of it to carry an extractable answer. Do not
-  leave this band unassigned; a check with an undefined region is not
-  deterministic.
-- **UNVERIFIABLE** only if only a rendered DOM was captured. Report it as unverifiable.
-  Do not pass it.
+- **N/A `no-rendered-snapshot`** when you have only the raw body (curl, no browser).
+  Do not pass and do not fail.
+- **N/A `no-raw-snapshot`** when you have only a rendered DOM. Do not pass and do not fail.
+- **PASS** only when both exist, `visible_chars_raw >= 400`, and the raw-HTML block
+  list contains at least as many non-empty blocks as the rendered one.
+- **FAIL** only when both exist and the raw body does not meet that bar.
+  `200 <= visible_chars_raw < 400` is **FAIL (thin)**.
 
 **Known correctness bug to not reproduce:** `zubair-trabzada/geo-seo-claude` issue #19
 falsely reports server-side-rendered sites as JS-rendered. The cause is comparing
@@ -183,8 +204,13 @@ Do not do that. What X-05 actually rewards is **named subjects**, not short bloc
 
 **Rule.** **PASS** if either:
 
-- ≥1 `<table>` with a `<thead>`/`<th>` header row and ≥2 data rows and ≥2 columns, or
+- ≥1 `<table>` with a `<thead>` or a header row of `<th>`, **and** ≥2 data rows,
+  **and** ≥2 columns, or
 - ≥3 `<li>` items inside a single list.
+
+W-05 uses the same table shape and does **not** accept a list. A list that passes
+X-06 does not pass W-05. W-05 also requires the table to compare at least two named
+things. See [CITATION_WORTHINESS.md](CITATION_WORTHINESS.md).
 
 **Language-agnostic.** Element counting only.
 
@@ -252,10 +278,23 @@ downstream matters if the crawler gets a wall.
    declaration — same language family, allowing regional variants
    (`en-GB` vs `en-US` pass; `en` vs `de` fail).
 
-**Detection.** Score each candidate language against its stopword list over the first
-3 blocks. Highest hit rate wins; if the top two are within 3 points, declare
-**MIXED** and mark X-08 N/A with `mixed-language` recorded, because a mixed page has
-no single correct answer and a fail would be a false negative.
+**Detection.** Score each candidate language against the stopword list in the next
+section, over the first 3 blocks. Highest hit rate wins; if the top two are within
+3 points, declare **MIXED** and mark X-08 N/A with `mixed-language` recorded, because
+a mixed page has no single correct answer and a fail would be a false negative.
+
+**Stopword lists (shipped).** Used by X-08 and by the heading-token half of E-02.
+Match whole tokens, case-insensitive. These are function words, not a stemmer.
+
+```
+en  a an the of to and in for on with at by from as is are was were be been being it its this that these those or but if not no nor so than then too very can will just about into over after before
+nl  de het een van en in op te voor met als is zijn was waren dit dat deze die niet ook maar of tot uit aan bij om naar over
+es  el la los las un una unos unas de del al y o u en con por para que es son fue como más pero si no ya su sus este esta esto estos estas
+pt  o a os as um uma uns umas de do da dos das e ou em com por para que é são foi como mais mas se não já seu sua este esta isto
+it  il lo la i gli le un uno una di del della dei delle e o in con per che è sono fu come più ma se non già suo sua questo questa
+fr  le la les un une des de du au aux et ou en avec pour que est sont fut comme plus mais si ne pas déjà son sa ce cette ces
+de  der die das den dem des ein eine einer eines und oder in mit von zu für auf ist sind war wie mehr aber wenn nicht schon sein seine dieser diese dieses
+```
 
 **Language attribute is not cosmetic.** Language is a Shepard factor at 6.3 and it is
 also the precondition for the whole multilingual calibration in Step 3 of the skill:
@@ -297,7 +336,7 @@ measures is not a regex problem at all.
   differently. X-05 measures self-containment, not length, so this audit does not
   inherit the error — but a human reading the report should not be told their
   paragraphs are "too long" by a rule ported from English.
-- **Typographic quotation marks.** `"…”"` in English, `„…“` in German, `«…»` in
+- **Typographic quotation marks.** `“…”` in English, `„…“` in German, `«…»` in
   French, `“…”` in Spanish. Any quotation or attribution check must accept all of
   them, not just ASCII.
 
@@ -345,4 +384,5 @@ visible characters and the first 2 blocks. This is deliberate: it keeps the chec
 language-agnostic. But a character budget is not neutral across languages — 400
 characters is fewer Spanish words than English ones, so the threshold is mildly
 *stricter* there. A near-boundary result in a long-token language is **not scored**,
-not a fail. Missing a marginal page is acceptable; failing a good one is not.
+not a fail. The boundary is characters 340–460 together with `chars_per_token` above
+5.5, defined under X-01. Missing a marginal page is acceptable; failing a good one is not.

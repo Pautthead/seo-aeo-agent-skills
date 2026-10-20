@@ -133,6 +133,7 @@ Claude-User:      Mozilla/5.0 (compatible; Claude-User/1.0; +claudebot@anthropic
 | `GoogleOther` | **S** | Unclassified Google fetcher. | **Allow** |
 | `Google-Read-Aloud` | **U** | Read-aloud / voice surfacing. | **Allow** |
 | `Google-PageRenderer` | **—** | JS rendering, not a user-facing crawler. | **Allow** |
+| `AdsBot-Google` | **—** | Google Ads crawler. Not AI. | Allow if you run ads |
 
 Google publishes full user-agent strings for most of its crawlers. Copy them, or match
 the token substring. Two tokens are exceptions and are marked below.
@@ -173,7 +174,6 @@ Google-Read-Aloud:      match the token substring; the Chrome version in its UA 
 |---|---|---|---|
 | `Bingbot` | **S** | Bing index. Microsoft states Bingbot also feeds Bing Chat and Copilot answers. | **Allow — never block** |
 | `msnbot` | **S** | Legacy MSN/Bing crawler, same vendor. | **Allow** |
-| `AdsBot-Google` | — | Google Ads crawler. Not AI. | Allow if you run ads |
 
 ```
 Bingbot: Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)
@@ -245,7 +245,6 @@ All class **T**. None of these produce citations. Blocking them costs you nothin
 | `DeepSeekBot` | DeepSeek | Training. | **Block** |
 | `cohere-ai` | Cohere | Training. Token is lowercase in the wild; matching is case-insensitive. | **Block** |
 | `omgili` | Meltwater / Omniglot | Training and dataset licensing. | **Block** |
-| `Bytespider` / `CCBot` / `img2dataset` | Hugging Face | Training datasets. | **Block** |
 | `AI2Bot` | Allen Institute for AI | Research crawl. | **Either** |
 | `Timpibot` | Timpibot | Third-party training proxy. | **Block** |
 | `Webzio-Extended` | Webzio | Third-party extended crawler. | **Block** |
@@ -298,7 +297,9 @@ User-agent: cohere-ai          → Disallow
 User-agent: omgili             → Disallow
 ```
 
-Explicit allowlines for the retrieval bots are **not required** if no `Disallow` applies to them — a token absent from robots.txt is allowed by default. They are worth writing anyway: they are documentation, they survive a later bad edit, and they make the intent reviewable. If you do write them, they must come **after** any `User-agent: *` block, and remember that group rules are matched by specificity — the longest matching token wins, so an allow for `Googlebot` overrides a `User-agent: *` disallow for `/private/`, but only for the paths the allow covers.
+Explicit allowlines for the retrieval bots are **not required** if no `Disallow` applies to them — a token absent from robots.txt is allowed by default. They are worth writing anyway: they are documentation, they survive a later bad edit, and they make the intent reviewable.
+
+**Group matching follows RFC 9309.** A group matches when its product token matches the crawler's user-agent, case-insensitively. Several matching groups are merged. Order does not matter, and a specific group does not have to follow `User-agent: *`. The `*` group applies only when no product token matched. Inside a matched group, the most specific **path** wins (longest path; equal length, Allow wins). Google's extra "longest matching user-agent token" behaviour is Google-specific. It is not the RFC 9309 rule. Do not require an allow to come after `*`, and do not say the longest token wins.
 
 ## Sources and confidence
 
@@ -310,7 +311,7 @@ Explicit allowlines for the retrieval bots are **not required** if no `Disallow`
 | Anthropic UA strings | **Not published by the vendor.** Assembled from crawls and third-party directories that disagree. | — | **OBSERVED, unverified; version drift expected** |
 | Anthropic identity check | Published IP list — `https://claude.com/crawling/bots.json` | vendor, current | **This is the verification method, not the UA string** |
 | Google tokens | Google Search Central crawling documentation | vendor, current | vendor-documented tokens |
-| Google UA strings | Commonly observed headers; Google does not print full strings | — | observed; verify against the live vendor page |
+| Google UA strings | Google publishes full strings for most crawlers (Google section above). Exceptions: `Google-Extended` has no UA; the Chrome version in `Google-Agent` is the placeholder `W.X.Y.Z` | vendor page | vendor-published, with those exceptions |
 | Perplexity tokens | Perplexity crawler documentation — `https://docs.perplexity.ai/guides/bots` | vendor, current | vendor-documented |
 | Perplexity UA strings | Same page, copied 2026-10-19 | 2026-10-19 | vendor-published (note the unbalanced parenthesis) |
 | Bingbot feeds Copilot | Microsoft Bing Webmaster documentation | vendor, current | vendor claim, not independently measured |

@@ -45,11 +45,15 @@ repeats off-site. These are not two problems.
 asking the author. Concretely, any of:
 
 - A specific number with a magnitude or unit — `137 scientific studies`, `3.4M analysed
-  rows`, `$0.012/task`.
-- A specific date — `2026-04-17`, `July 2026`, `Q3 2025`.
-- A named person or organisation attached to a claim — `Cyrus Shepard`, `Ahrefs`,
-  `Google Search Central`.
+  rows`, `$0.012/task`. **Deterministic.**
+- A specific date — `2026-04-17`, `July 2026`, `Q3 2025`. **Deterministic.**
+- A named person or organisation attached to a claim. **Labelled judgement.** The
+  heuristic is a capitalised name, or a token you already recorded as an organisation,
+  in the same sentence as a number, a date, or an attribution verb (`said`, `found`,
+  `reported`, `según`, `afirma`). Say "judgement" in the output when this heuristic
+  is what counted.
 - A named study, dataset or patent identifier with a figure — `n=137,210 domains`.
+  **Deterministic** when the identifier and the figure are both in the sentence.
 
 **Explicitly not facts:** adjectives, marketing superlatives, unquantified
 improvables ("dramatically faster"), and percentages with no base ("up to 40% faster"
@@ -62,7 +66,7 @@ density is 0.2/1,000, a 200-word extracted passage has a 4% chance of carrying o
 
 **Language calibration — mandatory outside English.** `effective_words =
 visible_character_count / chars_per_token[language]`. The `chars_per_token` table is
-in SKILL.md Step 3. Do **not** use whitespace token counts for Japanese, Chinese or
+in [EXTRACTABILITY.md](EXTRACTABILITY.md), multilingual calibration. Do **not** use whitespace token counts for Japanese, Chinese or
 Korean, where whitespace tokenisation does not exist and a token count returns roughly
 the number of clauses. For CJK, character count divided by 2.2 is the only workable
 normalisation.
@@ -98,14 +102,15 @@ Ahrefs (Louise Linehan, 2026-08-20):
 
 So W-02 measures the *minimum viable* condition: do you at least carry what everyone
 else carries? W-02 does **not** measure information gain — there is no dedicated
-information-gain check in this skill, because the score is measured by meaning and
+information-gain check in this skill, because the score is judged by meaning and
 cannot be computed deterministically without an LLM, and an LLM-scored check would
-violate the deterministic-analysis principle. Report it as an observation with the
+violate the deterministic-analysis principle. The meaning call is **judged**, not
+measured. Report it as an observation with the
 patent and Ahrefs cited, not as a score.
 
 **Caveat to carry verbatim:** Ahrefs is explicit that Google has not confirmed any
 information-gain requirement. Practitioner dissent is on the record
-(`r/SEO`, 2026-01-26): *"there is no information gain requirement — how do I know this
+(`[r/SEO, 2026-01-26](https://www.reddit.com/r/SEO/comments/1qngfmm/is_programmatic_seo_still_a_good_move_in_2026/)`, comment by WebLinkr): *"there is no information gain requirement — how do I know this
 — I publish 100's of 000's of PAAs/FAQs a month."* Present both. The stronger
 position is that information gain is a mechanism by which synthesis prunes overlap,
 well-evidenced at the mechanism level; the specific claim that Google penalises pages
@@ -129,7 +134,7 @@ Acceptable forms:
 - Footnote or endnote naming the speaker and the venue.
 
 **Language support.** Requires quotation-mark recognition. **Must accept typographic
-quotes**: `"…”"` (English), `„…“` (German), `«…»` (French), `“…”` (Spanish/Italian),
+quotes**: `“…”` (English), `„…“` (German), `«…»` (French), `“…”` (Spanish/Italian),
 `「…」` (CJK). Shipped lexicons: **en, nl, es, pt, it, fr, de**. Elsewhere **N/A**,
 never a fail.
 
@@ -148,10 +153,15 @@ the same domain. `example.github.io` is a different registrable domain from
 `github.io` for this purpose — public-suffix handling matters or large sites get free
 passes.
 
-**Exclude:** navigation, footer, social links, cookie banners, and the site's own
-logo link. Only count links inside content blocks.
+**Exclude:** navigation, a site footer that is a direct child of `<body>`, cookie
+banners, and the site's own logo link. A footer **inside** `<article>` or `<main>`
+stays — that is where the byline and the sources are. A social *profile* link
+(the bare host, no post path) does not count. A link whose path contains `/status/`,
+`/posts/`, `/p/`, or a dated permalink **does** count when the surrounding sentence
+cites that post as the source.
 
-**Language-agnostic.** Pure link-graph measurement.
+**Language-agnostic.** Link counting is the measurement. Deciding that the sentence
+cites the post is a labelled judgement; say so.
 
 **And it correlates with earned media** — Muck Rack's earned-vs-paid split (see the caveats
 at the top of this file: 84% is earned media as Muck Rack defines it, not 84% journalism).
@@ -166,10 +176,15 @@ the count and the destinations; let a human judge quality.
 
 ## W-05 — Comparison tables
 
-**Rule.** **PASS** if the page contains ≥1 `<table>` with ≥2 rows and ≥2 columns of
-data.
+**Rule.** **PASS** if the page contains ≥1 `<table>` with a `<thead>` or a header
+row of `<th>`, ≥2 data rows, ≥2 columns, **and** the table compares at least two
+named things (two products, two plans, two vendors).
 
-**Language-agnostic.** Element counting.
+A list does not pass W-05. X-06 accepts ≥3 `<li>` in one list; this check does not.
+A list that passes X-06 is not a W-05 pass. "At least two named things" is a labelled
+judgement on the header cells; the element counts are the measurement.
+
+**Language-agnostic** for the element counts.
 
 **Why worthiness and not just format:** a comparison table is the densest possible
 package of extractable, attributable, structured claims on a page. Every cell is a
@@ -204,7 +219,7 @@ fr  est un | est une | signifie | désigne | est défini comme
 de  ist ein | ist eine | bedeutet | bezeichnet | wird definiert als
 ```
 
-**≥40 words, not ~40 words.** The point is that a definition has to be liftable as a
+**≤40 words, not ~40 words.** The point is that a definition has to be liftable as a
 single sentence. Long definitions get truncated, and truncation of a definition
 produces a wrong definition.
 
@@ -254,8 +269,8 @@ empirical reason this audit does not award points for prettier markup.
   `datePublished` buried in JSON-LD. E-05 covers the machine-readable half; W-07
   covers the human half. A page with only a JSON-LD date has not shown a timestamp to
   a model reading the rendered text.
-- Recency means *current*. A date 18 months old is not a fresh timestamp; it is
-  evidence of neglect.
+- Recency means *current*, and it uses the same window as E-05: **12 months**. A
+  date older than 12 months is not a fresh timestamp.
 
 **The finding that should govern agent behaviour:**
 
