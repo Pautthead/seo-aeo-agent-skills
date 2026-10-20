@@ -53,11 +53,14 @@ Record the byte counts. You will compare bot responses against them in §5.
 
 Exact tokens from [`CRAWLERS.md`](CRAWLERS.md). These are the **citation-class** bots — the ones whose absence removes your pages from an engine's answers. Test all of them.
 
-> **On the strings below.** OpenAI and Perplexity publish exact User-Agent strings; OpenAI
-> explicitly notes that **"the version number may change"**, so `OAI-SearchBot/1.4` here is
-> the current published value and not a frozen fact. **Anthropic publishes no User-Agent
-> strings at all** — the `Claude-SearchBot` and `Claude-User` headers below are community-
-> observed, and third-party directories disagree about them.
+> **Why the commands below pass a bare token, not a full User-Agent string.** A User-Agent
+> is a self-asserted claim, and `CRAWLERS.md` requires the test to send the token only: a
+> string carrying a frozen version (`OAI-SearchBot/1.4`) fails silently the day the vendor
+> bumps it, and a full browser string is indistinguishable from a normal visitor. So each
+> command sends `-A 'OAI-SearchBot'`, which is exactly what an edge rule keyed on the token
+> sees. **OpenAI and Perplexity publish exact strings and OpenAI notes the "version number
+> may change"; Anthropic publishes no User-Agent strings at all** — the `Claude-SearchBot`
+> and `Claude-User` tokens are community-observed, and third-party directories disagree.
 >
 > That does not weaken the test. A User-Agent header is a self-asserted claim, so what you
 > are measuring here is how your edge treats a request *bearing that token* — which is
@@ -69,7 +72,7 @@ Exact tokens from [`CRAWLERS.md`](CRAWLERS.md). These are the **citation-class**
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' \
+  -A 'Claude-SearchBot' \
   https://example.com/pricing
 ```
 
@@ -77,7 +80,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (compatible; Claude-User/1.0; +claudebot@anthropic.com)' \
+  -A 'Claude-User' \
   https://example.com/pricing
 ```
 
@@ -85,7 +88,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot' \
+  -A 'OAI-SearchBot' \
   https://example.com/pricing
 ```
 
@@ -93,7 +96,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot' \
+  -A 'ChatGPT-User' \
   https://example.com/pricing
 ```
 
@@ -101,7 +104,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' \
+  -A 'Googlebot' \
   https://example.com/pricing
 ```
 
@@ -109,7 +112,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (compatible; Google-Agent/1.0)' \
+  -A 'Google-Agent' \
   https://example.com/pricing
 ```
 
@@ -117,7 +120,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)' \
+  -A 'bingbot' \
   https://example.com/pricing
 ```
 
@@ -152,16 +155,16 @@ BASE="https://example.com"
 PAGES="/ /pricing /blog/how-we-price"
 
 declare -A UA=(
-  [Claude-SearchBot]='Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)'
-  [Claude-User]='Mozilla/5.0 (compatible; Claude-User/1.0; +claudebot@anthropic.com)'
-  [OAI-SearchBot]='Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot'
-  [ChatGPT-User]='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot'
-  [Googlebot]='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+  [Claude-SearchBot]='Claude-SearchBot'
+  [Claude-User]='Claude-User'
+  [OAI-SearchBot]='OAI-SearchBot'
+  [ChatGPT-User]='ChatGPT-User'
+  [Googlebot]='Googlebot'
   [Google-Agent]='Google-Agent'
-  [Bingbot]='Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+  [Bingbot]='bingbot'
   [PerplexityBot]='PerplexityBot'
   [YouBot]='YouBot'
-  [DuckAssistBot]='DuckAssistBot/1.0; +http://duckduckgo.com/duckduckbot.html'
+  [DuckAssistBot]='DuckAssistBot'
 )
 
 printf '%-18s %-24s %-6s %-24s %-10s\n' BOT PAGE CODE TYPE BYTES
@@ -179,11 +182,11 @@ PowerShell equivalent:
 
 ```powershell
 $UA = @{
-  'Claude-SearchBot' = 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)'
-  'OAI-SearchBot'    = 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot'
-  'Googlebot'        = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
-  'Bingbot'          = 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'
-  'PerplexityBot'    = 'Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)'
+  'Claude-SearchBot' = 'Claude-SearchBot'
+  'OAI-SearchBot'    = 'OAI-SearchBot'
+  'Googlebot'        = 'Googlebot'
+  'Bingbot'          = 'bingbot'
+  'PerplexityBot'    = 'PerplexityBot'
 }
 foreach ($bot in $UA.Keys) {
   foreach ($p in $PAGES) {
@@ -219,7 +222,7 @@ Cloudflare's managed challenge frequently returns **`HTTP 200`** — not 403. A 
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' \
+  -A 'Claude-SearchBot' \
   https://example.com/pricing | grep -i 'cf-mitigated'
 ```
 
@@ -229,7 +232,7 @@ curl -sS -o /dev/null -D - \
 
 ```bash
 curl -sS \
-  -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' \
+  -A 'Claude-SearchBot' \
   https://example.com/pricing | grep -iE 'just a moment|challenges\.cloudflare\.com|cf-browser-verification|cf_chl_|Enable JavaScript and cookies'
 ```
 
@@ -250,7 +253,7 @@ check() {
   else verdict="FAIL — HTTP $code"; fi
   printf '%-60s %-9s %-9s %s\n' "$1" "$code" "$bytes" "$verdict"
 }
-check https://example.com/pricing 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)'
+check https://example.com/pricing 'Claude-SearchBot'
 ```
 
 ### Interstitial vs genuine 403
@@ -277,15 +280,15 @@ A 200 with the wrong bytes is still a failure.
 
 ```bash
 # Bytes, bot vs browser
-curl -sS -o /dev/null -w 'bot     %{size_download}\n' -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' https://example.com/pricing
+curl -sS -o /dev/null -w 'bot     %{size_download}\n' -A 'Claude-SearchBot' https://example.com/pricing
 curl -sS -o /dev/null -w 'browser %{size_download}\n' -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0 Safari/537.36' https://example.com/pricing
 
 # Is the answer text present in the bot's body, or only a mount point?
-curl -sS -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' https://example.com/pricing \
+curl -sS -A 'Claude-SearchBot' https://example.com/pricing \
   | grep -cE '<main|<article|<h1'
 
 # Does the bot body reference assets under a robots-disallowed prefix?
-curl -sS -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' https://example.com/pricing \
+curl -sS -A 'Claude-SearchBot' https://example.com/pricing \
   | grep -oE '(src|href)="[^"]+"' | grep -E '/(assets|static|wp-content|_next|dist)/' | sort -u
 ```
 
@@ -305,7 +308,7 @@ A 200 from your laptop is evidence, not proof. Bot Management scores, IP reputat
 ```bash
 # From a second network, ideally a VPS or datacenter host:
 curl -sS -o /dev/null -w '%{http_code}\n' \
-  -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' \
+  -A 'Claude-SearchBot' \
   https://example.com/pricing
 ```
 

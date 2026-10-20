@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: No dependencies, no API keys, no network required. Runs fully offline.
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.3"
+  version: "1.0.4"
   updated: "2026-10-20"
   keys-required: "none"
 ---

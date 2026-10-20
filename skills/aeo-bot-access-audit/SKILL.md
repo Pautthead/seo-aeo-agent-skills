@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires network access to the audited origin only. No API keys, no MCP servers, no paid accounts. Requires curl (or an equivalent HTTP client).
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.3"
+  version: "1.0.4"
   updated: "2026-10-20"
   keys-required: "none"
 ---

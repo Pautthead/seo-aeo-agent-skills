@@ -196,7 +196,7 @@ The check that catches the worst version of this bug is not in robots.txt at all
 ```bash
 # What did the retrieval bot actually request, and with what result?
 curl -sS -o /dev/null -w '%{http_code}\n' \
-  -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' \
+  -A 'Claude-SearchBot' \
   https://example.com/pricing
 ```
 
@@ -263,18 +263,18 @@ Never conclude from robots.txt. Test each URL, with each bot's exact token.
 
 ```bash
 curl -sS -o /dev/null -D - \
-  -A 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' \
+  -A 'Claude-SearchBot' \
   https://example.com/pricing
 ```
 
 **The verification command, in one line per bot:**
 
 ```bash
-for u in 'Mozilla/5.0 (compatible; Claude-SearchBot/1.0; +claudebot@anthropic.com)' \
-         'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; OAI-SearchBot/1.4; +https://openai.com/searchbot' \
-         'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' \
-         'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)' \
-         'Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)'; do
+for u in 'Claude-SearchBot' \
+         'OAI-SearchBot' \
+         'Googlebot' \
+         'bingbot' \
+         'PerplexityBot'; do
   printf '%s → ' "${u:0:40}"
   curl -sS -o /dev/null -w '%{http_code}\n' -A "$u" https://example.com/pricing
 done

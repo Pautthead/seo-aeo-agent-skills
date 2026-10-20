@@ -12,7 +12,7 @@ npx skills add Pautthead/seo-aeo-agent-skills
 [![Install](https://img.shields.io/badge/install-npx%20skills-8a2be2.svg)](https://www.npmjs.com/package/skills)
 [![API keys](https://img.shields.io/badge/API%20keys-none%20required-brightgreen.svg)](skills/)
 [![Skills](https://img.shields.io/badge/skills-4-orange.svg)](skills/)
-[![Release](https://img.shields.io/badge/release-v1.0.3-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
+[![Release](https://img.shields.io/badge/release-v1.0.4-informational.svg)](https://github.com/Pautthead/seo-aeo-agent-skills/releases)
 
 ---
 

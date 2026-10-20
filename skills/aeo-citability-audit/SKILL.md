@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Network access optional — accepts pasted HTML when offline. No API keys, no MCP, no dependencies.
 metadata:
   repo: "seo-aeo-agent-skills"
-  version: "1.0.3"
+  version: "1.0.4"
   updated: "2026-10-20"
   keys-required: "none"
 ---
@@ -205,7 +205,7 @@ measurement. Surface at most three, and always say which Shepard factor each map
 > **The headline this audit must be honest about.** Shepard's #2 factor is **search
 > rank at 9.4/10**. This audit cannot measure it keylessly. A 100/100 here means
 > "nothing wrong on-page", **not** "you will be cited". State that line verbatim in
-> the report whenever the score is above 70 **and no check returned N/A**. If any
+> the report whenever the score is **80–100 (strong)** **and no check was N/A**. If any
 > check is N/A the line is not true as stated — those checks never ran, and
 > "nothing is wrong on-page" would be a false negative reported as a clean result.
 > Say which checks were N/A instead.
