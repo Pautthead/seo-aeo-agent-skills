@@ -1,0 +1,103 @@
+name: Scheduled checks
+
+# Two things cannot run on every pull request, and both are worth running anyway:
+#
+#   1. External link rot. Publishers move URLs and add bot blocks on their own
+#      schedule; the only way to know is to ask them.
+#   2. The real install path. `npx skills add Pautthead/seo-aeo-agent-skills` clones
+#      the default branch from GitHub, so it tests what a user actually gets, not
+#      the working tree. Running it on a PR would test the previous commit.
+#
+# Neither blocks a merge. They open an issue instead, so a broken third-party page
+# does not turn the build red for reasons the author cannot fix.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # Mondays, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: scheduled-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  external-links:
+    name: "external links"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Check every external URL
+        id: links
+        continue-on-error: true
+        run: python tests/check_docs.py --external --no-shellcheck | tee links.txt
+
+      - name: Open or update an issue on link errors
+        if: steps.links.outcome == 'failure'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('links.txt', 'utf8');
+            const failures = report.split('\n').filter(l => l.includes('[external-')).join('\n');
+            const title = 'Scheduled: external link check found failures';
+            const body = 'The weekly external link check failed.\n\n```\n' + failures + '\n```\n\n' +
+              'A 403/429 is usually bot blocking and can be ignored; a 404 is a dead citation. ' +
+              'Body: https://github.com/' + context.repo.owner + '/' + context.repo.repo +
+              '/actions/runs/' + context.runId;
+            // Match on the title, not a label: labels passed to issues.create are
+            // silently ignored when they do not already exist, which would make the
+            // "already reported" lookup always miss and open a new issue every week.
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', per_page: 100,
+            });
+            const existing = open.data.find(i => !i.pull_request && i.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: existing.number, body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body,
+              });
+            }
+
+  install:
+    name: "install smoke test"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+
+      - name: Install the published repository into a scratch project
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/install-smoke" && cd "$RUNNER_TEMP/install-smoke"
+          npm init -y >/dev/null 2>&1
+          npx --yes skills@latest add Pautthead/seo-aeo-agent-skills --list > listing.txt 2>&1 || true
+          cat listing.txt
+          # The CLI's exit code is not a contract; the skill list is. Fail unless all
+          # four skills are offered by the published repository.
+          for skill in seo-data-contract aeo-bot-access-audit aeo-citability-audit information-gain-analysis; do
+            if ! grep -q "$skill" listing.txt; then
+              echo "::error::install listing is missing $skill"
+              exit 1
+            fi
+          done
+          echo "All four skills offered by the published repository."

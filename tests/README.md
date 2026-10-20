@@ -1,6 +1,6 @@
 # tests/ — what CI enforces, and why
 
-Two gates. Both are pure standard library, Python 3.10+, no dependencies, and both
+Three gates. All are pure standard library, Python 3.10+, no dependencies, and all
 run on every push. `AGENTS.md` documents them for contributors; this file explains
 *why each check exists*, so you can tell the difference between a gate protecting a
 real invariant and a gate that is merely noise.
@@ -8,10 +8,11 @@ real invariant and a gate that is merely noise.
 ```
 python tests/validate_skill_inventory.py
 python tests/reference_freshness.py
+python tests/check_docs.py            # add --external for the network check
 ```
 
-`--strict` makes warnings / review triggers fatal. CI enforces gate 2 at its default
-two thresholds and runs `--strict` separately, non-blocking (see the workflow for why).
+`--strict` makes warnings / review triggers fatal. CI enforces gates 2 and 3 at their
+defaults and runs `--strict` separately, non-blocking (see the workflow for why).
 
 ---
 
@@ -32,7 +33,7 @@ unloadable, unportable, or misleading.
 | Body under 500 lines / 5,000 est. tokens | A skill body is loaded into context on activation. Past that it crowds out the work it was loaded to do. Detail belongs in `references/`, which loads only when needed. The estimate is chars/4; tune with `--max-body-tokens` if the budget policy changes. |
 | No `context: fork`, no `hooks/` directory | Both are Claude Code only. Shipping them means the skill works on one host and silently misbehaves on six others. |
 | Zero hard dependencies | The repo's promise is that every skill completes without a paid account. The check looks for input-side artifact terms (`curl`, `fetch`, `web`, `paste`, `CSV`, `HTML`, `URL`) in the "when to use"/"inputs" context, and separately flags credential wording — but ignores it when negated, so "zero API keys" does not trip it. Heuristic, so it is a warning, not an error. |
-| Relative links resolve | A broken link in a reference file is a dead end at the exact moment the agent needs the detail, which is when it will guess instead. Links must be relative to the **skill root** (`references/FOO.md`) even from inside another reference file. `../` is rejected and `references/references/FOO.md` is caught as the double-prefix bug it is. |
+| Relative links resolve | A broken link in a reference file is a dead end at the exact moment the agent needs the detail, which is when it will guess instead. Links resolve relative to the **containing file**, as GitHub renders them: `references/FOO.md` from `SKILL.md`, plain `FOO.md` from inside `references/`. A link may not escape the skill root, and `references/references/FOO.md` is caught as the double-prefix bug it is. |
 
 Exit code is non-zero on any error, and on any warning under `--strict`.
 
@@ -89,6 +90,28 @@ different things and both exit 0; printing the checked count is what keeps the s
 from passing vacuously. Lower the review threshold (`--review-after-days 30`) and the
 review count rises sharply, which is how you confirm the check is live rather than
 inert.
+
+## Gate 3 — `check_docs.py`
+
+Everything Gate 1 cannot see, which is where every defect that survived to v1.0.2
+lived. Gate 1 checks four skill directories; this gate checks the repository: the
+README pair, `docs/`, the marketplace JSON, and whether the `curl` commands printed
+inside reference files are even valid shell.
+
+| Check | Why it exists |
+|---|---|
+| Every relative link resolves | Gate 1 only walks `skills/`. The three broken links found in `docs/` after v1.0.2 were invisible to it, and a reader who clicks one lands on a 404 in the file that is supposed to prove the repo's diligence. Resolution is relative to the containing file, because that is what a renderer does — the old skill-root convention passed the gate while 30 links 404'd on GitHub. |
+| No absolute paths, nothing escapes the repo | An absolute `/foo` path works on one host's build and nowhere else. `../` out of the repository is a link to a file the reader does not have. |
+| Fenced blocks balance | An unclosed fence silently swallows the rest of the document. In a skill body that means the agent reads headings as code and the checklist as prose. |
+| `bash` / `sh` blocks parse (`bash -n`) | These are copy-paste commands. A block that does not parse is a command the reader will run and watch fail. 37 blocks across 27 files were checked the first time this gate ran. The WindowsApps `bash.exe` shim is a WSL launcher that exits 1 when WSL is absent, so the shell is probed before use rather than trusted. |
+| `shellcheck -S error` on the same blocks | `bash -n` proves syntax, not correctness. Errors only: warnings and style suggestions would drown a document that is deliberately full of illustrative one-liners. Pass `--no-shellcheck` to skip it, and note that a missing shellcheck is a warning, never a silent pass. |
+| No BOM, valid UTF-8, no mojibake | `Get-Content` without `-Encoding` on Windows produced a mojibake release note during this project. Double-encoded text looks like an encoding problem to a reader and like a corrupted quote to a reviewer, and both destroy trust in the citation. |
+| `marketplace.json` parses and its skill paths exist | The marketplace file is what the installer reads. A path typo means a skill that installs for nobody, and nothing in the skill tree notices. |
+| Version is identical in five places | `marketplace.json`, four `SKILL.md` files and the README badge. Drift is how a "fixed in v1.0.3" claim ships in a v1.0.1 artefact — it happened twice here, in both directions. |
+| EN/ES URL parity | The Spanish README claims to be a translation, not a summary. A statistic present in one language and missing in the other means one audience is reading a different article. Badge URLs are localised and are matched as pairs, not by string. |
+| `--external`: every outbound URL answers | Link rot is the only failure here that a maintainer cannot see without asking. Off by default because it needs the network and because publishers rate-limit; CI runs it weekly and opens an issue. `403`/`429`/`503` are warnings (bot blocking), `404` is an error (dead citation). Probes use `GET`, because several CDNs and affiliate redirectors answer `HEAD` with `404` and `GET` with `200`. |
+
+Exit code is non-zero on any error, and on any warning under `--strict`.
 
 ## Fixtures
 

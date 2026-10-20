@@ -26,10 +26,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -70,3 +70,34 @@ jobs:
       - name: "Gate 2 (strict, informational) -- review triggers also fail"
         continue-on-error: true
         run: python tests/reference_freshness.py --review-after-days 90 --stale-after-days 365 --strict
+
+  docs:
+    name: "docs gate"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Ensure shellcheck is present
+        # shellcheck is preinstalled on ubuntu-latest, but a silent absence would turn
+        # the lint half of Gate 3 into a warning that nobody reads.
+        run: |
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq shellcheck
+          fi
+          shellcheck --version | head -2
+
+      - name: Gate 3 -- links, JSON, encoding, bash syntax, EN/ES parity
+        run: python tests/check_docs.py
+
+      - name: "Gate 3 (strict, informational) -- warnings also fail"
+        continue-on-error: true
+        run: python tests/check_docs.py --strict

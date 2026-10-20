@@ -125,9 +125,10 @@ Before you open a PR:
 ```
 python tests/validate_skill_inventory.py
 python tests/reference_freshness.py
+python tests/check_docs.py
 ```
 
-And add yourself to the `updated` metadata date. CI runs both on every push.
+And add yourself to the `updated` metadata date. CI runs all three on every push.
 
 ### The citation rule
 
